@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Eagle View — Your Smart Desktop Sidebar</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  :root {
+    --orange: #E87722;
+    --teal: #009B8D;
+    --dark: #08111F;
+    --dark2: #0C1A2E;
+    --dark3: #0E2040;
+    --text: #C4D4E8;
+    --text2: #6A8FAF;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior: smooth; }
+  body { font-family:'Inter',sans-serif; background:var(--dark); color:var(--text); overflow-x:hidden; }
+  ::-webkit-scrollbar { width:6px; }
+  ::-webkit-scrollbar-track { background:var(--dark); }
+  ::-webkit-scrollbar-thumb { background:var(--dark3); border-radius:3px; }
+
+  /* ── NAV ── */
+  nav {
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 60px;
+    background:rgba(8,17,31,0.88);
+    backdrop-filter:blur(20px);
+    border-bottom:1px solid rgba(255,255,255,0.05);
+  }
+  .nav-logo { display:flex; align-items:center; gap:10px; font-size:20px; font-weight:800; color:white; }
+  .nav-logo-icon {
+    width:38px; height:38px;
+    background:linear-gradient(135deg,#1C4A45,#061414);
+    border-radius:11px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .nav-links { display:flex; gap:36px; }
+  .nav-links a { color:var(--text2); text-decoration:none; font-size:14px; font-weight:500; transition:color 0.2s; }
+  .nav-links a:hover { color:white; }
+  .nav-cta {
+    background:linear-gradient(135deg,var(--orange),#B85400);
+    color:white; border:none; padding:10px 22px;
+    border-radius:10px; font-size:14px; font-weight:600;
+    cursor:pointer; transition:all 0.2s; text-decoration:none;
+  }
+  .nav-cta:hover { transform:translateY(-1px); box-shadow:0 8px 24px rgba(232,119,34,0.4); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height:100vh; display:flex; align-items:center; justify-content:center;
+    padding:120px 60px 80px; position:relative; overflow:hidden;
+  }
+  .hero-bg {
+    position:absolute; inset:0; z-index:0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 50%,rgba(0,155,141,0.08) 0%,transparent 60%),
+      radial-gradient(ellipse 60% 80% at 80% 30%,rgba(232,119,34,0.07) 0%,transparent 60%),
+      radial-gradient(ellipse 40% 40% at 60% 80%,rgba(0,82,204,0.06) 0%,transparent 60%);
+  }
+  .hero-grid {
+    position:absolute; inset:0; z-index:0;
+    background-image:linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);
+    background-size:60px 60px;
+    animation:gridMove 20s linear infinite;
+  }
+  @keyframes gridMove { 0%{transform:translateY(0)} 100%{transform:translateY(60px)} }
+
+  .hero-inner { position:relative; z-index:1; display:flex; align-items:center; gap:80px; max-width:1200px; width:100%; }
+  .hero-text { flex:1; }
+
+  .hero-badge {
+    display:inline-flex; align-items:center; gap:8px;
+    background:rgba(0,155,141,0.12); border:1px solid rgba(0,155,141,0.3);
+    color:#4DD4C8; padding:6px 16px; border-radius:100px;
+    font-size:13px; font-weight:600; margin-bottom:28px;
+    animation:fadeUp 0.6s ease both;
+  }
+  .badge-dot {
+    width:7px; height:7px; border-radius:50%;
+    background:#4DD4C8; box-shadow:0 0 8px #4DD4C8;
+    animation:pulse 2s ease infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+
+  .hero h1 {
+    font-size:68px; font-weight:900; line-height:1.05;
+    letter-spacing:-2px; margin-bottom:24px;
+    animation:fadeUp 0.6s 0.1s ease both;
+  }
+  .hero h1 span {
+    background:linear-gradient(135deg,#E87722 0%,#FFB86C 50%,#009B8D 100%);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  }
+  .hero-sub {
+    font-size:19px; color:var(--text2); line-height:1.7;
+    max-width:480px; margin-bottom:44px; font-weight:400;
+    animation:fadeUp 0.6s 0.2s ease both;
+  }
+  .hero-btns { display:flex; gap:14px; align-items:center; animation:fadeUp 0.6s 0.3s ease both; }
+  .btn-primary {
+    display:inline-flex; align-items:center; gap:8px;
+    background:linear-gradient(135deg,#E87722,#B85400);
+    color:white; padding:14px 28px; border-radius:12px;
+    font-size:15px; font-weight:700; text-decoration:none;
+    transition:all 0.2s; border:none; cursor:pointer;
+    box-shadow:0 4px 20px rgba(232,119,34,0.3);
+  }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 8px 32px rgba(232,119,34,0.5); }
+  .btn-secondary {
+    display:inline-flex; align-items:center; gap:8px;
+    background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12);
+    color:white; padding:14px 28px; border-radius:12px;
+    font-size:15px; font-weight:600; text-decoration:none;
+    transition:all 0.2s; cursor:pointer;
+  }
+  .btn-secondary:hover { background:rgba(255,255,255,0.1); border-color:rgba(255,255,255,0.2); }
+
+  .hero-stats { display:flex; gap:36px; margin-top:56px; animation:fadeUp 0.6s 0.4s ease both; }
+  .stat-num { font-size:28px; font-weight:800; color:white; }
+  .stat-label { font-size:13px; color:var(--text2); margin-top:2px; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+
+  /* ── APP MOCKUP ── */
+  .hero-mockup { flex:0 0 auto; animation:fadeUp 0.6s 0.2s ease both; position:relative; }
+  .mockup-glow {
+    position:absolute; inset:-40px;
+    background:radial-gradient(ellipse at center,rgba(232,119,34,0.15) 0%,transparent 70%);
+    pointer-events:none;
+  }
+
+  /* The sidebar window */
+  .app-sidebar {
+    width:240px;
+    background:#1A0E00;
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.06),
+      0 40px 100px rgba(0,0,0,0.7),
+      0 0 80px rgba(232,119,34,0.1);
+    position:relative;
+  }
+
+  /* Header — exact orange gradient from screenshot */
+  .app-header {
+    background:linear-gradient(100deg,#2A0E00 0%,#7A3200 30%,#D46A00 60%,#E87722 78%,#F5A030 92%,#FFCC70 100%);
+    padding:11px 14px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .app-header-icon {
+    width:34px; height:34px;
+    background:rgba(255,255,255,0.18);
+    border-radius:9px;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+
+  /* Rows */
+  .app-row {
+    display:flex; align-items:center; gap:9px;
+    padding:8px 12px;
+    border-bottom:1px solid rgba(255,255,255,0.05);
+    transition:background 0.15s;
+  }
+  .app-row:hover { background:rgba(255,255,255,0.03); }
+
+  /* Row icon — iOS-style rounded squares */
+  .ri {
+    width:30px; height:30px; border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0; overflow:hidden;
+  }
+
+  .row-label { font-size:12.5px; color:#C8D8EC; flex:1; font-weight:500; }
+
+  .row-badge {
+    font-size:11px; font-weight:800; color:white;
+    background:linear-gradient(135deg,#009B8D,#006B61);
+    padding:3px 9px; border-radius:100px;
+    min-width:26px; text-align:center; letter-spacing:0.3px;
+  }
+  .row-badge.warn { background:transparent; font-size:15px; padding:0; line-height:1; }
+
+  /* Notes section */
+  .note-row {
+    display:flex; align-items:center; gap:9px;
+    padding:7px 12px;
+    border-bottom:1px solid rgba(255,255,255,0.04);
+  }
+  .note-check {
+    width:15px; height:15px; border-radius:3px;
+    border:1.5px solid rgba(255,255,255,0.22); flex-shrink:0;
+  }
+  .note-text { font-size:11px; color:rgba(200,216,236,0.65); flex:1; }
+  .note-text.ph { color:rgba(100,140,175,0.45); font-style:italic; }
+  .note-bell { font-size:13px; opacity:0.4; }
+
+  /* Float cards */
+  .float-card {
+    position:absolute;
+    background:rgba(12,26,46,0.92);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:13px; padding:12px 16px;
+    backdrop-filter:blur(20px);
+    box-shadow:0 8px 32px rgba(0,0,0,0.4);
+    font-size:12px; white-space:nowrap;
+  }
+  .float-card-1 { top:-20px; right:-140px; animation:float1 4s ease-in-out infinite; }
+  .float-card-2 { bottom:100px; right:-130px; animation:float2 5s ease-in-out infinite; }
+  .float-card-3 { bottom:10px; left:-110px; animation:float3 4.5s ease-in-out infinite; }
+  @keyframes float1 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+  @keyframes float2 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(8px)} }
+  @keyframes float3 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+  .float-title { color:var(--text2); font-size:10px; margin-bottom:4px; }
+  .float-val { color:white; font-weight:700; font-size:15px; }
+  .float-sub { color:#4DD4C8; font-size:10px; margin-top:2px; }
+  .float-dot { display:inline-block; width:6px; height:6px; border-radius:50%; margin-right:5px; }
+
+  /* ── SECTIONS ── */
+  section { padding:100px 60px; }
+  .section-label { font-size:12px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--orange); margin-bottom:16px; }
+  .section-title { font-size:48px; font-weight:900; letter-spacing:-1.5px; color:white; line-height:1.1; margin-bottom:16px; }
+  .section-sub { font-size:17px; color:var(--text2); line-height:1.7; max-width:540px; }
+  .section-header { margin-bottom:64px; }
+
+  /* Features */
+  .features { background:var(--dark2); }
+  .features-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; max-width:1200px; margin:0 auto; }
+  .feature-card {
+    background:rgba(8,17,31,0.8); border:1px solid rgba(255,255,255,0.07);
+    border-radius:20px; padding:32px; position:relative; overflow:hidden;
+    transition:all 0.3s; cursor:default;
+  }
+  .feature-card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:1px;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent);
+    opacity:0; transition:opacity 0.3s;
+  }
+  .feature-card:hover { border-color:rgba(232,119,34,0.25); transform:translateY(-4px); box-shadow:0 20px 60px rgba(0,0,0,0.4),0 0 0 1px rgba(232,119,34,0.1); }
+  .feature-card:hover::before { opacity:1; }
+  .feature-icon { width:52px; height:52px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:24px; margin-bottom:20px; }
+  .feature-card h3 { font-size:18px; font-weight:700; color:white; margin-bottom:10px; }
+  .feature-card p { font-size:14px; color:var(--text2); line-height:1.65; }
+  .feature-tag { display:inline-block; margin-top:16px; font-size:11px; font-weight:600; padding:4px 10px; border-radius:100px; background:rgba(232,119,34,0.12); color:#E87722; border:1px solid rgba(232,119,34,0.2); }
+  .feature-tag.teal { background:rgba(0,155,141,0.12); color:#4DD4C8; border-color:rgba(0,155,141,0.2); }
+
+  /* How it works */
+  .how { max-width:1200px; margin:0 auto; }
+  .steps { display:grid; grid-template-columns:repeat(4,1fr); gap:32px; position:relative; }
+  .steps::before { content:''; position:absolute; top:32px; left:10%; right:10%; height:1px; background:linear-gradient(90deg,transparent,var(--dark3),var(--orange),var(--dark3),transparent); }
+  .step { text-align:center; position:relative; }
+  .step-num { width:64px; height:64px; border-radius:50%; background:linear-gradient(135deg,var(--dark3),var(--dark2)); border:2px solid rgba(232,119,34,0.3); display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:900; color:var(--orange); margin:0 auto 20px; position:relative; z-index:1; box-shadow:0 0 0 6px var(--dark),0 0 20px rgba(232,119,34,0.15); }
+  .step h4 { font-size:16px; font-weight:700; color:white; margin-bottom:8px; }
+  .step p { font-size:13px; color:var(--text2); line-height:1.6; }
+
+  /* Platforms */
+  .platforms { background:var(--dark2); }
+  .platforms-inner { max-width:1200px; margin:0 auto; }
+  .platform-cards { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  .platform-card { background:rgba(8,17,31,0.8); border:1px solid rgba(255,255,255,0.07); border-radius:20px; padding:40px; display:flex; align-items:center; gap:28px; transition:all 0.3s; }
+  .platform-card:hover { border-color:rgba(0,155,141,0.3); box-shadow:0 16px 48px rgba(0,0,0,0.3); }
+  .platform-icon { width:72px; height:72px; border-radius:18px; display:flex; align-items:center; justify-content:center; font-size:36px; flex-shrink:0; }
+  .platform-card h3 { font-size:22px; font-weight:800; color:white; margin-bottom:6px; }
+  .platform-card p { font-size:14px; color:var(--text2); line-height:1.6; }
+  .platform-badge { display:inline-block; margin-top:12px; font-size:11px; font-weight:700; padding:4px 12px; border-radius:100px; background:rgba(0,155,141,0.15); color:#4DD4C8; border:1px solid rgba(0,155,141,0.3); }
+
+  /* Themes */
+  .themes-inner { max-width:1200px; margin:0 auto; }
+  .themes-grid { display:flex; gap:16px; flex-wrap:wrap; }
+  .theme-pill { display:flex; align-items:center; gap:10px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); border-radius:100px; padding:8px 20px 8px 8px; transition:all 0.2s; cursor:default; }
+  .theme-pill:hover { background:rgba(255,255,255,0.09); border-color:rgba(255,255,255,0.15); transform:translateY(-2px); }
+  .theme-swatch { width:32px; height:32px; border-radius:50%; flex-shrink:0; }
+  .theme-name { font-size:14px; font-weight:600; color:white; }
+
+  /* CTA */
+  .cta { background:linear-gradient(135deg,rgba(232,119,34,0.08) 0%,rgba(0,155,141,0.08) 100%); border-top:1px solid rgba(255,255,255,0.05); border-bottom:1px solid rgba(255,255,255,0.05); text-align:center; }
+  .cta-inner { max-width:700px; margin:0 auto; }
+  .cta h2 { font-size:52px; font-weight:900; letter-spacing:-2px; color:white; margin-bottom:16px; }
+  .cta p { font-size:18px; color:var(--text2); margin-bottom:40px; line-height:1.6; }
+  .cta-btns { display:flex; gap:16px; justify-content:center; }
+
+  /* Footer */
+  footer { padding:40px 60px; display:flex; align-items:center; justify-content:space-between; border-top:1px solid rgba(255,255,255,0.06); }
+  .footer-logo { display:flex; align-items:center; gap:10px; font-weight:800; color:white; }
+  .footer-copy { font-size:13px; color:var(--text2); }
+  .footer-links { display:flex; gap:28px; }
+  .footer-links a { font-size:13px; color:var(--text2); text-decoration:none; transition:color 0.2s; }
+  .footer-links a:hover { color:white; }
+
+  /* Reveal */
+  .reveal { opacity:0; transform:translateY(32px); transition:opacity 0.7s ease,transform 0.7s ease; }
+  .reveal.visible { opacity:1; transform:translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- Reusable Eagle SVG symbol -->
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="eagle" viewBox="0 0 100 100">
+    <polygon points="50,8 67,40 50,35 33,40" fill="white"/>
+    <polygon points="50,35 10,25 20,50 38,50" fill="white" opacity="0.9"/>
+    <polygon points="50,35 90,25 80,50 62,50" fill="white" opacity="0.9"/>
+    <polygon points="38,50 20,60 30,72 50,65" fill="white" opacity="0.8"/>
+    <polygon points="62,50 80,60 70,72 50,65" fill="white" opacity="0.8"/>
+    <polygon points="50,65 44,85 50,80 56,85" fill="white" opacity="0.75"/>
+  </symbol>
+</svg>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-icon">
+      <svg width="26" height="26"><use href="#eagle"/></svg>
+    </div>
+    Eagle View
+  </div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#how">How it works</a>
+    <a href="#platforms">Platforms</a>
+    <a href="#themes">Themes</a>
+  </div>
+  <a href="#download" class="nav-cta">Download Free</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        Now available for macOS &amp; Windows
+      </div>
+      <h1>Your workspace,<br><span>always in view</span></h1>
+      <p class="hero-sub">Eagle View sits quietly on the edge of your screen — showing mails, meetings, tasks and more. One glance. Zero clicks.</p>
+      <div class="hero-btns">
+        <a href="#download" class="btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2v13M5 15l7 7 7-7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Download for Mac
+        </a>
+        <a href="#features" class="btn-secondary">See features →</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><div class="stat-num">8+</div><div class="stat-label">Live integrations</div></div>
+        <div class="stat"><div class="stat-num">5</div><div class="stat-label">Beautiful themes</div></div>
+        <div class="stat"><div class="stat-num">∞</div><div class="stat-label">Always on top</div></div>
+      </div>
+    </div>
+
+    <!-- APP MOCKUP -->
+    <div class="hero-mockup">
+      <div class="mockup-glow"></div>
+
+      <!-- Floating info cards -->
+      <div class="float-card float-card-1">
+        <div class="float-title">Unread mails</div>
+        <div class="float-val" style="color:#4DD4C8">15 new today</div>
+        <div class="float-sub">↑ Just synced</div>
+      </div>
+      <div class="float-card float-card-2">
+        <div class="float-title">Next meeting</div>
+        <div class="float-val" style="color:#E53935">● in 12m</div>
+        <div class="float-sub" style="color:var(--text2)">Team standup</div>
+      </div>
+      <div class="float-card float-card-3">
+        <div><span class="float-dot" style="background:#4DD4C8"></span><span style="color:#4DD4C8;font-weight:700;font-size:11px">CONNECTED</span></div>
+        <div style="color:var(--text2);font-size:10px;margin-top:3px">Outlook · Gmail · Jira</div>
+      </div>
+
+      <!-- ═══════════════════════════════════════
+           SIDEBAR — pixel-accurate replica
+      ════════════════════════════════════════ -->
+      <div class="app-sidebar">
+
+        <!-- Header -->
+        <div class="app-header">
+          <div class="app-header-icon">
+            <svg width="22" height="22"><use href="#eagle"/></svg>
+          </div>
+          <span style="font-size:15px;font-weight:900;color:white;letter-spacing:0.4px">Eagle View</span>
+        </div>
+
+        <!-- ── Rows ── -->
+        <div style="background:rgba(0,0,0,0.12)">
+
+          <!-- MAILS — blue Outlook-style envelope -->
+          <div class="app-row">
+            <div class="ri" style="background:linear-gradient(145deg,#1B6FD8,#0D47A1)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <rect x="2" y="5" width="20" height="15" rx="2" fill="white" opacity="0.2" stroke="white" stroke-width="1.5"/>
+                <polyline points="2,7 12,13 22,7" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                <circle cx="18" cy="17" r="4" fill="#FFD700"/>
+                <path d="M17 17h2M18 16v2" stroke="#1B6FD8" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <span class="row-label">Mails</span>
+            <span class="row-badge">15</span>
+          </div>
+
+          <!-- MEETINGS — calendar icon -->
+          <div class="app-row">
+            <div class="ri" style="background:white;flex-direction:column;gap:0;padding:0;overflow:hidden">
+              <div style="background:#E53935;width:100%;text-align:center;font-size:7px;font-weight:800;color:white;padding:2px 0;letter-spacing:1px">JUN</div>
+              <div style="font-size:13px;font-weight:900;color:#1A1A1A;line-height:1;padding:2px 0">29</div>
+            </div>
+            <span class="row-label">Meetings</span>
+            <span class="row-badge">0</span>
+          </div>
+
+          <!-- TO DO — Microsoft To Do flag -->
+          <div class="app-row">
+            <div class="ri" style="background:linear-gradient(145deg,#2979FF,#1565C0)">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
+                <path d="M5 3 L5 21" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                <path d="M5 5 L18 5 L18 14 L5 14 Z" fill="#FF5252" stroke="none"/>
+                <path d="M5 5 L18 5 L18 14 L5 14" fill="none" stroke="white" stroke-width="1.2"/>
+              </svg>
+            </div>
+            <span class="row-label">To Do</span>
+            <span class="row-badge">6</span>
+          </div>
+
+          <!-- INCIDENTS — crossed tools -->
+          <div class="app-row">
+            <div class="ri" style="background:linear-gradient(145deg,#CC5500,#7A2800)">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
+                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <span class="row-label">Incidents</span>
+            <span class="row-badge">5</span>
+          </div>
+
+          <!-- LEARN4U — orange with 4U text -->
+          <div class="app-row">
+            <div class="ri" style="background:linear-gradient(145deg,#E87722,#A04400)">
+              <span style="font-size:10px;font-weight:900;color:white;letter-spacing:-0.5px">4U</span>
+            </div>
+            <span class="row-label">Learn4U</span>
+            <span class="row-badge">3</span>
+          </div>
+
+          <!-- TIME SHEET — clock + person -->
+          <div class="app-row">
+            <div class="ri" style="background:linear-gradient(145deg,#4E6B7A,#263238)">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="9" stroke="white" stroke-width="1.5"/>
+                <polyline points="12,7 12,12 15,14" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                <circle cx="19" cy="20" r="3" fill="white" opacity="0.7"/>
+                <path d="M14 20c0-2.76 2.24-5 5-5" stroke="white" stroke-width="1.2" stroke-linecap="round" opacity="0.7"/>
+              </svg>
+            </div>
+            <span class="row-label">Time Sheet</span>
+            <span class="row-badge">2d</span>
+          </div>
+
+          <!-- PEAKON SURVEY — purple bar chart -->
+          <div class="app-row">
+            <div class="ri" style="background:linear-gradient(145deg,#5C35CC,#330E7A)">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
+                <rect x="3" y="14" width="4" height="7" rx="1" fill="white" opacity="0.6"/>
+                <rect x="10" y="9" width="4" height="12" rx="1" fill="white" opacity="0.8"/>
+                <rect x="17" y="4" width="4" height="17" rx="1" fill="white"/>
+              </svg>
+            </div>
+            <span class="row-label">Peakon Survey</span>
+            <span class="row-badge warn">⚠️</span>
+          </div>
+
+          <!-- JIRA — blue lightning bolt -->
+          <div class="app-row" style="border-bottom:none">
+            <div class="ri" style="background:linear-gradient(145deg,#0065FF,#003DAB)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <polygon points="13,2 4,14 11,14 11,22 20,10 13,10" fill="white"/>
+              </svg>
+            </div>
+            <span class="row-label">Jira</span>
+            <span class="row-badge">4</span>
+          </div>
+
+        </div>
+
+        <!-- Notes section -->
+        <div style="background:rgba(0,0,0,0.08);border-top:1px solid rgba(255,255,255,0.05)">
+          <div class="note-row">
+            <div class="note-check"></div>
+            <span class="note-text">hide icon on tray</span>
+            <span class="note-bell">🔔</span>
+          </div>
+          <div class="note-row">
+            <div class="note-check"></div>
+            <span class="note-text">time sheet icon</span>
+            <span class="note-bell">🔔</span>
+          </div>
+          <div class="note-row" style="border-bottom:none">
+            <div class="note-check"></div>
+            <span class="note-text ph">Add a note...</span>
+            <span class="note-bell">🔔</span>
+          </div>
+        </div>
+
+        <!-- World Clock pills -->
+        <div style="padding:8px 10px;display:flex;gap:7px;background:rgba(0,0,0,0.18);border-top:1px solid rgba(255,255,255,0.05)">
+          <div style="flex:1;background:rgba(0,120,107,0.25);border:1px solid rgba(0,155,141,0.35);border-radius:9px;padding:7px 10px;display:flex;align-items:center;gap:5px">
+            <span style="font-size:14px">🇩🇪</span>
+            <span style="font-size:16px;font-weight:900;color:#4DD4C8;letter-spacing:1.5px;font-variant-numeric:tabular-nums" id="clock-de">--:--</span>
+          </div>
+          <div style="flex:1;background:rgba(180,85,0,0.22);border:1px solid rgba(232,119,34,0.35);border-radius:9px;padding:7px 10px;display:flex;align-items:center;gap:5px">
+            <span style="font-size:14px">🇺🇸</span>
+            <span style="font-size:16px;font-weight:900;color:#E87722;letter-spacing:1.5px;font-variant-numeric:tabular-nums" id="clock-ny">--:--</span>
+          </div>
+        </div>
+
+        <!-- Footer bar -->
+        <div style="padding:6px 10px;display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,0.28);border-top:1px solid rgba(255,255,255,0.05)">
+          <span style="font-size:15px;opacity:0.4">🔓</span>
+          <span style="font-size:9px;color:var(--text2);display:flex;align-items:center;gap:4px">
+            <span style="width:5px;height:5px;border-radius:50%;background:#4CAF50;display:inline-block"></span>
+            Updated <span id="clock-updated" style="font-variant-numeric:tabular-nums">--:--:--</span>
+          </span>
+          <span style="font-size:15px;opacity:0.4;cursor:pointer;user-select:none">↻</span>
+        </div>
+
+      </div><!-- /app-sidebar -->
+    </div><!-- /hero-mockup -->
+  </div>
+</section>
+
+<!-- ── FEATURES ── -->
+<section class="features" id="features">
+  <div style="max-width:1200px;margin:0 auto">
+    <div class="section-header reveal">
+      <div class="section-label">Features</div>
+      <div class="section-title">Everything you need,<br>nothing you don't</div>
+      <div class="section-sub">All your work tools in one slim sidebar. Always visible, never in the way.</div>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <div class="feature-icon" style="background:linear-gradient(135deg,rgba(21,101,192,0.3),rgba(13,71,161,0.3));border:1px solid rgba(21,101,192,0.3)">📧</div>
+        <h3>Unified Mail</h3>
+        <p>Connects to both Outlook and Gmail. See unread count, today's mails, and flagged items — all from one place.</p>
+        <span class="feature-tag teal">Outlook + Gmail</span>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon" style="background:linear-gradient(135deg,rgba(229,57,53,0.3),rgba(183,28,28,0.3));border:1px solid rgba(229,57,53,0.3)">📅</div>
+        <h3>Live Meetings</h3>
+        <p>See today's calendar events with real-time countdown. One-click join for Teams and Google Meet calls.</p>
+        <span class="feature-tag">● Live countdown</span>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon" style="background:linear-gradient(135deg,rgba(0,82,204,0.3),rgba(0,52,154,0.3));border:1px solid rgba(0,82,204,0.3)">⚡</div>
+        <h3>Jira Issues</h3>
+        <p>Track your assigned Jira tickets with status pills — In Progress, In Review, To Do — at a glance.</p>
+        <span class="feature-tag teal">Status pills</span>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon" style="background:linear-gradient(135deg,rgba(232,119,34,0.3),rgba(122,50,0,0.3));border:1px solid rgba(232,119,34,0.3)">📝</div>
+        <h3>Smart Notes</h3>
+        <p>Inline notepad with drag reorder, reminder bells, and checkbox completion. Your to-do list is always visible.</p>
+        <span class="feature-tag">With reminders</span>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon" style="background:linear-gradient(135deg,rgba(0,155,141,0.3),rgba(0,75,68,0.3));border:1px solid rgba(0,155,141,0.3)">🌍</div>
+        <h3>World Clock</h3>
+        <p>Track two timezones simultaneously. Choose from 26 cities. Auto-updates every second from your system clock.</p>
+        <span class="feature-tag teal">26 timezones</span>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon" style="background:linear-gradient(135deg,rgba(108,99,255,0.3),rgba(59,47,160,0.3));border:1px solid rgba(108,99,255,0.3)">⚙️</div>
+        <h3>Full Customisation</h3>
+        <p>Drag to reorder rows, hide what you don't need, set refresh intervals, resize the window — your way.</p>
+        <span class="feature-tag">5 themes</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ── -->
+<section id="how" style="padding:100px 60px">
+  <div class="how">
+    <div class="section-header reveal" style="text-align:center;max-width:600px;margin:0 auto 80px">
+      <div class="section-label">How it works</div>
+      <div class="section-title">Up and running in minutes</div>
+    </div>
+    <div class="steps reveal">
+      <div class="step"><div class="step-num">1</div><h4>Download</h4><p>Grab the DMG for Mac or EXE for Windows. No account needed to install.</p></div>
+      <div class="step"><div class="step-num">2</div><h4>Install</h4><p>Drag to Applications. Launch Eagle View — it appears on your screen edge.</p></div>
+      <div class="step"><div class="step-num">3</div><h4>Connect</h4><p>Sign in with your Outlook or Gmail account. One-time setup, always secure.</p></div>
+      <div class="step"><div class="step-num">4</div><h4>Done</h4><p>Eagle View stays on top of all windows. Always there. Never in the way.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PLATFORMS ── -->
+<section class="platforms" id="platforms">
+  <div class="platforms-inner">
+    <div class="section-header reveal">
+      <div class="section-label">Platforms</div>
+      <div class="section-title">Built for your OS</div>
+      <div class="section-sub">Native Electron app — feels fast and familiar on every platform.</div>
+    </div>
+    <div class="platform-cards reveal">
+      <div class="platform-card">
+        <div class="platform-icon" style="background:linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03))">🍎</div>
+        <div>
+          <h3>macOS</h3>
+          <p>Available now for Apple Silicon (M1/M2/M3) and Intel. Transparent sidebar, native window management, stays above all apps.</p>
+          <span class="platform-badge">Available now</span>
+        </div>
+      </div>
+      <div class="platform-card">
+        <div class="platform-icon" style="background:linear-gradient(135deg,rgba(0,120,212,0.15),rgba(0,120,212,0.05))">🪟</div>
+        <div>
+          <h3>Windows</h3>
+          <p>Full Windows support via NSIS installer. Same features, same experience — works on Windows 10 and 11.</p>
+          <span class="platform-badge">Available now</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── THEMES ── -->
+<section id="themes" style="padding:100px 60px">
+  <div class="themes-inner">
+    <div class="section-header reveal">
+      <div class="section-label">Themes</div>
+      <div class="section-title">5 handcrafted themes</div>
+      <div class="section-sub">Switch instantly from the settings panel. Every theme is designed to look great in any environment.</div>
+    </div>
+    <div class="themes-grid reveal">
+      <div class="theme-pill"><div class="theme-swatch" style="background:linear-gradient(135deg,#E87722,#009B8D)"></div><span class="theme-name">Siemens</span></div>
+      <div class="theme-pill"><div class="theme-swatch" style="background:linear-gradient(135deg,#1565C0,#7B1FA2)"></div><span class="theme-name">Ocean</span></div>
+      <div class="theme-pill"><div class="theme-swatch" style="background:linear-gradient(135deg,#2E7D32,#F9A825)"></div><span class="theme-name">Forest</span></div>
+      <div class="theme-pill"><div class="theme-swatch" style="background:linear-gradient(135deg,#B71C1C,#455A64)"></div><span class="theme-name">Ember</span></div>
+      <div class="theme-pill"><div class="theme-swatch" style="background:linear-gradient(135deg,#0D1B4B,#29B6F6)"></div><span class="theme-name">Classic</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── DOWNLOAD CTA ── -->
+<section class="cta" id="download">
+  <div class="cta-inner reveal">
+    <div class="section-label" style="text-align:center">Download</div>
+    <h2>Start using<br>Eagle View today</h2>
+    <p>Free to download. No subscription. No sign-up required. Just install and connect your account.</p>
+    <div class="cta-btns">
+      <a href="#" class="btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2v13M5 15l7 7 7-7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Download for Mac
+      </a>
+      <a href="#" class="btn-secondary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2v13M5 15l7 7 7-7" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Download for Windows
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-logo">
+    <div class="nav-logo-icon" style="width:30px;height:30px">
+      <svg width="22" height="22"><use href="#eagle"/></svg>
+    </div>
+    Eagle View
+  </div>
+  <div class="footer-copy">© 2026 Eagle View. Built with Electron + React.</div>
+  <div class="footer-links">
+    <a href="#">GitHub</a>
+    <a href="#">Privacy</a>
+    <a href="#">Contact</a>
+  </div>
+</footer>
+
+<script>
+  // Live clocks
+  function updateClocks() {
+    const now = new Date()
+    const fmt2 = z => new Intl.DateTimeFormat('en',{timeZone:z,hour:'2-digit',minute:'2-digit',hour12:false}).format(now)
+    const fmt3 = z => new Intl.DateTimeFormat('en',{timeZone:z,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(now)
+    const de = document.getElementById('clock-de')
+    const ny = document.getElementById('clock-ny')
+    const upd = document.getElementById('clock-updated')
+    if (de) de.textContent = fmt2('Europe/Berlin')
+    if (ny) ny.textContent = fmt2('America/New_York')
+    if (upd) upd.textContent = fmt3('Europe/Berlin')
+  }
+  updateClocks()
+  setInterval(updateClocks, 1000)
+
+  // Scroll reveal
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach((e,i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80)
+        obs.unobserve(e.target)
+      }
+    })
+  }, { threshold: 0.1 })
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el))
+</script>
+</body>
+</html>
