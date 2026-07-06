@@ -1,0 +1,10 @@
+{
+  "version": "1.0.0",
+  "url": "https://manoj-mkn.github.io/eagleview-site/",
+  "notes": "Initial release",
+  "platforms": {
+    "macos_silicon": "https://manoj-mkn.github.io/eagleview-site/Eagle View_1.0.0_aarch64.dmg",
+    "macos_intel": "https://manoj-mkn.github.io/eagleview-site/Eagle View_1.0.0_x64.dmg",
+    "windows": "https://manoj-mkn.github.io/eagleview-site/Eagle View_1.0.0_x64-setup.exe"
+  }
+}
