@@ -1,0 +1,743 @@
+<title>Privacy Policy — Eagle View by NewMan Tech</title>
+<style>
+  /* ── Tokens ── */
+  :root {
+    --navy:       #0D1B2A;
+    --navy-mid:   #162032;
+    --navy-light: #1E2E42;
+    --teal:       #00B4D8;
+    --teal-dim:   #0090AD;
+    --bg:         #F4F7FB;
+    --card:       #FFFFFF;
+    --border:     #E2E8F0;
+    --text:       #1A2332;
+    --muted:      #4A5568;
+    --accent-bg:  #EBF8FC;
+    --badge-bg:   #E8F4F8;
+    --success:    #059669;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:       #0A1520;
+      --card:     #162032;
+      --border:   #243348;
+      --text:     #E8EDF4;
+      --muted:    #8FA3BC;
+      --accent-bg:#0D2233;
+      --badge-bg: #0D2233;
+    }
+  }
+  :root[data-theme="light"] {
+    --bg:       #F4F7FB;
+    --card:     #FFFFFF;
+    --border:   #E2E8F0;
+    --text:     #1A2332;
+    --muted:    #4A5568;
+    --accent-bg:#EBF8FC;
+    --badge-bg: #E8F4F8;
+  }
+  :root[data-theme="dark"] {
+    --bg:       #0A1520;
+    --card:     #162032;
+    --border:   #243348;
+    --text:     #E8EDF4;
+    --muted:    #8FA3BC;
+    --accent-bg:#0D2233;
+    --badge-bg: #0D2233;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* ── Header ── */
+  .site-header {
+    background: var(--navy);
+    padding: 0 2rem;
+  }
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 0;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .brand-logo {
+    height: 38px;
+    width: auto;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+  .brand-logo img {
+    height: 38px;
+    width: auto;
+    display: block;
+  }
+  .brand-name {
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+  }
+  .brand-sub {
+    color: rgba(255,255,255,0.45);
+    font-size: 0.78rem;
+    margin-top: 1px;
+  }
+  .header-tag {
+    color: rgba(255,255,255,0.5);
+    font-size: 0.78rem;
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 4px;
+    padding: 0.25rem 0.6rem;
+  }
+
+  /* ── Hero banner ── */
+  .hero {
+    background: linear-gradient(135deg, var(--navy) 0%, #0E2440 60%, #0D3A52 100%);
+    padding: 3.5rem 2rem 3rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(0,180,216,0.2);
+  }
+  .hero h1 {
+    color: #fff;
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+  .hero h1 span { color: var(--teal); }
+  .hero-meta {
+    margin-top: 0.75rem;
+    color: rgba(255,255,255,0.5);
+    font-size: 0.85rem;
+  }
+  .compliance-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+    margin-top: 1.75rem;
+  }
+  .badge {
+    background: rgba(0,180,216,0.12);
+    border: 1px solid rgba(0,180,216,0.3);
+    color: var(--teal);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.75rem;
+    border-radius: 100px;
+  }
+
+  /* ── Local processing callout ── */
+  .local-callout {
+    background: linear-gradient(135deg, #003D52, #004D3A);
+    border-top: 3px solid var(--teal);
+    padding: 1.5rem 2rem;
+    text-align: center;
+  }
+  .local-callout-inner {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .local-callout .icon { font-size: 1.5rem; margin-bottom: 0.5rem; }
+  .local-callout strong {
+    display: block;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+  }
+  .local-callout p {
+    color: rgba(255,255,255,0.65);
+    font-size: 0.85rem;
+    line-height: 1.5;
+  }
+
+  /* ── Layout ── */
+  .layout {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem 4rem;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 2.5rem;
+    align-items: start;
+  }
+  @media (max-width: 768px) {
+    .layout { grid-template-columns: 1fr; }
+    .toc { display: none; }
+  }
+
+  /* ── Table of Contents ── */
+  .toc {
+    position: sticky;
+    top: 1.5rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+  }
+  .toc-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.75rem;
+  }
+  .toc ol {
+    list-style: none;
+    counter-reset: toc;
+  }
+  .toc ol li {
+    counter-increment: toc;
+    margin-bottom: 0.3rem;
+  }
+  .toc ol li::before {
+    content: counter(toc) ". ";
+    color: var(--teal);
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+  .toc a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.78rem;
+    line-height: 1.4;
+    transition: color 0.15s;
+  }
+  .toc a:hover { color: var(--teal); }
+  .toc-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 0.9rem 0;
+  }
+  .toc-contact {
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+  .toc-contact a { color: var(--teal); text-decoration: none; }
+
+  /* ── Content ── */
+  .content { min-width: 0; }
+
+  .section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 1.25rem;
+    scroll-margin-top: 1.5rem;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    width: 28px;
+    height: 28px;
+    background: var(--teal);
+    color: #fff;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 800;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+  }
+  .section h2 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  .section p {
+    color: var(--muted);
+    margin-bottom: 0.85rem;
+    max-width: 65ch;
+  }
+  .section p:last-child { margin-bottom: 0; }
+  .section h3 {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--text);
+    margin: 1.25rem 0 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .section ul, .section ol {
+    padding-left: 1.25rem;
+    color: var(--muted);
+    margin-bottom: 0.85rem;
+  }
+  .section li { margin-bottom: 0.35rem; }
+
+  /* data table */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.82rem;
+    overflow-x: auto;
+    display: block;
+  }
+  .data-table th {
+    background: var(--bg);
+    color: var(--text);
+    font-weight: 700;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.6rem 0.9rem;
+    text-align: left;
+    border-bottom: 2px solid var(--border);
+  }
+  .data-table td {
+    padding: 0.65rem 0.9rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--muted);
+    vertical-align: top;
+  }
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table td strong { color: var(--text); }
+
+  /* highlight box */
+  .highlight {
+    background: var(--accent-bg);
+    border-left: 3px solid var(--teal);
+    border-radius: 0 8px 8px 0;
+    padding: 0.9rem 1.1rem;
+    margin: 1rem 0;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .highlight strong { color: var(--teal); }
+
+  /* rights grid */
+  .rights-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin: 1rem 0;
+  }
+  @media (max-width: 600px) { .rights-grid { grid-template-columns: 1fr; } }
+  .right-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.9rem 1rem;
+  }
+  .right-card .right-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.3rem;
+  }
+  .right-card p {
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin: 0;
+    max-width: none;
+  }
+
+  /* contact card */
+  .contact-card {
+    background: linear-gradient(135deg, var(--navy), #0E2A3E);
+    border-radius: 10px;
+    padding: 1.5rem;
+    text-align: center;
+  }
+  .contact-card h3 {
+    color: #fff;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .contact-card p { color: rgba(255,255,255,0.55); font-size: 0.85rem; max-width: none; }
+  .contact-card a {
+    display: inline-block;
+    margin-top: 1rem;
+    background: var(--teal);
+    color: #fff;
+    text-decoration: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  /* flag tags */
+  .flag { display: inline-block; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; padding: 0.15rem 0.5rem; border-radius: 4px; margin-left: 0.4rem; vertical-align: middle; }
+  .flag-gdpr  { background: #EEF2FF; color: #4F46E5; }
+  .flag-ccpa  { background: #FEF3C7; color: #92400E; }
+  .flag-dpdp  { background: #ECFDF5; color: #065F46; }
+  :root[data-theme="dark"] .flag-gdpr { background: #1E1B4B; color: #A5B4FC; }
+  :root[data-theme="dark"] .flag-ccpa { background: #451A03; color: #FCD34D; }
+  :root[data-theme="dark"] .flag-dpdp { background: #022C22; color: #6EE7B7; }
+
+  /* footer */
+  .doc-footer {
+    text-align: center;
+    padding: 2rem 1.5rem 3rem;
+    color: var(--muted);
+    font-size: 0.78rem;
+    border-top: 1px solid var(--border);
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .doc-footer a { color: var(--teal); text-decoration: none; }
+</style>
+
+<!-- Header -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-logo"><img src="data:image/png;base64,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" alt="NewMan Tech"></div>
+      <div>
+        <div class="brand-name">Eagle View</div>
+        <div class="brand-sub">by NewMan Tech</div>
+      </div>
+    </div>
+    <div class="header-tag">Legal Document</div>
+  </div>
+</header>
+
+<!-- Hero -->
+<div class="hero">
+  <h1>Privacy Policy for <span>Eagle View</span></h1>
+  <p class="hero-meta">Effective Date: July 11, 2026 &nbsp;·&nbsp; Version 1.0 &nbsp;·&nbsp; NewMan Tech, India</p>
+  <div class="compliance-badges">
+    <span class="badge">GDPR Compliant</span>
+    <span class="badge">CCPA Compliant</span>
+    <span class="badge">DPDP Act 2023</span>
+    <span class="badge">ISO 27001 Aligned</span>
+    <span class="badge">SOC 2 Principles</span>
+  </div>
+</div>
+
+<!-- Local Processing Callout -->
+<div class="local-callout">
+  <div class="local-callout-inner">
+    <div class="icon">🔒</div>
+    <strong>Your data never leaves your device.</strong>
+    <p>Eagle View processes all email, calendar, and task data entirely on your local machine. NewMan Tech does not operate any servers that receive, store, or transmit your personal data. Zero data collection by us.</p>
+  </div>
+</div>
+
+<!-- Main Layout -->
+<div class="layout">
+
+  <!-- Sidebar TOC -->
+  <nav class="toc" aria-label="Table of contents">
+    <div class="toc-title">Contents</div>
+    <ol>
+      <li><a href="#s1">Overview</a></li>
+      <li><a href="#s2">Data We Access</a></li>
+      <li><a href="#s3">How We Use Data</a></li>
+      <li><a href="#s4">Local Storage &amp; Security</a></li>
+      <li><a href="#s5">Third-Party Services</a></li>
+      <li><a href="#s6">Data Retention</a></li>
+      <li><a href="#s7">Your Rights</a></li>
+      <li><a href="#s8">Children's Privacy</a></li>
+      <li><a href="#s9">International Transfers</a></li>
+      <li><a href="#s10">Policy Updates</a></li>
+      <li><a href="#s11">Contact &amp; DPO</a></li>
+    </ol>
+    <hr class="toc-divider">
+    <div class="toc-contact">
+      Privacy enquiries:<br>
+      <a href="mailto:privacy@newmantech.in">privacy@newmantech.in</a>
+    </div>
+  </nav>
+
+  <!-- Content -->
+  <main class="content">
+
+    <!-- 1. Overview -->
+    <section class="section" id="s1">
+      <div class="section-header">
+        <div class="section-num">1</div>
+        <h2>Overview</h2>
+      </div>
+      <p>This Privacy Policy describes how <strong>NewMan Tech</strong> ("we", "our", or "us"), a technology company based in India, handles information in connection with the <strong>Eagle View</strong> desktop application ("Application", "Service").</p>
+      <p>Eagle View is a productivity widget that connects to your Microsoft Outlook or Google Gmail account to display a real-time summary of emails, calendar meetings, and flagged tasks — all processed locally on your device.</p>
+      <p>This Policy is designed to meet the requirements of the <strong>EU General Data Protection Regulation (GDPR)</strong>, the <strong>California Consumer Privacy Act (CCPA/CPRA)</strong>, India's <strong>Digital Personal Data Protection Act 2023 (DPDP Act)</strong>, and internationally recognised privacy principles including OECD Privacy Guidelines and ISO/IEC 29101.</p>
+      <div class="highlight">
+        <strong>Plain-language summary:</strong> Eagle View reads data from your email and calendar providers using your own credentials. This data is shown to you inside the app. It is never sent to our servers. We do not sell, share, or monetise your personal data.
+      </div>
+    </section>
+
+    <!-- 2. Data We Access -->
+    <section class="section" id="s2">
+      <div class="section-header">
+        <div class="section-num">2</div>
+        <h2>Data We Access</h2>
+      </div>
+      <p>Eagle View requests the following permissions from your connected accounts. All access is read-only. We never write, modify, or delete data in your accounts.</p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Data Category</th>
+            <th>Specific Fields Accessed</th>
+            <th>Purpose</th>
+            <th>Stored Locally?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Email metadata</strong></td>
+            <td>Sender name, subject line, received time, unread count, flag status</td>
+            <td>Display unread count and flagged mail list</td>
+            <td>In-memory only; not persisted to disk</td>
+          </tr>
+          <tr>
+            <td><strong>Calendar events</strong></td>
+            <td>Event title, start/end time, meeting join URL, attendee list</td>
+            <td>Display today's upcoming meetings</td>
+            <td>In-memory only; not persisted to disk</td>
+          </tr>
+          <tr>
+            <td><strong>Authentication tokens</strong></td>
+            <td>OAuth 2.0 access token, refresh token, expiry timestamp</td>
+            <td>Maintain authenticated session without repeated login</td>
+            <td>Yes — encrypted in local app settings file</td>
+          </tr>
+          <tr>
+            <td><strong>App settings</strong></td>
+            <td>Refresh intervals, widget size/position, notes, reminder data</td>
+            <td>Restore user preferences across app restarts</td>
+            <td>Yes — local settings file on your device</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="highlight">
+        <strong>Email content is never accessed.</strong> Eagle View reads only metadata (sender, subject, time). The body of your emails is not read, stored, or transmitted under any circumstances.
+      </div>
+    </section>
+
+    <!-- 3. How We Use Data -->
+    <section class="section" id="s3">
+      <div class="section-header">
+        <div class="section-num">3</div>
+        <h2>How We Use Your Data</h2>
+      </div>
+      <p>We process your data solely to provide the features of Eagle View. The legal bases for processing under GDPR Article 6 are:</p>
+      <table class="data-table">
+        <thead>
+          <tr><th>Processing Activity</th><th>Legal Basis (GDPR)</th><th>Purpose</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Reading email metadata</td><td>Art. 6(1)(b) — Contract performance</td><td>Core feature of the Application</td></tr>
+          <tr><td>Reading calendar events</td><td>Art. 6(1)(b) — Contract performance</td><td>Core feature of the Application</td></tr>
+          <tr><td>Storing OAuth tokens locally</td><td>Art. 6(1)(b) — Contract performance</td><td>Maintain authenticated session</td></tr>
+          <tr><td>Storing user preferences</td><td>Art. 6(1)(b) — Contract performance</td><td>Restore app settings</td></tr>
+        </tbody>
+      </table>
+      <p>We do not use your data for advertising, analytics, profiling, machine learning training, or any purpose beyond delivering the functionality you explicitly requested.</p>
+      <p>We do not sell your personal data. We do not share your personal data with any third party except as described in Section 5 (Third-Party Services).</p>
+    </section>
+
+    <!-- 4. Local Storage & Security -->
+    <section class="section" id="s4">
+      <div class="section-header">
+        <div class="section-num">4</div>
+        <h2>Local Storage &amp; Security</h2>
+      </div>
+      <p>All data handled by Eagle View resides exclusively on your local device. The following file is created during normal operation:</p>
+      <table class="data-table">
+        <thead><tr><th>File</th><th>Location</th><th>Contents</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>eagle-view-settings.json</strong></td>
+            <td>macOS: <code>~/Library/Application Support/com.newmantech.eagleview/</code><br>Windows: <code>%APPDATA%\com.newmantech.eagleview\</code></td>
+            <td>OAuth tokens (encrypted at rest), widget preferences, notes, reminder data</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Security Measures</h3>
+      <ul>
+        <li>OAuth tokens are stored using the platform's native secure storage primitives</li>
+        <li>All API communication uses TLS 1.2 or higher (HTTPS only)</li>
+        <li>The Application requests minimum necessary OAuth scopes (principle of least privilege)</li>
+        <li>No telemetry, crash reporting, or usage analytics data is transmitted from the Application</li>
+        <li>The Application's Rust backend enforces memory safety to prevent buffer overflow and injection attacks</li>
+      </ul>
+      <div class="highlight">
+        <strong>You are the data controller.</strong> Because all data stays on your device, you retain full control. You can delete all stored data at any time by removing the settings file above or uninstalling the Application.
+      </div>
+    </section>
+
+    <!-- 5. Third-Party Services -->
+    <section class="section" id="s5">
+      <div class="section-header">
+        <div class="section-num">5</div>
+        <h2>Third-Party Services</h2>
+      </div>
+      <p>Eagle View integrates with the following third-party platforms at your direction. Your use of these platforms is governed by their respective privacy policies:</p>
+      <table class="data-table">
+        <thead><tr><th>Provider</th><th>Purpose</th><th>Data Shared With Provider</th><th>Their Privacy Policy</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Microsoft Corporation</strong></td>
+            <td>Outlook email &amp; calendar access via Microsoft Graph API</td>
+            <td>OAuth authentication credentials; API requests containing your User ID</td>
+            <td>Microsoft Privacy Statement</td>
+          </tr>
+          <tr>
+            <td><strong>Google LLC</strong></td>
+            <td>Gmail email access via Google Gmail API</td>
+            <td>OAuth authentication credentials; API requests containing your User ID</td>
+            <td>Google Privacy Policy</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>NewMan Tech is not responsible for the privacy practices of Microsoft or Google. Eagle View's use of data obtained from these APIs is limited to displaying information within the Application and is not used for any secondary purposes.</p>
+      <p>Eagle View's use and transfer to any other app of information received from Google APIs adheres to the <strong>Google API Services User Data Policy</strong>, including the Limited Use requirements.</p>
+    </section>
+
+    <!-- 6. Data Retention -->
+    <section class="section" id="s6">
+      <div class="section-header">
+        <div class="section-num">6</div>
+        <h2>Data Retention</h2>
+      </div>
+      <p>Because NewMan Tech does not collect or store any data on our servers, our data retention obligations are minimal:</p>
+      <table class="data-table">
+        <thead><tr><th>Data</th><th>Retention Period</th><th>Deletion Method</th></tr></thead>
+        <tbody>
+          <tr><td>Email &amp; calendar data (in-memory)</td><td>Duration of app session only</td><td>Automatically cleared on app close</td></tr>
+          <tr><td>OAuth tokens</td><td>Until logout or uninstall</td><td>Settings → Log Out; or delete settings file</td></tr>
+          <tr><td>App preferences &amp; notes</td><td>Until uninstall</td><td>Delete settings file or uninstall app</td></tr>
+        </tbody>
+      </table>
+      <p>NewMan Tech retains no copies of your data. There is no data on our servers to delete or export on your behalf.</p>
+    </section>
+
+    <!-- 7. Your Rights -->
+    <section class="section" id="s7">
+      <div class="section-header">
+        <div class="section-num">7</div>
+        <h2>Your Rights</h2>
+      </div>
+      <p>Depending on your jurisdiction, you have the following rights regarding your personal data. Because Eagle View does not transmit data to our servers, most of these rights can be exercised directly by you within the Application or your operating system.</p>
+
+      <h3>Rights under GDPR <span class="flag flag-gdpr">GDPR</span></h3>
+      <div class="rights-grid">
+        <div class="right-card"><div class="right-title">Right of Access (Art. 15)</div><p>You can view all data the app accesses directly within Eagle View's interface.</p></div>
+        <div class="right-card"><div class="right-title">Right to Erasure (Art. 17)</div><p>Log out and delete the settings file to erase all locally stored data.</p></div>
+        <div class="right-card"><div class="right-title">Right to Restrict Processing (Art. 18)</div><p>Disconnect your account via Settings → Log Out to stop all data processing.</p></div>
+        <div class="right-card"><div class="right-title">Right to Data Portability (Art. 20)</div><p>Your settings file is a standard JSON file you may copy or transfer freely.</p></div>
+        <div class="right-card"><div class="right-title">Right to Object (Art. 21)</div><p>Uninstall the Application to cease all data processing immediately.</p></div>
+        <div class="right-card"><div class="right-title">Right to Lodge a Complaint</div><p>Contact your national supervisory authority (e.g., ICO, CNIL, BfDI).</p></div>
+      </div>
+
+      <h3>Rights under CCPA/CPRA <span class="flag flag-ccpa">CCPA</span></h3>
+      <div class="rights-grid">
+        <div class="right-card"><div class="right-title">Right to Know</div><p>This Policy fully describes the categories of personal information processed.</p></div>
+        <div class="right-card"><div class="right-title">Right to Delete</div><p>Delete your settings file or uninstall to remove all personal information.</p></div>
+        <div class="right-card"><div class="right-title">Right to Opt-Out of Sale</div><p>We do not sell personal information. No opt-out is required.</p></div>
+        <div class="right-card"><div class="right-title">Right to Non-Discrimination</div><p>Exercising your privacy rights will not affect your access to Eagle View.</p></div>
+      </div>
+
+      <h3>Rights under DPDP Act 2023 <span class="flag flag-dpdp">India</span></h3>
+      <div class="rights-grid">
+        <div class="right-card"><div class="right-title">Right to Information (S.11)</div><p>This Policy provides complete information about personal data processing activities.</p></div>
+        <div class="right-card"><div class="right-title">Right to Correction &amp; Erasure (S.12)</div><p>Contact us or delete your local settings file to erase processed data.</p></div>
+        <div class="right-card"><div class="right-title">Right to Grievance Redressal (S.13)</div><p>Contact our Data Protection Officer at privacy@newmantech.in.</p></div>
+        <div class="right-card"><div class="right-title">Right to Nominate (S.14)</div><p>You may nominate a representative to exercise your rights on your behalf.</p></div>
+      </div>
+
+      <p style="margin-top:1rem;">To exercise any right that requires our involvement, contact us at <a href="mailto:privacy@newmantech.in" style="color:var(--teal)">privacy@newmantech.in</a>. We will respond within 30 days (GDPR: 1 month; DPDP: as prescribed by the Board).</p>
+    </section>
+
+    <!-- 8. Children's Privacy -->
+    <section class="section" id="s8">
+      <div class="section-header">
+        <div class="section-num">8</div>
+        <h2>Children's Privacy</h2>
+      </div>
+      <p>Eagle View is a professional productivity tool intended for use by individuals aged 18 years and older. We do not knowingly process personal data of children under the age of 13 (or the applicable age of digital consent in your jurisdiction).</p>
+      <p>If you believe a child has provided personal information in connection with Eagle View, please contact us at <a href="mailto:privacy@newmantech.in" style="color:var(--teal)">privacy@newmantech.in</a> and we will take appropriate steps to address the matter.</p>
+    </section>
+
+    <!-- 9. International Transfers -->
+    <section class="section" id="s9">
+      <div class="section-header">
+        <div class="section-num">9</div>
+        <h2>International Data Transfers</h2>
+      </div>
+      <p>NewMan Tech is headquartered in India. Because Eagle View processes all data locally on your device and does not transmit personal data to our servers, there are no international transfers of personal data by NewMan Tech.</p>
+      <p>When Eagle View connects to Microsoft or Google APIs on your behalf, your data may be processed on servers operated by these providers in various countries. These transfers are governed by Microsoft's and Google's respective data transfer mechanisms (including Standard Contractual Clauses under GDPR).</p>
+      <p>For enterprise deployments subject to data residency requirements, please ensure your Microsoft or Google tenant is configured with the appropriate regional data boundary settings before deploying Eagle View.</p>
+    </section>
+
+    <!-- 10. Policy Updates -->
+    <section class="section" id="s10">
+      <div class="section-header">
+        <div class="section-num">10</div>
+        <h2>Changes to This Policy</h2>
+      </div>
+      <p>We may update this Privacy Policy from time to time to reflect changes in our practices, legal requirements, or the features of Eagle View. When we make material changes, we will:</p>
+      <ul>
+        <li>Update the "Effective Date" at the top of this document</li>
+        <li>Display a notice within the Eagle View application</li>
+        <li>Post the updated Policy at <strong>newmantech.in/privacy</strong></li>
+      </ul>
+      <p>Your continued use of Eagle View after the effective date of a revised Policy constitutes your acceptance of the changes. If you do not agree with the changes, you should discontinue use of the Application.</p>
+      <p>For material changes that require fresh consent under applicable law, we will request your explicit confirmation within the Application before continuing to process your data.</p>
+    </section>
+
+    <!-- 11. Contact -->
+    <section class="section" id="s11">
+      <div class="section-header">
+        <div class="section-num">11</div>
+        <h2>Contact &amp; Data Protection Officer</h2>
+      </div>
+      <div class="contact-card">
+        <h3>NewMan Tech — Privacy Office</h3>
+        <p>For privacy enquiries, data subject requests, or to contact our Data Protection Officer, reach us at the address below. We aim to respond to all enquiries within 30 calendar days.</p>
+        <a href="mailto:privacy@newmantech.in">privacy@newmantech.in</a>
+      </div>
+      <p style="margin-top:1.25rem; font-size:0.82rem; color:var(--muted);">
+        <strong style="color:var(--text)">Business address:</strong> NewMan Tech, India<br>
+        <strong style="color:var(--text)">Data Protection Officer (GDPR):</strong> privacy@newmantech.in<br>
+        <strong style="color:var(--text)">Grievance Officer (DPDP Act / IT Act):</strong> privacy@newmantech.in<br>
+        <strong style="color:var(--text)">EU Representative:</strong> To be appointed upon EU market entry<br>
+        <strong style="color:var(--text)">UK Representative:</strong> To be appointed upon UK market entry
+      </p>
+    </section>
+
+  </main>
+</div>
+
+<footer class="doc-footer">
+  <p>© 2026 NewMan Tech. All rights reserved. &nbsp;·&nbsp; <a href="#">Privacy Policy</a> &nbsp;·&nbsp; <a href="#">Terms of Service</a> &nbsp;·&nbsp; <a href="mailto:privacy@newmantech.in">Contact</a></p>
+  <p style="margin-top:0.5rem; opacity:0.6;">Eagle View is a product of NewMan Tech. This document was last updated on July 11, 2026.</p>
+</footer>
