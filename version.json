@@ -1,10 +1,10 @@
 {
-  "version": "1.0.7",
+  "version": "1.0.8",
   "url": "https://manoj-mkn.github.io/eagleview-site/#download",
-  "notes": "Settings email updates correctly after account switch, reliability fixes, and update download button on license screen",
+  "notes": "Jira integration, priority icons, dual-row layout, status transitions, project carousel, UI consistency fixes, and Classic theme overrides",
   "platforms": {
-    "macos_silicon": "https://github.com/manoj-mkn/eagleview-site/releases/download/v1.0.7/Eagle.View_1.0.7_aarch64.dmg",
-    "macos_intel": "https://github.com/manoj-mkn/eagleview-site/releases/download/v1.0.7/Eagle.View_1.0.7_x64.dmg",
-    "windows": "https://github.com/manoj-mkn/eagleview-site/releases/download/v1.0.7/Eagle.View_1.0.7_x64-setup.exe"
+    "macos_silicon": "https://github.com/manoj-mkn/eagleview-site/releases/download/v1.0.8/Eagle.View_1.0.8_aarch64.dmg",
+    "macos_intel": "https://github.com/manoj-mkn/eagleview-site/releases/download/v1.0.8/Eagle.View_1.0.8_x64.dmg",
+    "windows": "https://github.com/manoj-mkn/eagleview-site/releases/download/v1.0.8/Eagle.View_1.0.8_x64-setup.exe"
   }
 }
