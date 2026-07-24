@@ -1,10 +1,10 @@
 {
-  "version": "1.0.9",
-  "url": "https://manoj-mkn.github.io/eagleview-site/#download",
-  "notes": "Email centering fix, conditional scroll animation, update check improvements, touchscreen toggle fix",
+  "version": "1.1.0",
+  "url": "https://newmantech.in/#download",
+  "notes": "Slack & Jira OAuth, icon fixes, bug fixes, UX polish",
   "platforms": {
-    "macos_silicon": "https://github.com/manoj-mkn/eagleview-site/releases/download/v1.0.9/Eagle.View_1.0.9_aarch64.dmg",
-    "macos_intel": "https://github.com/manoj-mkn/eagleview-site/releases/download/v1.0.9/Eagle.View_1.0.9_x64.dmg",
-    "windows": "https://github.com/manoj-mkn/eagleview-site/releases/download/v1.0.9/Eagle.View_1.0.9_x64-setup.exe"
+    "macos_silicon": "https://github.com/manoj-mkn/eagleview-site/releases/download/v1.1.0/Eagle.View_1.1.0_aarch64.dmg",
+    "macos_intel": "https://github.com/manoj-mkn/eagleview-site/releases/download/v1.1.0/Eagle.View_1.1.0_x64.dmg",
+    "windows": "https://github.com/manoj-mkn/eagleview-site/releases/download/v1.1.0/Eagle.View_1.1.0_x64-setup.exe"
   }
 }
