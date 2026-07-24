@@ -1,10 +1,10 @@
 {
-  "version": "1.1.0",
+  "version": "1.1.1",
   "url": "https://newmantech.in/#download",
-  "notes": "Slack & Jira OAuth, icon fixes, bug fixes, UX polish",
+  "notes": "Vite migration, performance improvements, bug fixes",
   "platforms": {
-    "macos_silicon": "https://github.com/manoj-mkn/eagleview-site/releases/download/v1.1.0/Eagle.View_1.1.0_aarch64.dmg",
-    "macos_intel": "https://github.com/manoj-mkn/eagleview-site/releases/download/v1.1.0/Eagle.View_1.1.0_x64.dmg",
-    "windows": "https://github.com/manoj-mkn/eagleview-site/releases/download/v1.1.0/Eagle.View_1.1.0_x64-setup.exe"
+    "macos_silicon": "https://github.com/manoj-mkn/eagleview-site/releases/download/v1.1.1/Eagle.View_1.1.1_aarch64.dmg",
+    "macos_intel": "https://github.com/manoj-mkn/eagleview-site/releases/download/v1.1.1/Eagle.View_1.1.1_x64.dmg",
+    "windows": "https://github.com/manoj-mkn/eagleview-site/releases/download/v1.1.1/Eagle.View_1.1.1_x64-setup.exe"
   }
 }
