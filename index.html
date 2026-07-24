@@ -91,7 +91,7 @@ nav.sc{background:rgba(3,6,18,.94);border-bottom-color:rgba(0,229,255,.14);box-s
 .nc:hover{transform:translateY(-1px);box-shadow:0 0 44px rgba(255,104,32,.5),0 6px 20px rgba(255,104,32,.25);}
 
 /* HERO */
-.hero{position:relative;min-height:100vh;display:flex;align-items:center;padding:110px 64px 80px;overflow:hidden;}
+.hero{position:relative;min-height:100vh;min-height:100dvh;display:flex;align-items:center;padding:110px 64px 80px;overflow:hidden;}
 #hc{position:absolute;inset:0;z-index:0;}
 .orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;}
 .o1{width:700px;height:700px;background:radial-gradient(circle,rgba(0,229,255,.12),transparent 70%);top:-250px;left:-200px;animation:orb 18s ease-in-out infinite;}
@@ -476,7 +476,7 @@ footer{padding:38px 64px;display:flex;align-items:center;justify-content:space-b
   function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight}
   function init(){pts=[];const n=Math.floor((W*H)/14000);for(let i=0;i<n;i++)pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.35,vy:(Math.random()-.5)*.35,r:Math.random()*1.2+.4,o:Math.random()*.45+.15})}
   function tick(){ctx.clearRect(0,0,W,H);for(let i=0;i<pts.length;i++){const p=pts[i];p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(0,229,255,${p.o*.55})`;ctx.fill();for(let j=i+1;j<pts.length;j++){const q=pts[j],dx=p.x-q.x,dy=p.y-q.y,d=Math.sqrt(dx*dx+dy*dy);if(d<130){ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.strokeStyle=`rgba(0,229,255,${.12*(1-d/130)})`;ctx.lineWidth=.5;ctx.stroke()}}}requestAnimationFrame(tick)}
-  resize();init();tick();window.addEventListener('resize',()=>{resize();init()})
+  resize();init();tick();window.addEventListener('resize',()=>{if(window.innerWidth!==W){resize();init()}})
 })()
 ;(function(){const el=document.getElementById('tw');if(!el)return;const txt='Eagle View sits quietly on the edge of your screen — showing mails, meetings, tasks and more. One glance. Zero clicks.';let i=0;function next(){if(i<txt.length){el.textContent+=txt[i++];setTimeout(next,28+Math.random()*28)}}setTimeout(next,700)})()
 function animCount(el,target,dur){const s=performance.now();(function upd(t){const p=Math.min((t-s)/dur,1),e=1-Math.pow(1-p,3);el.textContent=Math.round(e*target)+(el.dataset.suffix||'');if(p<1)requestAnimationFrame(upd)})(s)}
