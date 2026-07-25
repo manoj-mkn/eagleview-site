@@ -1,10 +1,10 @@
 {
-  "version": "1.1.1",
+  "version": "1.1.2",
   "url": "https://newmantech.in/#download",
-  "notes": "Vite migration, performance improvements, bug fixes",
+  "notes": "Quick Links, website favicons in footer, theme-aware popups, bug fixes",
   "platforms": {
-    "macos_silicon": "https://github.com/manoj-mkn/eagleview-site/releases/download/v1.1.1/Eagle.View_1.1.1_aarch64.dmg",
-    "macos_intel": "https://github.com/manoj-mkn/eagleview-site/releases/download/v1.1.1/Eagle.View_1.1.1_x64.dmg",
-    "windows": "https://github.com/manoj-mkn/eagleview-site/releases/download/v1.1.1/Eagle.View_1.1.1_x64-setup.exe"
+    "macos_silicon": "https://github.com/manoj-mkn/eagleview-site/releases/download/v1.1.2/Eagle.View_1.1.2_aarch64.dmg",
+    "macos_intel": "https://github.com/manoj-mkn/eagleview-site/releases/download/v1.1.2/Eagle.View_1.1.2_x64.dmg",
+    "windows": "https://github.com/manoj-mkn/eagleview-site/releases/download/v1.1.2/Eagle.View_1.1.2_x64-setup.exe"
   }
 }
