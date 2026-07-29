@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meeting Reminder — User Feedback</title>
+<style>
+/* ── Tester Meta Dropdowns ── */
+.meta-row{display:flex;align-items:center;gap:4px;flex-wrap:nowrap;margin-top:5px;padding-top:5px;border-top:1px solid var(--border);overflow-x:auto}
+.meta-label{font-size:10px;font-weight:700;color:var(--text2);white-space:nowrap;flex-shrink:0}
+.meta-select{
+  padding:3px 20px 3px 7px;
+  border:1px solid var(--border);
+  border-radius:6px;
+  background:var(--bg3);
+  color:var(--text);
+  font-size:11.5px;
+  font-weight:600;
+  cursor:pointer;
+  appearance:none;
+  -webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%239898A8'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 7px center;
+  transition:border-color 0.15s,background-color 0.15s;
+  min-width:0;
+}
+#sel-tester{min-width:104px}
+#sel-platform{min-width:90px}
+#sel-display{min-width:108px}
+.meta-select:hover{border-color:var(--accent)}
+.meta-select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(232,119,34,0.15)}
+.meta-select option{background:var(--bg2);color:var(--text)}
+#meta-badge-wrap{display:none}
+.meta-sep{color:var(--border);font-size:12px;margin:0 1px;flex-shrink:0}
+/* Custom tester input */
+#custom-tester{
+  display:none;
+  padding:3px 8px;border:1px solid var(--accent);border-radius:6px;
+  background:var(--bg3);color:var(--text);font-size:11.5px;font-weight:600;
+  min-width:104px;outline:none;
+  box-shadow:0 0 0 2px rgba(232,119,34,0.15);
+}
+#custom-tester::placeholder{color:var(--text2);font-style:italic;font-weight:400}
+/* Logo */
+.app-logo{display:flex;align-items:center;gap:8px}
+.app-logo img{width:28px;height:28px;flex-shrink:0}
+.app-logo-text{font-size:17px;font-weight:800;color:var(--accent);letter-spacing:-0.3px}
+#testing-mode-tag{display:none;font-size:11px;font-weight:700;color:var(--text2);letter-spacing:0;white-space:nowrap}
+#testing-mode-tag.visible{display:inline}
+/* Filter buttons removed from the UI, but .filter-hidden is still toggled by setFilter() (called
+   internally by clearAll()/saved-file restore), so the class itself stays defined. */
+.tc.filter-hidden{display:none!important}
+.tc.platform-hidden{display:none!important}
+.tc-group.platform-hidden{display:none!important}
+/* Zoom controls */
+.zoom-ctrl{display:inline-flex;align-items:center;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.zoom-btn{border:none!important;border-radius:0!important;padding:5px 10px!important;min-width:28px;font-size:14px;font-weight:700;line-height:1}
+.zoom-btn:first-child{border-right:1px solid var(--border)!important}
+.zoom-btn:last-child{border-left:1px solid var(--border)!important}
+.zoom-label{font-size:11px;font-weight:700;color:var(--text2);padding:0 8px;min-width:38px;text-align:center;white-space:nowrap;user-select:none}
+/* Floppy save button */
+.floppy-btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:30px;height:30px;border-radius:6px;
+  border:1px solid var(--border);background:var(--bg3);
+  color:var(--text2);cursor:not-allowed;opacity:0.4;
+  transition:all 0.15s;flex-shrink:0;
+}
+.floppy-btn.ready{opacity:1;cursor:pointer;color:var(--accent);border-color:rgba(232,119,34,0.4);background:rgba(232,119,34,0.08)}
+.floppy-btn.ready:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+.floppy-btn.saved{background:var(--pass)!important;border-color:var(--pass)!important;color:#fff!important;opacity:1}
+/* ── Dropdown entry glow ── */
+@keyframes sel-glow{
+  0%,100%{box-shadow:0 0 0 0 rgba(232,119,34,0);border-color:var(--border)}
+  50%{box-shadow:0 0 0 3px rgba(232,119,34,0.35),0 0 10px 2px rgba(232,119,34,0.2);border-color:var(--accent)}
+}
+body.pre-save .meta-select:not(.has-value){animation:sel-glow 1.6s ease-in-out infinite}
+body.pre-save #sel-platform:not(.has-value){animation-delay:0.25s}
+body.pre-save #sel-display:not(.has-value){animation-delay:0.5s}
+/* ── Pre-save lock state ── */
+#topbar{transition:min-height 0.55s cubic-bezier(0.4,0,0.2,1),padding 0.55s}
+main{transition:filter 0.45s ease,opacity 0.45s ease}
+body.pre-save #topbar{min-height:50vh;display:flex;flex-direction:column;justify-content:center}
+body.pre-save main{filter:blur(5px);opacity:0.18;pointer-events:none;user-select:none}
+#presave-hint{display:none;text-align:center;padding:14px 0 6px;margin-top:6px;border-top:1px solid var(--border)}
+#presave-hint .ph-icon{font-size:36px;line-height:1;display:block;margin-bottom:10px}
+#presave-hint .ph-title{font-size:15px;font-weight:800;color:var(--text);display:block;margin-bottom:5px}
+#presave-hint .ph-sub{font-size:12px;color:var(--text2);display:block}
+body.pre-save #presave-hint{display:block}
+body.file-saved #presave-hint{display:none!important}
+#saved-hint{display:none;text-align:center;padding:14px 0 6px;margin-top:6px;border-top:1px solid var(--border);overflow:hidden;max-height:120px}
+#saved-hint .ph-icon{font-size:36px;line-height:1;display:block;margin-bottom:10px}
+#saved-hint .ph-title{font-size:15px;font-weight:800;color:var(--accent);display:block}
+@keyframes saved-hint-life{
+  0%{opacity:0;transform:translateY(-6px)}
+  7%{opacity:1;transform:translateY(0)}
+  91%{opacity:1}
+  100%{opacity:0;max-height:0;padding:0;margin:0;border-width:0}
+}
+body[data-saved] #saved-hint{display:block;animation:saved-hint-life 10.5s ease forwards}
+/* Hide floppy + nudge in the saved testing file */
+body[data-saved] .floppy-btn{display:none!important}
+body[data-saved] #save-nudge{display:none!important}
+/* Frozen dropdowns in saved file — CSS-only, lock icon replaces dropdown arrow */
+body[data-saved] .meta-select{
+  pointer-events:none!important;cursor:default!important;user-select:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='12' viewBox='0 0 24 24' fill='none' stroke='%239898A8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='11' width='18' height='11' rx='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E");
+  background-size:10px 12px;
+}
+/* saved-hint must never intercept pointer events */
+#saved-hint{pointer-events:none}
+/* Save nudge */
+@keyframes nudge-in{0%{opacity:0;transform:translateX(-6px) scale(0.9)}60%{transform:translateX(3px) scale(1.05)}100%{opacity:1;transform:translateX(0) scale(1)}}
+@keyframes nudge-out{to{opacity:0;transform:scale(0.85)}}
+#save-nudge{
+  display:none;align-items:center;gap:4px;
+  font-size:11.5px;font-weight:700;white-space:nowrap;flex-shrink:0;
+  animation:nudge-in 0.45s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+#save-nudge.nudge-red{color:#EF4444}
+#save-nudge.nudge-green{color:#22C55E}
+#save-nudge.visible{display:inline-flex}
+#save-nudge.hiding{animation:nudge-out 0.25s ease forwards}
+</style>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0D0D10;--bg2:#16161A;--bg3:#1E1E24;--border:#2A2A35;
+  --text:#E8E8F0;--text2:#9898A8;--accent:#E87722;--accent2:#C45E00;
+  --pass:#22C55E;--fail:#EF4444;--skip:#6B7280;
+  --pass-bg:rgba(34,197,94,0.20);--fail-bg:rgba(239,68,68,0.20);--skip-bg:rgba(107,114,128,0.18);
+  --shadow:0 2px 8px rgba(0,0,0,0.4);
+}
+@media(prefers-color-scheme:light){:root{
+  --bg:#F0F2F7;--bg2:#FFFFFF;--bg3:#E8EBF2;--border:#D0D4E0;
+  --text:#111120;--text2:#60607A;--shadow:0 2px 8px rgba(0,0,0,0.10);
+  --pass-bg:rgba(34,197,94,0.18);--fail-bg:rgba(239,68,68,0.18);--skip-bg:rgba(107,114,128,0.14);
+}}
+:root[data-theme="dark"]{
+  --bg:#0D0D10;--bg2:#16161A;--bg3:#1E1E24;--border:#2A2A35;
+  --text:#E8E8F0;--text2:#9898A8;
+  --pass-bg:rgba(34,197,94,0.20);--fail-bg:rgba(239,68,68,0.20);--skip-bg:rgba(107,114,128,0.18);
+}
+:root[data-theme="light"]{
+  --bg:#F0F2F7;--bg2:#FFFFFF;--bg3:#E8EBF2;--border:#D0D4E0;
+  --text:#111120;--text2:#60607A;
+  --pass-bg:rgba(34,197,94,0.18);--fail-bg:rgba(239,68,68,0.18);--skip-bg:rgba(107,114,128,0.14);
+}
+html{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;font-size:14px;background:var(--bg);color:var(--text)}
+body{min-height:100vh}
+code{font-family:'SF Mono',Consolas,'Courier New',monospace;font-size:12px;background:rgba(255,255,255,0.08);border-radius:3px;padding:1px 4px}
+
+/* ── Sticky header ── */
+#topbar{
+  position:sticky;top:0;z-index:100;
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  padding:6px 20px;box-shadow:var(--shadow);
+}
+#topbar-inner{max-width:1100px;margin:0 auto;}
+.topbar-row1{display:flex;align-items:center;gap:10px;flex-wrap:nowrap;margin-bottom:5px;overflow-x:auto;}
+.app-title{font-size:17px;font-weight:800;color:var(--accent);letter-spacing:-0.3px}
+.app-sub{font-size:12px;color:var(--text2);margin-top:2px}
+.topbar-actions{display:flex;gap:6px;margin-left:auto;flex-shrink:0;flex-wrap:nowrap;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border:1px solid var(--border);border-radius:6px;background:var(--bg3);color:var(--text2);font-size:11px;font-weight:600;cursor:pointer;transition:all 0.15s;white-space:nowrap}
+.btn:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-danger:hover{background:#EF4444;border-color:#EF4444;color:#fff}
+
+/* Progress bar */
+#progress{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+#prog-bar-wrap{flex:1;min-width:120px;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
+#prog-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:3px;transition:width 0.3s}
+.prog-stat{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:700;white-space:nowrap}
+.prog-stat .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dot-pass{background:var(--pass)}.dot-fail{background:var(--fail)}.dot-skip{background:var(--skip)}.dot-total{background:var(--accent)}
+#prog-pct{font-size:12px;color:var(--text2);min-width:36px;text-align:right}
+
+/* ── Main layout ── */
+main{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
+
+/* ── Section ── */
+.section{margin-bottom:10px;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--bg2)}
+.sec-header{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;cursor:pointer;user-select:none;
+  background:var(--bg3);border-bottom:1px solid var(--border);
+  transition:background 0.15s;
+}
+.sec-header:hover{background:var(--border)}
+.sec-num{font-size:11px;font-weight:800;color:var(--accent);background:rgba(232,119,34,0.15);border-radius:4px;padding:2px 6px;min-width:32px;text-align:center;flex-shrink:0}
+.sec-title{font-size:13px;font-weight:700;color:var(--text);flex:1;display:flex;align-items:center;gap:6px}
+.sec-badge{font-size:11px;color:var(--text2);margin-right:6px;white-space:nowrap}
+.sec-badge .b-pass{color:var(--pass);font-weight:700}
+.sec-badge .b-fail{color:var(--fail);font-weight:700}
+.sec-chevron{font-size:11px;color:var(--text2);transition:transform 0.2s;flex-shrink:0}
+.sec-header.collapsed .sec-chevron{transform:rotate(-90deg)}
+.sec-body{display:block}
+.sec-body.hidden{display:none}
+.new-badge{font-size:9px;font-weight:800;background:var(--accent);color:#fff;border-radius:3px;padding:1px 5px;letter-spacing:0.5px;flex-shrink:0}
+
+/* ── Test case row ── */
+.tc{
+  display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;
+  padding:8px 14px;border-bottom:1px solid var(--border);
+  transition:background 0.12s;
+}
+.tc:last-child{border-bottom:none}
+.tc:hover{background:rgba(255,255,255,0.025)}
+.tc.tc-pass{background:var(--pass-bg)!important}
+.tc.tc-fail{background:var(--fail-bg)!important}
+.tc.tc-skip{background:var(--skip-bg)!important}
+.tc-id{font-size:10px;font-weight:700;color:var(--text2);white-space:nowrap;min-width:52px;padding-top:2px;font-family:'SF Mono',Consolas,monospace;flex-shrink:0;cursor:pointer;user-select:none}
+.tc-id:hover{color:var(--accent)}
+.tc-note-wrap{width:100%;display:none;padding:4px 0 2px 0}
+.tc-note-wrap.open{display:block}
+.tc-note-input{width:100%;box-sizing:border-box;padding:6px 10px;border:1px solid var(--accent);border-radius:5px;background:var(--bg);color:var(--text);font-size:12px;font-family:inherit;resize:vertical;min-height:44px;outline:none;opacity:0.9}
+.tc-note-input:focus{opacity:1;box-shadow:0 0 0 2px rgba(232,119,34,0.2)}
+.tc-note-input::placeholder{color:var(--text2);font-style:italic}
+.tc-desc{flex:1;font-size:13px;color:var(--text);line-height:1.5}
+.tc-desc .note{display:block;font-size:11px;color:var(--text2);margin-top:3px;font-style:italic}
+.tc-btns{display:flex;gap:5px;flex-shrink:0;padding-top:1px}
+.tc-btn{
+  padding:3px 10px;border-radius:4px;border:1px solid var(--border);
+  font-size:11px;font-weight:700;cursor:pointer;transition:all 0.12s;
+  background:var(--bg3);color:var(--text2);
+}
+.tc-btn.pass{background:rgba(34,197,94,0.12);border-color:rgba(34,197,94,0.35);color:var(--pass)}
+.tc-btn.fail{background:rgba(239,68,68,0.12);border-color:rgba(239,68,68,0.35);color:var(--fail)}
+.tc-btn.skip{background:rgba(107,114,128,0.12);border-color:rgba(107,114,128,0.35);color:var(--skip)}
+.tc-btn.active-pass{background:var(--pass)!important;color:#fff!important;border-color:var(--pass)!important}
+.tc-btn.active-fail{background:var(--fail)!important;color:#fff!important;border-color:var(--fail)!important}
+.tc-btn.active-skip{background:var(--skip)!important;color:#fff!important;border-color:var(--skip)!important}
+.tc-btn:hover{opacity:0.8}
+
+/* TC-001 and TC-002 are neutral/ordinal answers (duration, count) — not a good/bad result */
+.tc[data-id="TC-001"] .tc-btn.pass, .tc[data-id="TC-001"] .tc-btn.fail, .tc[data-id="TC-001"] .tc-btn.skip,
+.tc[data-id="TC-002"] .tc-btn.pass, .tc[data-id="TC-002"] .tc-btn.fail, .tc[data-id="TC-002"] .tc-btn.skip {
+  background: var(--bg3); border-color: var(--border); color: var(--text2);
+}
+.tc[data-id="TC-001"] .tc-btn.active-pass, .tc[data-id="TC-001"] .tc-btn.active-fail, .tc[data-id="TC-001"] .tc-btn.active-skip,
+.tc[data-id="TC-002"] .tc-btn.active-pass, .tc[data-id="TC-002"] .tc-btn.active-fail, .tc[data-id="TC-002"] .tc-btn.active-skip {
+  background: var(--accent)!important; border-color: var(--accent)!important; color: #fff!important;
+}
+.tc[data-id="TC-001"].tc-pass, .tc[data-id="TC-001"].tc-fail, .tc[data-id="TC-001"].tc-skip,
+.tc[data-id="TC-002"].tc-pass, .tc[data-id="TC-002"].tc-fail, .tc[data-id="TC-002"].tc-skip {
+  background: transparent!important;
+}
+
+/* TC-014 is the headline "would you recommend" question */
+.tc[data-id="TC-014"] {
+  background: linear-gradient(135deg, rgba(232,119,34,0.12), rgba(232,119,34,0.02));
+  border: 1.5px solid var(--accent);
+  border-radius: 10px;
+  margin: 12px 14px;
+  padding: 16px;
+  flex-direction: column;
+}
+.tc-important-badge{
+  display:inline-block;font-size:10px;font-weight:800;letter-spacing:0.5px;text-transform:uppercase;
+  color:var(--accent);background:rgba(232,119,34,0.14);border:1px solid rgba(232,119,34,0.4);
+  border-radius:12px;padding:2px 9px;margin-bottom:6px;
+}
+.tc[data-id="TC-014"] .tc-desc{ font-size:15px; font-weight:700; }
+.tc[data-id="TC-014"] .tc-btns{
+  flex-basis:100%; width:100%; justify-content:center; gap:16px; margin-top:14px;
+}
+.tc[data-id="TC-014"] .tc-btns .tc-btn{
+  padding:11px 26px; font-size:15px; border-radius:9px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  animation: tc014-pulse 2.4s ease-in-out infinite;
+}
+.tc[data-id="TC-014"] .tc-btns .tc-btn.pass{ animation-delay:0s; }
+.tc[data-id="TC-014"] .tc-btns .tc-btn.skip{ animation-delay:0.3s; }
+.tc[data-id="TC-014"] .tc-btns .tc-btn.fail{ animation-delay:0.6s; }
+.tc[data-id="TC-014"] .tc-btns .tc-btn:hover{
+  transform: translateY(-3px) scale(1.08);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+}
+@keyframes tc014-pulse{
+  0%,100%{ box-shadow:0 0 0 0 rgba(232,119,34,0); }
+  50%{ box-shadow:0 0 0 5px rgba(232,119,34,0.16); }
+}
+
+/* sub-group label */
+.tc-group{padding:5px 14px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;color:var(--accent);border-bottom:1px solid var(--border);background:rgba(232,119,34,0.04)}
+
+/* ── Print ── */
+@media print{
+  html{zoom:100%!important}
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  @page{margin:10mm 8mm}
+  body{min-height:auto}
+  #topbar{position:static;box-shadow:none;max-width:100%!important}
+  #topbar-inner{max-width:100%!important}
+  main{max-width:100%!important;padding:4px 8mm!important}
+  .topbar-actions{display:none}
+  .sec-body.hidden{display:block!important}
+  .tc.tc-pass::before{content:'✓ ';color:green}
+  .tc.tc-fail::before{content:'✗ ';color:red}
+  .tc.tc-skip::before{content:'– ';color:gray}
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+
+<div id="topbar">
+  <div id="topbar-inner">
+    <div class="topbar-row1">
+      <div class="app-logo">
+        <div>
+          <div class="app-logo-text" ondblclick="unlockTesting()">Meeting Reminder — User Feedback <span id="testing-mode-tag"></span></div>
+          <div class="app-sub">Feedback on your experience so far — helps decide what goes into v1.1.0</div>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn" onclick="toggleTheme()">☀ / ☾</button>
+        <button class="btn" id="btn-toggle-sections" onclick="toggleAllSections()">Collapse All</button>
+        <button class="btn" onclick="exportCSV()">Export CSV</button>
+        <button class="btn btn-danger" onclick="clearAll()">Clear All</button>
+        <button class="btn" onclick="savePDF()">⬇ Save as PDF</button>
+        <button class="btn" onclick="savePDFDirect(this)">⬇ Direct PDF</button>
+        <div class="zoom-ctrl">
+          <button class="btn zoom-btn" onclick="zoomOut()" title="Zoom Out">−</button>
+          <span id="zoom-label" class="zoom-label">100%</span>
+          <button class="btn zoom-btn" onclick="zoomIn()" title="Zoom In">+</button>
+        </div>
+      </div>
+    </div>
+    <div id="progress">
+      <div id="prog-bar-wrap"><div id="prog-bar-fill" style="width:0%"></div></div>
+      <div class="prog-stat"><div class="dot dot-pass"></div><span id="prog-pass">0</span> Pass</div>
+      <div class="prog-stat"><div class="dot dot-fail"></div><span id="prog-fail">0</span> Fail</div>
+      <div class="prog-stat"><div class="dot dot-skip"></div><span id="prog-skip">0</span> N/A</div>
+      <div class="prog-stat"><div class="dot dot-total"></div><span id="prog-total">0/0</span></div>
+      <div id="prog-pct">0%</div>
+    </div>
+    <!-- ── Meta selectors ── -->
+    <div class="meta-row">
+      <span class="meta-label">Tester:</span>
+      <select id="sel-tester" class="meta-select" onchange="onMetaChange()">
+        <option value="">— Tester —</option>
+        <!-- keep this last option exactly as-is -->
+        <option value="__custom__">+ Add custom…</option>
+      </select>
+      <input id="custom-tester" type="text" placeholder="Type name, press Enter"
+        onkeydown="if(event.key==='Enter')applyCustomTester()"
+        onblur="applyCustomTester()">
+      <span class="meta-sep">·</span>
+      <span class="meta-label">Platform:</span>
+      <select id="sel-platform" class="meta-select" onchange="onMetaChange()">
+        <option value="">— Platform —</option>
+        <option value="Mac Intel">Mac Intel</option>
+        <option value="Mac Silicon">Mac Silicon</option>
+        <option value="Windows 11">Windows 11</option>
+        <option value="Windows 10">Windows 10</option>
+      </select>
+      <span class="meta-sep">·</span>
+      <span class="meta-label">Display:</span>
+      <select id="sel-display" class="meta-select" onchange="onMetaChange()">
+        <option value="">— Display —</option>
+        <option value="Touch Screen">Touch Screen</option>
+        <option value="Normal Display">Normal Display</option>
+      </select>
+      <span id="meta-badge-wrap"></span>
+      <button id="btn-floppy" class="floppy-btn" onclick="saveAsTestedFile(this)" title="Select Tester, Platform &amp; Display first" disabled>
+        <svg viewBox="0 0 14 14" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="1" y="1" width="12" height="12" rx="1.5"/>
+          <rect x="3.5" y="1" width="5" height="4" rx="0.5"/>
+          <line x1="5.5" y1="2.2" x2="5.5" y2="4.8"/>
+          <rect x="2.5" y="7.5" width="9" height="4.5" rx="0.5"/>
+        </svg>
+      </button>
+      <span id="save-nudge"></span>
+    </div>
+    <div id="presave-hint">
+      <span class="ph-icon">🔒</span>
+      <span class="ph-title">Fill in your details and save the file to begin</span>
+      <span class="ph-sub">Select Tester → Platform → Display → then click 💾</span>
+    </div>
+    <div id="saved-hint">
+      <span class="ph-icon">🚀</span>
+      <span class="ph-title">Now Start Your Feedback</span>
+    </div>
+  </div>
+</div>
+
+<main>
+
+<!-- S1 ─────────────────────────────────────── -->
+<div class="section" id="s1">
+  <div class="sec-header" onclick="toggleSection('s1')">
+    <span class="sec-num">01</span><span class="sec-title">About You</span>
+    <span class="sec-badge" id="s1-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s1-body">
+    <div class="tc" data-id="TC-001"><span class="tc-id">TC-001</span><span class="tc-desc">How long have you been using Meeting Reminder?</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">1 week</button><button class="tc-btn skip" data-val="skip">2–3 weeks</button><button class="tc-btn fail" data-val="fail">1 month</button></div></div>
+    <div class="tc" data-id="TC-002"><span class="tc-id">TC-002</span><span class="tc-desc">Roughly how many meetings a day does it remind you for?</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">0–2</button><button class="tc-btn skip" data-val="skip">3–6</button><button class="tc-btn fail" data-val="fail">7+</button></div></div>
+  </div>
+</div>
+
+<!-- S2 ─────────────────────────────────────── -->
+<div class="section" id="s2">
+  <div class="sec-header" onclick="toggleSection('s2')">
+    <span class="sec-num">02</span><span class="sec-title">Overall Experience</span>
+    <span class="sec-badge" id="s2-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s2-body">
+    <div class="tc" data-id="TC-003"><span class="tc-id">TC-003</span><span class="tc-desc">Do you think this is a useful app?</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Yes</button><button class="tc-btn skip" data-val="skip">Somewhat</button><button class="tc-btn fail" data-val="fail">No</button></div></div>
+    <div class="tc" data-id="TC-004"><span class="tc-id">TC-004</span><span class="tc-desc">Has it ever caused you to miss a meeting, or given a false/duplicate reminder?</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">No, never</button><button class="tc-btn skip" data-val="skip">Yes, false/duplicate</button><button class="tc-btn fail" data-val="fail">Yes, missed a meeting</button></div></div>
+  </div>
+</div>
+
+<!-- S3 ─────────────────────────────────────── -->
+<div class="section" id="s3">
+  <div class="sec-header" onclick="toggleSection('s3')">
+    <span class="sec-num">03</span><span class="sec-title">Toast Notifications</span>
+    <span class="sec-badge" id="s3-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s3-body">
+    <div class="tc" data-id="TC-005"><span class="tc-id">TC-005</span><span class="tc-desc">Does the toast stay on screen too long, too short, or about right?</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">About right</button><button class="tc-btn skip" data-val="skip">Too long</button><button class="tc-btn fail" data-val="fail">Too short</button></div></div>
+    <div class="tc" data-id="TC-006"><span class="tc-id">TC-006</span><span class="tc-desc">Does clicking the toast to join a meeting work reliably?</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Yes, always</button><button class="tc-btn skip" data-val="skip">Mostly</button><button class="tc-btn fail" data-val="fail">Rarely / never</button></div></div>
+    <div class="tc" data-id="TC-007"><span class="tc-id">TC-007</span><span class="tc-desc">Have you found the toast distracting, or badly positioned on screen?</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">No</button><button class="tc-btn skip" data-val="skip">Badly positioned</button><button class="tc-btn fail" data-val="fail">Distracting</button></div></div>
+    <div class="tc" data-id="TC-015"><span class="tc-id">TC-015</span><span class="tc-desc">Which toast style do you use most?</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Card</button><button class="tc-btn skip" data-val="skip">Tray card</button><button class="tc-btn fail" data-val="fail">Switch between both</button></div></div>
+  </div>
+</div>
+
+<!-- S4 ─────────────────────────────────────── -->
+<div class="section" id="s4">
+  <div class="sec-header" onclick="toggleSection('s4')">
+    <span class="sec-num">04</span><span class="sec-title">Reliability &amp; Outlook Integration</span>
+    <span class="sec-badge" id="s4-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s4-body">
+    <div class="tc" data-id="TC-008"><span class="tc-id">TC-008</span><span class="tc-desc">Have you noticed the app fail to catch a meeting, or fire late?</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">No</button><button class="tc-btn skip" data-val="skip">Occasionally</button><button class="tc-btn fail" data-val="fail">Often</button></div></div>
+    <div class="tc" data-id="TC-009"><span class="tc-id">TC-009</span><span class="tc-desc">Any crashes, or times the tray icon disappeared or stopped responding?</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">No</button><button class="tc-btn skip" data-val="skip">Once or twice</button><button class="tc-btn fail" data-val="fail">Repeatedly</button></div></div>
+    <div class="tc" data-id="TC-016"><span class="tc-id">TC-016</span><span class="tc-desc">Do you use classic Outlook or New Outlook as default before testing?</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Classic Outlook</button><button class="tc-btn skip" data-val="skip">Not sure</button><button class="tc-btn fail" data-val="fail">New Outlook</button></div></div>
+  </div>
+</div>
+
+<!-- S5 ─────────────────────────────────────── -->
+<div class="section" id="s5">
+  <div class="sec-header" onclick="toggleSection('s5')">
+    <span class="sec-num">05</span><span class="sec-title">Performance</span>
+    <span class="sec-badge" id="s5-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s5-body">
+    <div class="tc" data-id="TC-010"><span class="tc-id">TC-010</span><span class="tc-desc">Have you noticed it using noticeable RAM/CPU, or slowing your PC down?</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">No, never noticed it</button><button class="tc-btn skip" data-val="skip">Slightly</button><button class="tc-btn fail" data-val="fail">Yes, noticeably</button></div></div>
+  </div>
+</div>
+
+<!-- S6 ─────────────────────────────────────── -->
+<div class="section" id="s6">
+  <div class="sec-header" onclick="toggleSection('s6')">
+    <span class="sec-num">06</span><span class="sec-title">Open Feedback</span>
+    <span class="sec-badge" id="s6-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s6-body">
+    <div class="tc" data-id="TC-011"><span class="tc-id">TC-011</span><span class="tc-desc">What's the one thing you'd change first?</span></div>
+    <div class="tc" data-id="TC-012"><span class="tc-id">TC-012</span><span class="tc-desc">What's a feature you wish it had?</span></div>
+    <div class="tc" data-id="TC-013"><span class="tc-id">TC-013</span><span class="tc-desc">Anything you'd tell a coworker before they start using it?</span></div>
+    <div class="tc" data-id="TC-014"><span class="tc-id">TC-014</span><span class="tc-desc"><span class="tc-important-badge">★ Key Question</span><br>If everything you mentioned above gets improved, would you recommend this app to a colleague?</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">👍 Yes</button><button class="tc-btn skip" data-val="skip">🙂 Maybe</button><button class="tc-btn fail" data-val="fail">👎 No</button></div></div>
+  </div>
+</div>
+
+</main>
+
+<script>
+function savePDF() {
+  const tester   = document.getElementById('sel-tester').value   || 'Unknown';
+  const platform = document.getElementById('sel-platform').value || 'Unknown';
+  const prev = document.title;
+  document.title = `MeetingReminder_Feedback_v1.1.0_${platform}_${tester}`.replace(/\s+/g,'_');
+  window.print();
+  document.title = prev;
+}
+
+async function savePDFDirect(btn) {
+  if (!window.html2canvas || !window.jspdf) {
+    alert('PDF library not loaded — please check your internet connection.'); return;
+  }
+  const orig = btn.textContent;
+  btn.textContent = '⏳ Generating…';
+  btn.disabled = true;
+  try {
+    const prevZoom     = document.documentElement.style.zoom || '';
+    const prevScrollY  = window.scrollY;
+    const hiddenBodies = Array.from(document.querySelectorAll('.sec-body.hidden'));
+    const selectReplacements = [];
+    const toHide = [
+      document.querySelector('.topbar-actions'),
+      document.querySelector('.filter-btn')?.closest('div[style]'),
+      document.getElementById('btn-floppy'),
+      document.getElementById('save-nudge'),
+      document.getElementById('presave-hint'),
+      document.getElementById('saved-hint'),
+    ].filter(Boolean);
+    const overrideStyle = document.createElement('style');
+    overrideStyle.id = 'pdf-cap-override';
+    overrideStyle.textContent =
+      '.tc-desc{text-align:left!important}' +
+      '#topbar{position:static!important;overflow:visible!important}' +
+      '.topbar-row1,.meta-row{overflow:visible!important}' +
+      '.meta-select{background-image:none!important}';
+    let canvas;
+    try {
+      document.documentElement.style.zoom = '1';
+      hiddenBodies.forEach(s => s.classList.remove('hidden'));
+      window.scrollTo(0, 0);
+      toHide.forEach(el => { el.dataset.pdfHide = '1'; el.style.display = 'none'; });
+      document.head.appendChild(overrideStyle);
+      document.querySelectorAll('.meta-select').forEach(sel => {
+        const div = document.createElement('div');
+        div.className = sel.className;
+        div.style.cssText = 'display:inline-flex;align-items:center;';
+        div.textContent = sel.options[sel.selectedIndex]?.text || sel.value || '';
+        sel.parentNode.replaceChild(div, sel);
+        selectReplacements.push({ div, sel });
+      });
+      await new Promise(r => setTimeout(r, 200));
+      const contentWidth = (document.querySelector('main')?.offsetWidth || 1100) + 32;
+      canvas = await html2canvas(document.body, {
+        scale: 2, useCORS: true, allowTaint: false, logging: false,
+        scrollX: 0, scrollY: 0,
+        windowWidth: contentWidth,
+        windowHeight: document.body.scrollHeight
+      });
+    } finally {
+      document.documentElement.style.zoom = prevZoom;
+      hiddenBodies.forEach(s => s.classList.add('hidden'));
+      window.scrollTo(0, prevScrollY);
+      document.querySelectorAll('[data-pdf-hide]').forEach(el => {
+        el.style.display = ''; delete el.dataset.pdfHide;
+      });
+      selectReplacements.forEach(({ div, sel }) => {
+        if (div.parentNode) div.parentNode.replaceChild(sel, div);
+      });
+      overrideStyle.remove();
+    }
+    if (!canvas) return;
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pW  = pdf.internal.pageSize.getWidth();
+    const pH  = pdf.internal.pageSize.getHeight();
+    const img = canvas.toDataURL('image/jpeg', 0.95);
+    const iH  = canvas.height * pW / canvas.width;
+    let y = 0;
+    pdf.addImage(img, 'JPEG', 0, y, pW, iH);
+    let rem = iH - pH;
+    while (rem > 0) { y -= pH; pdf.addPage(); pdf.addImage(img, 'JPEG', 0, y, pW, iH); rem -= pH; }
+    const tester   = (document.getElementById('sel-tester').value   || 'Tester').replace(/\s+/g,'_');
+    const platform = (document.getElementById('sel-platform').value || 'Platform').replace(/\s+/g,'_');
+    pdf.save(`MeetingReminder_Feedback_v1.1.0_${platform}_${tester}.pdf`);
+  } catch(e) {
+    alert('PDF failed: ' + e.message);
+  } finally {
+    btn.textContent = orig;
+    btn.disabled = false;
+  }
+}
+
+const FILE_ID  = 'MeetingReminder_Feedback_v1.1.0';
+const BASE_KEY = 'meetingreminder-feedback-v1|' + FILE_ID;
+let state = {};
+
+function getStoreKey() {
+  const t = document.getElementById('sel-tester').value;
+  const p = document.getElementById('sel-platform').value;
+  const d = document.getElementById('sel-display').value;
+  if (!t || !p || !d) return null;
+  return BASE_KEY + '|' + t + '|' + p + '|' + d;
+}
+
+function load() {
+  const k = getStoreKey();
+  state = {};
+  if (!k) return;
+  try { const s = localStorage.getItem(k); if (s) state = JSON.parse(s); } catch(e){}
+}
+function save() {
+  const k = getStoreKey();
+  if (!k) return;
+  try { localStorage.setItem(k, JSON.stringify(state)); } catch(e){}
+}
+
+function applyCustomTester() {
+  const inp = document.getElementById('custom-tester');
+  if (inp.style.display === 'none') return;
+  const sel = document.getElementById('sel-tester');
+  const name = inp.value.trim();
+  inp.style.display = 'none';
+  inp.value = '';
+  sel.style.display = 'inline-block';
+  if (name) {
+    const exists = Array.from(sel.options).some(o => o.value === name);
+    if (!exists) {
+      const opt = new Option(name, name);
+      sel.insertBefore(opt, sel.querySelector('option[value="__custom__"]'));
+    }
+    sel.value = name;
+  } else {
+    sel.value = '';
+  }
+  onMetaChange();
+}
+
+function saveAsTestedFile(btn) {
+  const t = document.getElementById('sel-tester').value;
+  const p = document.getElementById('sel-platform').value;
+  const d = document.getElementById('sel-display').value;
+  if (!t || !p || !d) return;
+  const baseId = FILE_ID.replace(/\s*\|\s*Master\s*$/i, '');
+  const filename = baseId + ' | ' + t + ' | ' + p + ' | ' + d + '.html';
+
+  const nudge = document.getElementById('save-nudge');
+  const nudgeCls = nudge ? nudge.className : '';
+  const nudgeTxt = nudge ? nudge.textContent : '';
+
+  const pairs = [['sel-tester', t], ['sel-platform', p], ['sel-display', d]];
+  pairs.forEach(([id, val]) => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    Array.from(sel.options).forEach(o => {
+      if (o.value === val) o.setAttribute('selected', '');
+      else o.removeAttribute('selected');
+    });
+    sel.classList.add('has-value');
+  });
+
+  const activeFilterBtn = document.querySelector('.filter-btn.active');
+  const prevFilter = activeFilterBtn ? activeFilterBtn.dataset.filter : 'all';
+  if (prevFilter !== 'all') setFilter('all');
+
+  document.body.classList.remove('pre-save', 'file-saved');
+  document.body.setAttribute('data-saved', '1');
+  if (nudge) { nudge.className = ''; nudge.textContent = ''; }
+
+  const restoreJs =
+    '(function(){' +
+      'if(typeof load==="function")load();' +
+      'document.querySelectorAll(".tc").forEach(function(tc){if(typeof renderTC==="function")renderTC(tc.dataset.id);});' +
+      'if(typeof applyPlatformFilter==="function")applyPlatformFilter();' +
+      'if(typeof setFilter==="function")setFilter("all");' +
+      'if(typeof updateProgress==="function")updateProgress();' +
+      'if(typeof restoreNotes==="function")restoreNotes();' +
+    '})()';
+  let html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+  const bodyIdx = html.lastIndexOf('</body>');
+  if (bodyIdx !== -1) {
+    html = html.slice(0, bodyIdx) + '<script>' + restoreJs + '\x3c/script>' + html.slice(bodyIdx);
+  }
+
+  document.body.removeAttribute('data-saved');
+  document.body.classList.add('pre-save', 'file-saved');
+  if (nudge) { nudge.className = nudgeCls; nudge.textContent = nudgeTxt; }
+  if (prevFilter !== 'all') setFilter(prevFilter);
+
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+
+  btn.classList.add('saved');
+  setTimeout(() => btn.classList.remove('saved'), 1200);
+  if (nudge) {
+    nudge.classList.add('hiding');
+    setTimeout(() => {
+      nudge.textContent = 'Open the saved file in download';
+      nudge.classList.remove('hiding', 'nudge-red');
+      nudge.classList.add('visible', 'nudge-green');
+    }, 280);
+  }
+}
+
+function onMetaChange() {
+  const sel = document.getElementById('sel-tester');
+  if (sel.value === '__custom__') {
+    sel.style.display = 'none';
+    const inp = document.getElementById('custom-tester');
+    inp.style.display = 'inline-block';
+    inp.focus();
+    return;
+  }
+  ['sel-tester','sel-platform','sel-display'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.toggle('has-value', !!el.value && el.value !== '__custom__');
+  });
+  const t = sel.value;
+  const p = document.getElementById('sel-platform').value;
+  const d = document.getElementById('sel-display').value;
+  const wrap = document.getElementById('meta-badge-wrap');
+  const floppy = document.getElementById('btn-floppy');
+  const nudge = document.getElementById('save-nudge');
+  if (t && p && d) {
+    if (wrap) wrap.innerHTML = '<span class="meta-badge">&#10003; ' + t + ' &nbsp;·&nbsp; ' + p + ' &nbsp;·&nbsp; ' + d + '</span>';
+    floppy.disabled = false;
+    floppy.classList.add('ready');
+    floppy.title = 'Save as: ' + FILE_ID + ' | ' + t + ' | ' + p + ' | ' + d + '.html';
+    if (nudge) {
+      nudge.textContent = 'Click the save button';
+      nudge.classList.remove('hiding','nudge-green');
+      nudge.classList.add('visible','nudge-red');
+    }
+  } else {
+    if (wrap) wrap.innerHTML = '';
+    floppy.disabled = true;
+    floppy.classList.remove('ready','saved');
+    floppy.title = 'Select Tester, Platform & Display first';
+    if (nudge) { nudge.classList.remove('visible','hiding','nudge-red','nudge-green'); nudge.textContent = ''; }
+  }
+  document.querySelectorAll('.tc').forEach(tc => {
+    tc.classList.remove('tc-pass','tc-fail','tc-skip');
+    tc.querySelectorAll('.tc-btn').forEach(b => { b.className = 'tc-btn ' + b.dataset.val; });
+  });
+  load();
+  document.querySelectorAll('.tc').forEach(tc => renderTC(tc.dataset.id));
+  applyPlatformFilter();
+  updateProgress();
+  restoreNotes();
+}
+
+function tagTCsByPlatform() {
+  document.querySelectorAll('.sec-body').forEach(body => {
+    let cur = 'all';
+    Array.from(body.children).forEach(el => {
+      if (el.classList.contains('tc-group')) {
+        const t = el.textContent.trim().toLowerCase();
+        if (t.includes('windows') || t.includes('win')) cur = 'win';
+        else if (t.includes('macos') || t.includes('mac')) cur = 'mac';
+        else cur = 'all';
+        el.dataset.platformGroup = cur;
+      } else if (el.classList.contains('tc')) {
+        el.dataset.platformGroup = cur;
+      }
+    });
+  });
+}
+
+function applyPlatformFilter() {
+  const platform = document.getElementById('sel-platform').value;
+  tagTCsByPlatform();
+  document.querySelectorAll('.tc').forEach(tc => {
+    const pg = tc.dataset.platformGroup || 'all';
+    let hide = false;
+    if ((platform === 'Mac Intel' || platform === 'Mac Silicon') && pg === 'win') hide = true;
+    if ((platform === 'Windows 10' || platform === 'Windows 11') && pg === 'mac') hide = true;
+    tc.classList.toggle('platform-hidden', hide);
+  });
+  document.querySelectorAll('.tc-group').forEach(grp => {
+    const pg = grp.dataset.platformGroup || 'all';
+    let hide = false;
+    if ((platform === 'Mac Intel' || platform === 'Mac Silicon') && pg === 'win') hide = true;
+    if ((platform === 'Windows 10' || platform === 'Windows 11') && pg === 'mac') hide = true;
+    grp.classList.toggle('platform-hidden', hide);
+  });
+}
+
+function setResult(id, val) {
+  if (!getStoreKey()) {
+    alert('Please select Tester, Platform, and Display before marking results.');
+    return;
+  }
+  if (state[id] === val) { delete state[id]; }
+  else { state[id] = val; }
+  save();
+  renderTC(id);
+  updateProgress();
+  const active = document.querySelector('.filter-btn.active');
+  if (active) setFilter(active.dataset.filter);
+}
+
+function renderTC(id) {
+  const el = document.querySelector(`.tc[data-id="${id}"]`);
+  if (!el) return;
+  el.classList.remove('tc-pass','tc-fail','tc-skip');
+  const v = state[id];
+  if (v) el.classList.add('tc-'+v);
+  el.querySelectorAll('.tc-btn').forEach(b => {
+    const t = b.dataset.val;
+    b.className = `tc-btn ${t}${v===t?' active-'+t:''}`;
+  });
+}
+
+function toggleNote(id) {
+  const el = document.querySelector(`.tc[data-id="${id}"]`);
+  if (!el) return;
+  let wrap = el.querySelector('.tc-note-wrap');
+  if (!wrap) {
+    wrap = document.createElement('div');
+    wrap.className = 'tc-note-wrap';
+    wrap.appendChild(makeNoteTextarea(id));
+    el.appendChild(wrap);
+  }
+  const isOpen = wrap.classList.toggle('open');
+  if (isOpen) wrap.querySelector('textarea').focus();
+}
+
+function makeNoteTextarea(id) {
+  const ta = document.createElement('textarea');
+  ta.className = 'tc-note-input';
+  ta.placeholder = 'Add a note…';
+  ta.value = state[id + '_note'] || '';
+  let debounce;
+  ta.addEventListener('input', () => {
+    clearTimeout(debounce);
+    debounce = setTimeout(() => {
+      const txt = ta.value.trim();
+      if (txt) state[id + '_note'] = txt;
+      else delete state[id + '_note'];
+      save();
+      updateProgress();
+    }, 400);
+  });
+  return ta;
+}
+
+/* These rows have no Pass/Fail/N/A buttons — they're answered entirely via the note box,
+   so the note is always open and never toggled. */
+const ALWAYS_OPEN_NOTE_IDS = ['TC-011', 'TC-012', 'TC-013'];
+
+function restoreNotes() {
+  document.querySelectorAll('.tc').forEach(el => {
+    const id = el.dataset.id;
+    let wrap = el.querySelector('.tc-note-wrap');
+    if (wrap) { wrap.remove(); }
+    if (state[id + '_note'] || ALWAYS_OPEN_NOTE_IDS.includes(id)) {
+      wrap = document.createElement('div');
+      wrap.className = 'tc-note-wrap open';
+      wrap.appendChild(makeNoteTextarea(id));
+      el.appendChild(wrap);
+    }
+  });
+}
+
+function initNotes() {
+  document.querySelectorAll('.tc-id').forEach(span => {
+    const id = span.closest('.tc').dataset.id;
+    span.title = 'Click to add a note';
+    span.addEventListener('click', () => toggleNote(id));
+  });
+}
+
+function visibleTCs() {
+  return Array.from(document.querySelectorAll('.tc')).filter(tc => !tc.classList.contains('platform-hidden'));
+}
+
+function updateProgress() {
+  const tcs   = visibleTCs();
+  const total  = tcs.length;
+  let pass=0, fail=0, skip=0, done=0;
+  tcs.forEach(tc => {
+    const id = tc.dataset.id;
+    const v = state[id];
+    if (v==='pass') pass++;
+    else if (v==='fail') fail++;
+    else if (v==='skip') skip++;
+    if (v || state[id + '_note']) done++;
+  });
+  document.getElementById('prog-pass').textContent = pass;
+  document.getElementById('prog-fail').textContent = fail;
+  document.getElementById('prog-skip').textContent = skip;
+  document.getElementById('prog-total').textContent = `${done}/${total}`;
+  const pct = total>0 ? Math.round(done/total*100) : 0;
+  document.getElementById('prog-bar-fill').style.width = pct+'%';
+  document.getElementById('prog-pct').textContent = pct+'%';
+  updateSectionBadges();
+}
+
+function updateSectionBadges() {
+  document.querySelectorAll('.section').forEach(sec => {
+    const badge = document.getElementById(sec.id+'-badge');
+    if (!badge) return;
+    const tcs = Array.from(sec.querySelectorAll('.tc')).filter(tc => !tc.classList.contains('platform-hidden'));
+    let pass=0, fail=0, answered=0, total=tcs.length;
+    tcs.forEach(tc => {
+      const id = tc.dataset.id;
+      const v = state[id];
+      if (v==='pass') pass++;
+      else if (v==='fail') fail++;
+      if (v || state[id + '_note']) answered++;
+    });
+    badge.innerHTML = total===0 ? '' : fail>0
+      ? `<span class="b-fail">${fail} fail</span> · ${answered}/${total}`
+      : answered>0
+        ? `<span class="b-pass">${answered}/${total}</span>`
+        : `${total} cases`;
+  });
+}
+
+function toggleSection(id) {
+  const body = document.getElementById(id+'-body');
+  const hdr  = document.querySelector(`#${id} .sec-header`);
+  if (!body) return;
+  const collapsed = body.classList.toggle('hidden');
+  hdr.classList.toggle('collapsed', collapsed);
+}
+
+function expandAll() {
+  document.querySelectorAll('.sec-body').forEach(b=>b.classList.remove('hidden'));
+  document.querySelectorAll('.sec-header').forEach(h=>h.classList.remove('collapsed'));
+}
+function collapseAll() {
+  document.querySelectorAll('.sec-body').forEach(b=>b.classList.add('hidden'));
+  document.querySelectorAll('.sec-header').forEach(h=>h.classList.add('collapsed'));
+}
+
+function setFilter(filter) {
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.filter === filter);
+  });
+  document.querySelectorAll('.tc').forEach(tc => {
+    if (tc.classList.contains('platform-hidden')) { tc.classList.remove('filter-hidden'); return; }
+    const result = state[tc.dataset.id] || 'untested';
+    let show;
+    if (filter === 'all')           show = true;
+    else if (filter === 'untested') show = !state[tc.dataset.id];
+    else                            show = result === filter;
+    tc.classList.toggle('filter-hidden', !show);
+  });
+}
+
+function toggleAllSections() {
+  const btn = document.getElementById('btn-toggle-sections');
+  const anyExpanded = document.querySelector('.sec-body:not(.hidden)');
+  if (anyExpanded) {
+    collapseAll();
+    btn.textContent = 'Expand All';
+  } else {
+    expandAll();
+    btn.textContent = 'Collapse All';
+  }
+}
+
+function clearAll() {
+  if (!getStoreKey()) { alert('Select Tester, Platform, and Display first.'); return; }
+  const t = document.getElementById('sel-tester').value;
+  const p = document.getElementById('sel-platform').value;
+  const d = document.getElementById('sel-display').value;
+  if (!confirm('Clear all results for ' + t + ' / ' + p + ' / ' + d + '? This cannot be undone.')) return;
+  state = {};
+  save();
+  document.querySelectorAll('.tc').forEach(tc => {
+    tc.classList.remove('tc-pass','tc-fail','tc-skip');
+    tc.querySelectorAll('.tc-btn').forEach(b => {
+      b.className = `tc-btn ${b.dataset.val}`;
+    });
+  });
+  updateProgress();
+  restoreNotes();
+  setFilter('all');
+}
+
+function toggleTheme() {
+  const root = document.documentElement;
+  const current = root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme:light)').matches ? 'light' : 'dark');
+  root.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
+}
+
+// ── Zoom ──
+const ZOOM_KEY = 'ev-qa-zoom';
+const ZOOM_STEP = 10;
+const ZOOM_MIN  = 50;
+const ZOOM_MAX  = 200;
+let zoomLevel = parseInt(localStorage.getItem(ZOOM_KEY) || '100', 10);
+
+function applyZoom() {
+  document.documentElement.style.zoom = zoomLevel + '%';
+  document.getElementById('zoom-label').textContent = zoomLevel + '%';
+  localStorage.setItem(ZOOM_KEY, zoomLevel);
+}
+function zoomIn()  { if (zoomLevel < ZOOM_MAX) { zoomLevel += ZOOM_STEP; applyZoom(); } }
+function zoomOut() { if (zoomLevel > ZOOM_MIN) { zoomLevel -= ZOOM_STEP; applyZoom(); } }
+
+function exportCSV() {
+  const tester   = document.getElementById('sel-tester').value   || 'Unknown';
+  const platform = document.getElementById('sel-platform').value || 'Unknown';
+  const display  = document.getElementById('sel-display').value  || 'Unknown';
+  const meta = [
+    ['Tester', tester],
+    ['Platform', platform],
+    ['Display', display],
+    ['Date', new Date().toISOString().slice(0,10)],
+    [],
+    ['ID','Description','Result']
+  ];
+  const rows = [...meta];
+  document.querySelectorAll('.tc').forEach(tc => {
+    const id   = tc.dataset.id;
+    const desc = (tc.querySelector('.tc-desc')?.innerText||'').replace(/\n/g,' ').trim();
+    const res  = state[id]||'not tested';
+    rows.push([id, '"'+desc.replace(/"/g,'""')+'"', res]);
+  });
+  const csv  = rows.map(r=>r.join(',')).join('\n');
+  const blob = new Blob([csv],{type:'text/csv'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  const safeName = tester.replace(/\s+/g,'_');
+  const safePlat = platform.replace(/\s+/g,'_');
+  a.href=url; a.download=`MeetingReminder_Feedback_v1.1.0_${new Date().toISOString().slice(0,10)}_${safeName}_${safePlat}.csv`;
+  a.click(); URL.revokeObjectURL(url);
+}
+
+function unlockTesting() {
+  document.body.classList.remove('pre-save','file-saved');
+  const tag = document.getElementById('testing-mode-tag');
+  if (tag) { tag.textContent = '— Manoj Kumar M on testing mode'; tag.classList.add('visible'); }
+}
+
+// ── Init ──
+if (!document.body.dataset.saved) document.body.classList.add('pre-save');
+applyZoom();
+tagTCsByPlatform();
+document.addEventListener('click', function(e) {
+  var btn = e.target.closest ? e.target.closest('.tc-btn') : null;
+  if (!btn) return;
+  var tc = btn.closest('.tc');
+  if (!tc) return;
+  setResult(tc.dataset.id, btn.dataset.val);
+});
+updateProgress();
+initNotes();
+</script>
+</body>
+</html>
