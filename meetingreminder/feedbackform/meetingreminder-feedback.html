@@ -339,14 +339,7 @@ main{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
     <!-- ── Meta selectors ── -->
     <div class="meta-row">
       <span class="meta-label">Tester:</span>
-      <select id="sel-tester" class="meta-select" onchange="onMetaChange()">
-        <option value="">— Tester —</option>
-        <!-- keep this last option exactly as-is -->
-        <option value="__custom__">+ Add custom…</option>
-      </select>
-      <input id="custom-tester" type="text" placeholder="Type name, press Enter"
-        onkeydown="if(event.key==='Enter')applyCustomTester()"
-        onblur="applyCustomTester()">
+      <input id="sel-tester" type="text" class="meta-select" placeholder="Your name" oninput="onMetaChange()">
       <span class="meta-sep">·</span>
       <span class="meta-label">Platform:</span>
       <select id="sel-platform" class="meta-select" onchange="onMetaChange()">
@@ -376,8 +369,8 @@ main{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
     </div>
     <div id="presave-hint">
       <span class="ph-icon">🔒</span>
-      <span class="ph-title">Fill in your details and save the file to begin</span>
-      <span class="ph-sub">Select Tester → Platform → Display → then click 💾</span>
+      <span class="ph-title">Fill in your details to begin</span>
+      <span class="ph-sub">Select Tester → Platform → Display → then click 💾 to unlock</span>
     </div>
     <div id="saved-hint">
       <span class="ph-icon">🚀</span>
@@ -584,111 +577,23 @@ function save() {
   try { localStorage.setItem(k, JSON.stringify(state)); } catch(e){}
 }
 
-function applyCustomTester() {
-  const inp = document.getElementById('custom-tester');
-  if (inp.style.display === 'none') return;
-  const sel = document.getElementById('sel-tester');
-  const name = inp.value.trim();
-  inp.style.display = 'none';
-  inp.value = '';
-  sel.style.display = 'inline-block';
-  if (name) {
-    const exists = Array.from(sel.options).some(o => o.value === name);
-    if (!exists) {
-      const opt = new Option(name, name);
-      sel.insertBefore(opt, sel.querySelector('option[value="__custom__"]'));
-    }
-    sel.value = name;
-  } else {
-    sel.value = '';
-  }
-  onMetaChange();
-}
 
 function saveAsTestedFile(btn) {
   const t = document.getElementById('sel-tester').value;
   const p = document.getElementById('sel-platform').value;
   const d = document.getElementById('sel-display').value;
   if (!t || !p || !d) return;
-  const baseId = FILE_ID.replace(/\s*\|\s*Master\s*$/i, '');
-  const filename = baseId + ' | ' + t + ' | ' + p + ' | ' + d + '.html';
-
-  const nudge = document.getElementById('save-nudge');
-  const nudgeCls = nudge ? nudge.className : '';
-  const nudgeTxt = nudge ? nudge.textContent : '';
-
-  const pairs = [['sel-tester', t], ['sel-platform', p], ['sel-display', d]];
-  pairs.forEach(([id, val]) => {
-    const sel = document.getElementById(id);
-    if (!sel) return;
-    Array.from(sel.options).forEach(o => {
-      if (o.value === val) o.setAttribute('selected', '');
-      else o.removeAttribute('selected');
-    });
-    sel.classList.add('has-value');
-  });
-
-  const activeFilterBtn = document.querySelector('.filter-btn.active');
-  const prevFilter = activeFilterBtn ? activeFilterBtn.dataset.filter : 'all';
-  if (prevFilter !== 'all') setFilter('all');
-
-  document.body.classList.remove('pre-save', 'file-saved');
+  document.body.classList.remove('pre-save');
   document.body.setAttribute('data-saved', '1');
-  if (nudge) { nudge.className = ''; nudge.textContent = ''; }
-
-  const restoreJs =
-    '(function(){' +
-      'if(typeof load==="function")load();' +
-      'document.querySelectorAll(".tc").forEach(function(tc){if(typeof renderTC==="function")renderTC(tc.dataset.id);});' +
-      'if(typeof applyPlatformFilter==="function")applyPlatformFilter();' +
-      'if(typeof setFilter==="function")setFilter("all");' +
-      'if(typeof updateProgress==="function")updateProgress();' +
-      'if(typeof restoreNotes==="function")restoreNotes();' +
-    '})()';
-  let html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
-  const bodyIdx = html.lastIndexOf('</body>');
-  if (bodyIdx !== -1) {
-    html = html.slice(0, bodyIdx) + '<script>' + restoreJs + '\x3c/script>' + html.slice(bodyIdx);
-  }
-
-  document.body.removeAttribute('data-saved');
-  document.body.classList.add('pre-save', 'file-saved');
-  if (nudge) { nudge.className = nudgeCls; nudge.textContent = nudgeTxt; }
-  if (prevFilter !== 'all') setFilter(prevFilter);
-
-  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = filename; a.click();
-  URL.revokeObjectURL(url);
-
-  btn.classList.add('saved');
-  setTimeout(() => btn.classList.remove('saved'), 1200);
-  if (nudge) {
-    nudge.classList.add('hiding');
-    setTimeout(() => {
-      nudge.textContent = 'Open the saved file in download';
-      nudge.classList.remove('hiding', 'nudge-red');
-      nudge.classList.add('visible', 'nudge-green');
-    }, 280);
-  }
 }
 
 function onMetaChange() {
-  const sel = document.getElementById('sel-tester');
-  if (sel.value === '__custom__') {
-    sel.style.display = 'none';
-    const inp = document.getElementById('custom-tester');
-    inp.style.display = 'inline-block';
-    inp.focus();
-    return;
-  }
   ['sel-tester','sel-platform','sel-display'].forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
-    el.classList.toggle('has-value', !!el.value && el.value !== '__custom__');
+    el.classList.toggle('has-value', !!el.value);
   });
-  const t = sel.value;
+  const t = document.getElementById('sel-tester').value;
   const p = document.getElementById('sel-platform').value;
   const d = document.getElementById('sel-display').value;
   const wrap = document.getElementById('meta-badge-wrap');
