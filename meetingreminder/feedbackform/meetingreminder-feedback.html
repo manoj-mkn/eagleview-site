@@ -507,7 +507,7 @@ async function savePDFDirect(btn) {
         const div = document.createElement('div');
         div.className = sel.className;
         div.style.cssText = 'display:inline-flex;align-items:center;';
-        div.textContent = sel.options[sel.selectedIndex]?.text || sel.value || '';
+        div.textContent = sel.options?.[sel.selectedIndex]?.text || sel.value || '';
         sel.parentNode.replaceChild(div, sel);
         selectReplacements.push({ div, sel });
       });
