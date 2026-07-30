@@ -280,6 +280,24 @@ main{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
   0%,100%{ box-shadow:0 0 0 0 rgba(232,119,34,0); }
   50%{ box-shadow:0 0 0 5px rgba(232,119,34,0.16); }
 }
+/* Share CTA */
+#share-cta{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  margin:10px 14px 6px;padding:13px 16px;
+  background:rgba(232,119,34,0.06);
+  border:1.5px dashed rgba(232,119,34,0.4);
+  border-radius:10px;flex-wrap:wrap;
+}
+#share-cta .share-label{font-size:13px;font-weight:600;color:var(--text2)}
+.share-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 18px;border-radius:8px;
+  background:var(--accent);color:#fff;
+  border:none;font-size:13px;font-weight:700;cursor:pointer;
+  transition:background 0.15s,transform 0.15s,box-shadow 0.15s;
+}
+.share-btn:hover{background:#bf6d1a;transform:translateY(-2px);box-shadow:0 4px 14px rgba(232,119,34,0.35)}
+.share-btn:active{transform:translateY(0)}
 
 /* sub-group label */
 .tc-group{padding:5px 14px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;color:var(--accent);border-bottom:1px solid var(--border);background:rgba(232,119,34,0.04)}
@@ -454,6 +472,10 @@ main{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
     <div class="tc" data-id="TC-012"><span class="tc-id">TC-012</span><span class="tc-desc">What's a feature you wish it had?</span></div>
     <div class="tc" data-id="TC-013"><span class="tc-id">TC-013</span><span class="tc-desc">Anything you'd tell a coworker before they start using it?</span></div>
     <div class="tc" data-id="TC-014"><span class="tc-id">TC-014</span><span class="tc-desc"><span class="tc-important-badge">★ Key Question</span><br>If everything you mentioned above gets improved, would you recommend this app to a colleague?</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">👍 Yes</button><button class="tc-btn skip" data-val="skip">🙂 Maybe</button><button class="tc-btn fail" data-val="fail">👎 No</button></div></div>
+    <div id="share-cta">
+      <span class="share-label">📤 Share the PDF with Manoj</span>
+      <button class="share-btn" onclick="shareWithManoj(this)">📧 Send PDF</button>
+    </div>
   </div>
 </div>
 
@@ -469,6 +491,14 @@ function savePDF() {
   document.title = prev;
 }
 
+async function shareWithManoj(btn) {
+  await savePDFDirect(btn);
+  const tester   = document.getElementById('sel-tester').value   || 'Tester';
+  const platform = document.getElementById('sel-platform').value || 'Platform';
+  const subject  = encodeURIComponent('Meeting Reminder Feedback — ' + tester + ' (' + platform + ')');
+  const body     = encodeURIComponent('Hi Manoj,\n\nPlease find my Meeting Reminder feedback PDF attached.\n\nTester: ' + tester + '\nPlatform: ' + platform);
+  window.location.href = 'mailto:manojkmahesh@gmail.com?subject=' + subject + '&body=' + body;
+}
 async function savePDFDirect(btn) {
   if (!window.html2canvas || !window.jspdf) {
     alert('PDF library not loaded — please check your internet connection.'); return;
