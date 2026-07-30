@@ -1,0 +1,90 @@
+════════════════════════════════════════════════════════
+  GOOGLE APPS SCRIPT — SETUP (5 minutes, one time only)
+════════════════════════════════════════════════════════
+
+STEP 1 — Create a Google Sheet
+  • Go to sheets.google.com → click "+ Blank"
+  • Name it: Meeting Reminder Feedback
+  (leave it empty — the script creates headers automatically)
+
+STEP 2 — Open Apps Script
+  • In the Sheet: Extensions → Apps Script
+  • Delete all existing code in the editor
+
+STEP 3 — Paste this code:
+──────────────────────────────────────────────────────
+const SHEET_NAME = 'Sheet1';
+const TC_IDS = ['TC-001','TC-002','TC-003','TC-004','TC-005','TC-006',
+                'TC-007','TC-008','TC-009','TC-010','TC-011','TC-012',
+                'TC-013','TC-014','TC-015','TC-016'];
+
+function doPost(e) {
+  try {
+    const ss    = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName(SHEET_NAME) || ss.getActiveSheet();
+    const data  = JSON.parse(e.postData.contents);
+    if (sheet.getLastRow() === 0) {
+      const hdrs = ['Timestamp','Tester','Platform','Display'];
+      TC_IDS.forEach(id => { hdrs.push(id); hdrs.push(id+'_note'); });
+      sheet.appendRow(hdrs);
+    }
+    const row = [data.timestamp||'', data.tester||'', data.platform||'', data.display||''];
+    TC_IDS.forEach(id => { row.push(data[id]||''); row.push(data[id+'_note']||''); });
+    sheet.appendRow(row);
+    return ContentService
+      .createTextOutput(JSON.stringify({ok:true}))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch(err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ok:false,error:err.message}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doGet(e) {
+  try {
+    const ss    = SpreadsheetApp.getActiveSpreadsheet();
+    const sheet = ss.getSheetByName(SHEET_NAME) || ss.getActiveSheet();
+    if (sheet.getLastRow() < 2) {
+      return ContentService
+        .createTextOutput(JSON.stringify({ok:true,data:[]}))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+    const rows    = sheet.getDataRange().getValues();
+    const headers = rows[0];
+    const data    = rows.slice(1).map(row => {
+      const obj = {};
+      headers.forEach((h,i) => { obj[h] = row[i]; });
+      return obj;
+    });
+    return ContentService
+      .createTextOutput(JSON.stringify({ok:true,data}))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch(err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ok:false,error:err.message}))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+──────────────────────────────────────────────────────
+
+STEP 4 — Deploy
+  • Click "Deploy" → "New deployment"
+  • Type: Web app
+  • Execute as: Me
+  • Who has access: Anyone
+  • Click "Deploy" → Authorize → Allow
+  • COPY the Web App URL (looks like https://script.google.com/macros/s/ABC.../exec)
+
+STEP 5 — Paste the URL into BOTH HTML files
+  In meetingreminder-feedback.html (line ~585):
+    const SCRIPT_URL = 'PASTE_YOUR_URL_HERE';
+                        ↓ replace with your URL ↓
+    const SCRIPT_URL = 'https://script.google.com/macros/s/ABC.../exec';
+
+  Same change in meetingreminder-feedback-dashboard.html (near top of <script>).
+
+  Then push both files to GitHub.
+
+DONE — test by submitting the form once, then open the dashboard.
+════════════════════════════════════════════════════════
