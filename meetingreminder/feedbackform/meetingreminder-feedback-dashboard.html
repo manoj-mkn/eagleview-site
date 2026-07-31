@@ -5,407 +5,306 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Meeting Reminder — Feedback Dashboard</title>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#F0F2F7;--bg2:#FFFFFF;--bg3:#E8EBF2;--border:#D0D4E0;
-  --text:#111120;--text2:#60607A;--accent:#E87722;
+  --text:#111120;--text2:#60607A;--accent:#E87722;--accent2:#C45E00;
   --pass:#22C55E;--fail:#EF4444;--skip:#6B7280;
-  --pass-bg:rgba(34,197,94,0.12);--fail-bg:rgba(239,68,68,0.12);--skip-bg:rgba(107,114,128,0.10);
-  --shadow:0 2px 8px rgba(0,0,0,0.08);
+  --pass-bg:rgba(34,197,94,0.14);--fail-bg:rgba(239,68,68,0.14);--skip-bg:rgba(107,114,128,0.13);
+  --shadow:0 2px 8px rgba(0,0,0,0.10);
 }
 @media(prefers-color-scheme:dark){:root{
   --bg:#0D0D10;--bg2:#16161A;--bg3:#1E1E24;--border:#2A2A35;
   --text:#E8E8F0;--text2:#9898A8;--shadow:0 2px 8px rgba(0,0,0,0.4);
-  --pass-bg:rgba(34,197,94,0.18);--fail-bg:rgba(239,68,68,0.18);--skip-bg:rgba(107,114,128,0.14);
 }}
-:root[data-theme="dark"]{
-  --bg:#0D0D10;--bg2:#16161A;--bg3:#1E1E24;--border:#2A2A35;
-  --text:#E8E8F0;--text2:#9898A8;--shadow:0 2px 8px rgba(0,0,0,0.4);
-  --pass-bg:rgba(34,197,94,0.18);--fail-bg:rgba(239,68,68,0.18);--skip-bg:rgba(107,114,128,0.14);
-}
-:root[data-theme="light"]{
-  --bg:#F0F2F7;--bg2:#FFFFFF;--bg3:#E8EBF2;--border:#D0D4E0;
-  --text:#111120;--text2:#60607A;--shadow:0 2px 8px rgba(0,0,0,0.08);
-  --pass-bg:rgba(34,197,94,0.12);--fail-bg:rgba(239,68,68,0.12);--skip-bg:rgba(107,114,128,0.10);
-}
+:root[data-theme="dark"]{--bg:#0D0D10;--bg2:#16161A;--bg3:#1E1E24;--border:#2A2A35;--text:#E8E8F0;--text2:#9898A8;--shadow:0 2px 8px rgba(0,0,0,0.4)}
+:root[data-theme="light"]{--bg:#F0F2F7;--bg2:#FFFFFF;--bg3:#E8EBF2;--border:#D0D4E0;--text:#111120;--text2:#60607A;--shadow:0 2px 8px rgba(0,0,0,0.10)}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;font-size:14px;background:var(--bg);color:var(--text)}
 body{min-height:100vh}
 
-/* Header */
-#topbar{
-  position:sticky;top:0;z-index:100;
-  background:var(--bg2);border-bottom:1px solid var(--border);
-  padding:10px 24px;box-shadow:var(--shadow);
-  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
-}
-.dash-title{font-size:16px;font-weight:800;color:var(--accent);letter-spacing:-0.3px}
-.dash-sub{font-size:11px;color:var(--text2);margin-top:1px}
-#refresh-info{margin-left:auto;font-size:11px;color:var(--text2);display:flex;align-items:center;gap:8px;flex-shrink:0}
-.dot-live{width:7px;height:7px;border-radius:50%;background:var(--pass);flex-shrink:0;animation:pulse-live 2s ease-in-out infinite}
-@keyframes pulse-live{0%,100%{opacity:1}50%{opacity:0.35}}
-.btn{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:var(--bg3);color:var(--text2);font-size:11px;font-weight:600;cursor:pointer;transition:all 0.15s}
-.btn:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+/* ── Header ── */
+#header{position:sticky;top:0;z-index:100;background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 24px;box-shadow:var(--shadow)}
+#header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.dash-title{font-size:18px;font-weight:800;color:var(--accent);flex:1;min-width:0}
+.dash-meta{font-size:12px;color:var(--text2);white-space:nowrap}
+.hdr-btn{padding:5px 13px;border:1px solid var(--border);border-radius:6px;background:var(--bg3);color:var(--text2);font-size:11px;font-weight:600;cursor:pointer;transition:all 0.15s;white-space:nowrap}
+.hdr-btn:hover{background:var(--accent);border-color:var(--accent);color:#fff}
 
-/* Main */
-main{max-width:1200px;margin:0 auto;padding:20px 20px 60px}
+/* ── Main ── */
+main{max-width:1200px;margin:0 auto;padding:24px 16px 60px}
 
-/* Loading / error */
-#loading,#no-data,#setup-notice{text-align:center;padding:60px 20px;color:var(--text2)}
-#setup-notice{background:rgba(232,119,34,0.08);border:1.5px dashed rgba(232,119,34,0.4);border-radius:12px;margin-top:30px}
-#setup-notice h2{color:var(--accent);margin-bottom:10px;font-size:16px}
-#setup-notice code{display:block;background:var(--bg3);border-radius:6px;padding:10px 14px;font-family:monospace;font-size:12px;margin:10px 0;text-align:left;overflow-x:auto;color:var(--text)}
-#error-msg{text-align:center;padding:40px 20px;color:var(--fail)}
-.spin{display:inline-block;animation:spin 1s linear infinite}
+/* ── Stat cards ── */
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px 16px}
+.stat-value{font-size:30px;font-weight:900;color:var(--accent);line-height:1}
+.stat-label{font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.6px;margin-top:7px}
+
+/* ── Section card ── */
+.dash-section{background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:20px}
+.dash-section-hdr{padding:10px 16px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:11px;font-weight:800;color:var(--text);text-transform:uppercase;letter-spacing:0.6px;display:flex;align-items:center;gap:8px}
+.hdr-count{font-size:11px;font-weight:700;color:var(--text2);background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:1px 7px}
+
+/* ── TC bar rows ── */
+.tc-row{display:flex;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid var(--border)}
+.tc-row:last-child{border-bottom:none}
+.tc-row-id{font-size:10px;font-weight:700;color:var(--text2);font-family:'SF Mono',Consolas,monospace;min-width:48px;flex-shrink:0}
+.tc-row-desc{font-size:12px;color:var(--text);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tc-bar-wrap{width:180px;flex-shrink:0;height:14px;border-radius:4px;overflow:hidden;background:var(--bg3);display:flex;gap:1px}
+.tc-bar-seg{height:100%;transition:width 0.5s cubic-bezier(0.4,0,0.2,1)}
+.tc-bar-pass{background:var(--pass)}
+.tc-bar-fail{background:var(--fail)}
+.tc-bar-skip{background:var(--skip)}
+.tc-counts{display:flex;gap:10px;font-size:11px;font-weight:700;min-width:90px;flex-shrink:0}
+.cnt-pass{color:var(--pass)}.cnt-fail{color:var(--fail)}.cnt-skip{color:var(--skip)}
+
+/* ── Notes ── */
+.notes-group{border-bottom:1px solid var(--border)}
+.notes-group:last-child{border-bottom:none}
+.notes-group-hdr{padding:8px 16px;font-size:11px;font-weight:800;color:var(--accent);background:rgba(232,119,34,0.05);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.note-block{padding:10px 16px;border-bottom:1px solid var(--border)}
+.note-block:last-child{border-bottom:none}
+.note-meta{font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px}
+.note-text{font-size:12px;color:var(--text);line-height:1.6;padding-left:10px;border-left:2px solid var(--accent);white-space:pre-wrap}
+
+/* ── Submissions table ── */
+.tbl-wrap{overflow-x:auto}
+.sub-table{width:100%;border-collapse:collapse;min-width:560px}
+.sub-table th{padding:8px 12px;text-align:left;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.4px;color:var(--text2);background:var(--bg3);border-bottom:1px solid var(--border);white-space:nowrap}
+.sub-table td{padding:9px 12px;font-size:12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.sub-table tr:last-child td{border-bottom:none}
+.sub-table tbody tr:hover td{background:rgba(232,119,34,0.04)}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700}
+.badge-pass{background:var(--pass-bg);color:var(--pass)}
+.badge-fail{background:var(--fail-bg);color:var(--fail)}
+.badge-skip{background:var(--skip-bg);color:var(--skip)}
+.tester-name{font-weight:700;color:var(--text)}
+
+/* ── Loading / empty / error ── */
+#loading{text-align:center;padding:70px 20px;color:var(--text2);font-size:13px}
+.spinner{display:block;width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 14px}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* Summary cards */
-.summary-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px}
-.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px 18px;box-shadow:var(--shadow)}
-.stat-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--text2);margin-bottom:6px}
-.stat-value{font-size:28px;font-weight:800;color:var(--text);line-height:1}
-.stat-sub{font-size:11px;color:var(--text2);margin-top:4px}
-.stat-card.accent .stat-value{color:var(--accent)}
-.stat-card.green  .stat-value{color:var(--pass)}
-.stat-card.red    .stat-value{color:var(--fail)}
-
-/* Section wrapper */
-.dash-section{background:var(--bg2);border:1px solid var(--border);border-radius:10px;margin-bottom:20px;overflow:hidden;box-shadow:var(--shadow)}
-.dash-section-hdr{padding:12px 18px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:var(--text2)}
-
-/* TC breakdown table */
-.tc-table{width:100%;border-collapse:collapse}
-.tc-table td,.tc-table th{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
-.tc-table tr:last-child td{border-bottom:none}
-.tc-table th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text2);background:var(--bg3)}
-.tc-id-cell{font-size:10px;font-weight:700;color:var(--text2);font-family:monospace;white-space:nowrap}
-.tc-q{font-size:12px;color:var(--text);max-width:320px}
-.tc-counts{white-space:nowrap;font-size:11px;font-weight:700;display:flex;gap:6px;align-items:center}
-.cnt{display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:4px;font-size:11px;font-weight:700}
-.cnt-pass{background:var(--pass-bg);color:var(--pass)}
-.cnt-fail{background:var(--fail-bg);color:var(--fail)}
-.cnt-skip{background:var(--skip-bg);color:var(--skip)}
-.cnt-neutral{background:rgba(232,119,34,0.12);color:var(--accent)}
-/* Mini bar chart */
-.mini-bar{display:flex;height:8px;border-radius:4px;overflow:hidden;min-width:120px;background:var(--bg3)}
-.mini-bar-seg{height:100%;transition:width 0.4s}
-.seg-pass{background:var(--pass)}.seg-fail{background:var(--fail)}.seg-skip{background:var(--skip)}
-.seg-neutral-a{background:var(--accent)}.seg-neutral-b{background:#6B7280}.seg-neutral-c{background:#3B82F6}
-
-/* Open feedback */
-.feedback-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;padding:16px}
-.feedback-col-hdr{font-size:11px;font-weight:800;color:var(--accent);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.4px}
-.note-pill{background:var(--bg3);border-radius:7px;padding:9px 12px;margin-bottom:8px}
-.note-tester{font-size:10px;font-weight:700;color:var(--text2);margin-bottom:3px}
-.note-text{font-size:12px;color:var(--text);line-height:1.5}
-
-/* Submissions list */
-.submissions-grid{display:grid;gap:14px;padding:16px}
-.sub-card{border:1px solid var(--border);border-radius:9px;overflow:hidden}
-.sub-card-hdr{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg3);border-bottom:1px solid var(--border);cursor:pointer;user-select:none}
-.sub-avatar{width:30px;height:30px;border-radius:50%;background:var(--accent);color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.sub-name{font-size:13px;font-weight:800;color:var(--text)}
-.sub-meta{font-size:11px;color:var(--text2)}
-.sub-date{font-size:10px;color:var(--text2);margin-left:auto;white-space:nowrap}
-.sub-pct{font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px;background:var(--pass-bg);color:var(--pass);white-space:nowrap}
-.sub-body{padding:12px 14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:6px}
-.sub-body.hidden{display:none}
-.sub-row{display:flex;align-items:flex-start;gap:6px;font-size:11px}
-.sub-tc-id{font-weight:700;color:var(--text2);font-family:monospace;white-space:nowrap;min-width:52px;flex-shrink:0}
-.sub-val{font-weight:600}
-.val-pass{color:var(--pass)}.val-fail{color:var(--fail)}.val-skip{color:var(--skip)}.val-neutral{color:var(--accent)}.val-empty{color:var(--text2);font-style:italic}
-.sub-note{grid-column:1/-1;background:var(--bg3);border-radius:6px;padding:7px 10px;font-size:11px;color:var(--text2);line-height:1.5}
-.sub-note-lbl{font-weight:700;color:var(--text);display:block;margin-bottom:2px}
-.chev{font-size:10px;color:var(--text2);transition:transform 0.2s;margin-left:4px}
-.sub-card-hdr.open .chev{transform:rotate(180deg)}
-
-/* Empty state */
-.empty-state{text-align:center;padding:40px 20px;color:var(--text2);font-size:13px}
+.empty-msg{padding:40px;text-align:center;color:var(--text2);font-size:13px}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 </head>
 <body>
 
-<div id="topbar">
-  <div>
+<div id="header">
+  <div id="header-inner">
     <div class="dash-title">Meeting Reminder — Feedback Dashboard</div>
-    <div class="dash-sub">Live responses collected from testers</div>
+    <div class="dash-meta" id="dash-meta">Loading…</div>
+    <button class="hdr-btn" onclick="toggleTheme()">☀ / ☾</button>
+    <button class="hdr-btn" onclick="loadData()">↻ Refresh</button>
   </div>
-  <div id="refresh-info">
-    <span class="dot-live"></span>
-    <span id="refresh-txt">Loading…</span>
-  </div>
-  <button class="btn" onclick="loadData()">↺ Refresh</button>
-  <button class="btn" onclick="toggleTheme()">☀ / ☾</button>
 </div>
 
 <main>
-  <div id="setup-notice" style="display:none">
-    <h2>⚙️ Setup Required</h2>
-    <p>Paste your Google Apps Script URL into <strong>SCRIPT_URL</strong> at the top of this file:</p>
-    <code>const SCRIPT_URL = 'https://script.google.com/macros/s/YOUR_ID/exec';</code>
-    <p style="font-size:12px;margin-top:8px;color:var(--text2)">Follow the setup steps provided — takes about 5 minutes.</p>
-  </div>
-  <div id="loading" style="display:none"><span class="spin">⟳</span> Loading responses…</div>
-  <div id="error-msg" style="display:none"></div>
-  <div id="dashboard" style="display:none">
-    <div class="summary-row" id="summary-row"></div>
-    <div class="dash-section">
-      <div class="dash-section-hdr">Per-Question Breakdown</div>
-      <table class="tc-table" id="tc-table">
-        <thead><tr>
-          <th>ID</th><th>Question</th>
-          <th>Pass / Option A</th><th>N/A / Option B</th><th>Fail / Option C</th>
-          <th>Distribution</th>
-        </tr></thead>
-        <tbody id="tc-tbody"></tbody>
-      </table>
-    </div>
-    <div class="dash-section" id="open-section">
-      <div class="dash-section-hdr">Open Feedback</div>
-      <div class="feedback-grid" id="open-grid"></div>
-    </div>
-    <div class="dash-section">
-      <div class="dash-section-hdr">Individual Submissions</div>
-      <div class="submissions-grid" id="subs-grid"></div>
-    </div>
-  </div>
+  <div id="loading"><span class="spinner"></span>Loading feedback data…</div>
+  <div id="dashboard" style="display:none"></div>
 </main>
 
 <script>
-const SCRIPT_URL = 'PASTE_YOUR_SCRIPT_URL_HERE';
+const _sb = supabase.createClient(
+  'https://jedwogtewefvwbwlaenb.supabase.co',
+  'sb_publishable_Uww5sEdF1AQAWkxCtsGlkQ_xfx24-8c'
+);
 
-const TC_META = {
-  'TC-001': { q:'How long have you been using Meeting Reminder?',      neutral:true,  pa:'1 week',          sk:'2–3 weeks',             fa:'1 month' },
-  'TC-002': { q:'How many meetings/day does it remind you for?',       neutral:true,  pa:'0–2',             sk:'3–6',                   fa:'7+' },
-  'TC-003': { q:'Is this a useful app?',                                               pa:'Yes',             sk:'Somewhat',              fa:'No' },
-  'TC-004': { q:'Ever caused you to miss a meeting / false reminder?',                pa:'No, never',       sk:'Yes, false/duplicate',  fa:'Yes, missed a meeting' },
-  'TC-005': { q:'Does the toast stay on screen the right amount?',                    pa:'About right',     sk:'Too long',              fa:'Too short' },
-  'TC-006': { q:'Does clicking the toast to join work reliably?',                     pa:'Yes, always',     sk:'Mostly',                fa:'Rarely / never' },
-  'TC-007': { q:'Has the toast been distracting or badly positioned?',                pa:'No',              sk:'Badly positioned',      fa:'Distracting' },
-  'TC-008': { q:'Has the app failed to catch a meeting, or fired late?',              pa:'No',              sk:'Occasionally',          fa:'Often' },
-  'TC-009': { q:'Any crashes or tray icon disappearing?',                             pa:'No',              sk:'Once or twice',         fa:'Repeatedly' },
-  'TC-010': { q:'Noticeable RAM/CPU usage or PC slowdown?',                           pa:'Never noticed',   sk:'Slightly',              fa:'Yes, noticeably' },
-  'TC-014': { q:'Would you recommend this app to a colleague?',                       pa:'👍 Yes',          sk:'🙂 Maybe',              fa:'👎 No' },
-  'TC-015': { q:'Which toast style do you use most?',       neutral:true,  pa:'Card',            sk:'Tray card',             fa:'Switch between both' },
-  'TC-016': { q:'Classic or New Outlook as default?',       neutral:true,  pa:'Classic Outlook', sk:'Not sure',              fa:'New Outlook' },
+const TC_META = [
+  {id:'TC-001', desc:'How long have you been using Meeting Reminder?', ordinal:true},
+  {id:'TC-002', desc:'Roughly how many meetings a day does it remind you for?', ordinal:true},
+  {id:'TC-003', desc:'Do you think this is a useful app?'},
+  {id:'TC-004', desc:'Has it ever caused you to miss a meeting, or given a false/duplicate reminder?'},
+  {id:'TC-005', desc:'Does the toast stay on screen too long, too short, or about right?'},
+  {id:'TC-006', desc:'Does clicking the toast to join a meeting work reliably?'},
+  {id:'TC-007', desc:'Have you found the toast distracting, or badly positioned on screen?'},
+  {id:'TC-008', desc:'Have you noticed the app fail to catch a meeting, or fire late?'},
+  {id:'TC-009', desc:'Any crashes, or times the tray icon disappeared or stopped responding?'},
+  {id:'TC-010', desc:'Have you noticed it using noticeable RAM/CPU, or slowing your PC down?'},
+  {id:'TC-011', desc:"What's the one thing you'd change first?", noteOnly:true},
+  {id:'TC-012', desc:"What's a feature you wish it had?", noteOnly:true},
+  {id:'TC-013', desc:"Anything you'd tell a coworker before they start using it?", noteOnly:true},
+  {id:'TC-014', desc:'Would you recommend this app to a colleague?'},
+  {id:'TC-015', desc:'Which toast style do you use most?', ordinal:true},
+  {id:'TC-016', desc:'Do you use classic Outlook or New Outlook?', ordinal:true},
+];
+const NOTE_TITLES = {
+  'TC-011': "What'd they change first?",
+  'TC-012': 'Feature wish list',
+  'TC-013': 'Advice for coworkers'
 };
-const OPEN_TCS = ['TC-011','TC-012','TC-013'];
-const OPEN_Q   = {
-  'TC-011': "What's the one thing you'd change first?",
-  'TC-012': "What's a feature you wish it had?",
-  'TC-013': "Anything you'd tell a coworker before they start?",
-};
-const ALL_TCS = ['TC-001','TC-002','TC-003','TC-004','TC-005','TC-006',
-                 'TC-007','TC-008','TC-009','TC-010','TC-011','TC-012',
-                 'TC-013','TC-014','TC-015','TC-016'];
-const NEUTRAL_TCS = new Set(['TC-001','TC-002','TC-015','TC-016']);
-
-function toggleTheme() {
-  const r = document.documentElement;
-  const cur = r.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light');
-  r.setAttribute('data-theme', cur === 'light' ? 'dark' : 'light');
-}
 
 async function loadData() {
-  if (SCRIPT_URL === 'PASTE_YOUR_SCRIPT_URL_HERE') {
-    document.getElementById('setup-notice').style.display = '';
-    document.getElementById('loading').style.display = 'none';
+  document.getElementById('loading').innerHTML = '<span class="spinner"></span>Loading…';
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('dashboard').style.display = 'none';
+
+  const {data, error} = await _sb
+    .from('meeting_feedback')
+    .select('*')
+    .order('created_at', {ascending:false});
+
+  document.getElementById('loading').style.display = 'none';
+  if (error) {
+    document.getElementById('loading').innerHTML =
+      '<div style="color:var(--fail);padding:40px;text-align:center;font-weight:700">Failed to load: ' + esc(error.message) + '</div>';
+    document.getElementById('loading').style.display = 'block';
     return;
   }
-  document.getElementById('setup-notice').style.display = 'none';
-  document.getElementById('loading').style.display = '';
-  document.getElementById('error-msg').style.display = 'none';
-  document.getElementById('dashboard').style.display = 'none';
-  document.getElementById('refresh-txt').textContent = 'Fetching…';
-  try {
-    const res  = await fetch(SCRIPT_URL, { cache: 'no-store' });
-    const json = await res.json();
-    if (!json.ok) throw new Error(json.error || 'Script returned error');
-    render(json.data || []);
-    const now = new Date();
-    document.getElementById('refresh-txt').textContent = 'Updated ' + now.toLocaleTimeString();
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('dashboard').style.display = '';
-  } catch(err) {
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('error-msg').style.display = '';
-    document.getElementById('error-msg').textContent = '⚠ Could not load data: ' + err.message;
-    document.getElementById('refresh-txt').textContent = 'Error';
+
+  const rows = data || [];
+  const now  = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  document.getElementById('dash-meta').textContent =
+    rows.length + ' submission' + (rows.length !== 1 ? 's' : '') + ' · Updated ' + now;
+
+  if (rows.length === 0) {
+    document.getElementById('dashboard').innerHTML =
+      '<div class="empty-msg">No submissions yet. Share the feedback form to get started.</div>';
+    document.getElementById('dashboard').style.display = 'block';
+    return;
   }
+
+  renderDashboard(rows);
 }
 
-function render(rows) {
-  renderSummary(rows);
-  renderTCTable(rows);
-  renderOpenFeedback(rows);
-  renderSubmissions(rows);
-}
+function renderDashboard(rows) {
+  const n = rows.length;
 
-function renderSummary(rows) {
-  const total = rows.length;
-  // TC-014 recommend rate
-  const tc14 = rows.filter(r => r['TC-014'] === 'pass').length;
-  const rec  = total > 0 ? Math.round(tc14 / total * 100) : 0;
-  // Most common platform
-  const plat = {};
-  rows.forEach(r => { const p = r['Platform'] || 'Unknown'; plat[p] = (plat[p]||0)+1; });
-  const topPlat = Object.entries(plat).sort((a,b)=>b[1]-a[1])[0];
-  // Overall pass rate (excluding neutral + open TCs)
-  const rated = ALL_TCS.filter(id => !NEUTRAL_TCS.has(id) && !OPEN_TCS.includes(id));
-  let passCount=0, totalVotes=0;
-  rows.forEach(r => rated.forEach(id => { if(r[id]) { totalVotes++; if(r[id]==='pass') passCount++; } }));
-  const passRate = totalVotes > 0 ? Math.round(passCount/totalVotes*100) : 0;
+  /* ── Stat cards ── */
+  const platforms = {};
+  let recYes = 0, recTotal = 0;
+  rows.forEach(r => {
+    const p = r.platform || 'Unknown';
+    platforms[p] = (platforms[p] || 0) + 1;
+    const rec = r.answers?.['TC-014'];
+    if (rec) { recTotal++; if (rec === 'pass') recYes++; }
+  });
+  const recPct    = recTotal > 0 ? Math.round(recYes / recTotal * 100) + '%' : '—';
+  const topPlat   = Object.entries(platforms).sort((a,b) => b[1]-a[1])[0]?.[0] || '—';
+  const platCount = Object.keys(platforms).length;
 
-  document.getElementById('summary-row').innerHTML = `
-    <div class="stat-card accent">
+  const stats = `<div class="stat-row">
+    <div class="stat-card">
+      <div class="stat-value">${n}</div>
       <div class="stat-label">Total Submissions</div>
-      <div class="stat-value">${total}</div>
-      <div class="stat-sub">feedback forms received</div>
-    </div>
-    <div class="stat-card ${rec>=70?'green':rec>=40?'accent':'red'}">
-      <div class="stat-label">Would Recommend</div>
-      <div class="stat-value">${rec}%</div>
-      <div class="stat-sub">${tc14} of ${total} said Yes</div>
-    </div>
-    <div class="stat-card ${passRate>=70?'green':passRate>=40?'accent':'red'}">
-      <div class="stat-label">Overall Pass Rate</div>
-      <div class="stat-value">${passRate}%</div>
-      <div class="stat-sub">across all rated questions</div>
     </div>
     <div class="stat-card">
+      <div class="stat-value" style="color:var(--pass)">${recPct}</div>
+      <div class="stat-label">Would Recommend</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">${platCount}</div>
+      <div class="stat-label">Platforms Tested</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="font-size:${topPlat.length > 10 ? '13px' : '18px'};padding-top:6px">${esc(topPlat)}</div>
       <div class="stat-label">Top Platform</div>
-      <div class="stat-value" style="font-size:18px;padding-top:4px">${topPlat ? topPlat[0] : '—'}</div>
-      <div class="stat-sub">${topPlat ? topPlat[1] + ' tester' + (topPlat[1]>1?'s':'') : 'no data'}</div>
-    </div>`;
-}
+    </div>
+  </div>`;
 
-function renderTCTable(rows) {
-  const total = rows.length;
-  const tbody = document.getElementById('tc-tbody');
-  tbody.innerHTML = '';
-  Object.entries(TC_META).forEach(([id, m]) => {
-    const pass = rows.filter(r=>r[id]==='pass').length;
-    const skip = rows.filter(r=>r[id]==='skip').length;
-    const fail = rows.filter(r=>r[id]==='fail').length;
-    const n    = pass+skip+fail;
-    const pPct = n>0 ? pass/n*100 : 0;
-    const sPct = n>0 ? skip/n*100 : 0;
-    const fPct = n>0 ? fail/n*100 : 0;
-    const neu  = m.neutral;
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td class="tc-id-cell">${id}</td>
-      <td class="tc-q">${m.q}</td>
-      <td><span class="cnt ${neu?'cnt-neutral':'cnt-pass'}">${pass} · ${m.pa}</span></td>
-      <td><span class="cnt cnt-skip">${skip} · ${m.sk}</span></td>
-      <td><span class="cnt ${neu?'cnt-neutral':'cnt-fail'}">${fail} · ${m.fa}</span></td>
-      <td>
-        <div class="mini-bar" title="${pass} pass · ${skip} skip · ${fail} fail">
-          <div class="mini-bar-seg ${neu?'seg-neutral-a':'seg-pass'}" style="width:${pPct}%"></div>
-          <div class="mini-bar-seg ${neu?'seg-neutral-b':'seg-skip'}" style="width:${sPct}%"></div>
-          <div class="mini-bar-seg ${neu?'seg-neutral-c':'seg-fail'}" style="width:${fPct}%"></div>
-        </div>
-        <div style="font-size:10px;color:var(--text2);margin-top:3px">${n}/${total} answered</div>
-      </td>`;
-    tbody.appendChild(tr);
-  });
-  if(!tbody.children.length) tbody.innerHTML='<tr><td colspan="6" class="empty-state">No submissions yet</td></tr>';
-}
-
-function renderOpenFeedback(rows) {
-  const grid = document.getElementById('open-grid');
-  grid.innerHTML = '';
-  OPEN_TCS.forEach(id => {
-    const col = document.createElement('div');
-    col.innerHTML = `<div class="feedback-col-hdr">${OPEN_Q[id]}</div>`;
-    const notes = rows.filter(r => r[id+'_note'] && r[id+'_note'].trim());
-    if (!notes.length) {
-      col.innerHTML += '<div style="font-size:12px;color:var(--text2);font-style:italic">No responses yet</div>';
-    } else {
-      notes.forEach(r => {
-        const pill = document.createElement('div');
-        pill.className = 'note-pill';
-        pill.innerHTML = `<div class="note-tester">${r['Tester'] || 'Anonymous'} · ${r['Platform'] || ''}</div>
-                          <div class="note-text">${escHtml(r[id+'_note'])}</div>`;
-        col.appendChild(pill);
-      });
-    }
-    grid.appendChild(col);
-  });
-}
-
-function renderSubmissions(rows) {
-  const grid = document.getElementById('subs-grid');
-  grid.innerHTML = '';
-  if (!rows.length) {
-    grid.innerHTML = '<div class="empty-state">No submissions yet — share the feedback form with your testers.</div>';
-    return;
-  }
-  const sorted = [...rows].sort((a,b) => new Date(b['Timestamp']||0) - new Date(a['Timestamp']||0));
-  sorted.forEach((r, i) => {
-    const tester   = r['Tester']   || 'Anonymous';
-    const platform = r['Platform'] || '—';
-    const display  = r['Display']  || '—';
-    const ts       = r['Timestamp'] ? new Date(r['Timestamp']).toLocaleString() : '—';
-    // Completion
-    const answered = ALL_TCS.filter(id => r[id] || r[id+'_note']).length;
-    const pct = Math.round(answered / ALL_TCS.length * 100);
-
-    const card = document.createElement('div');
-    card.className = 'sub-card';
-    const hdr = document.createElement('div');
-    hdr.className = 'sub-card-hdr';
-    hdr.innerHTML = `
-      <div class="sub-avatar">${tester.charAt(0).toUpperCase()}</div>
-      <div>
-        <div class="sub-name">${escHtml(tester)}</div>
-        <div class="sub-meta">${escHtml(platform)} · ${escHtml(display)}</div>
+  /* ── TC bars ── */
+  let bars = '';
+  TC_META.filter(t => !t.noteOnly).forEach(tc => {
+    let pass=0, fail=0, skip=0;
+    rows.forEach(r => {
+      const v = r.answers?.[tc.id];
+      if (v === 'pass') pass++;
+      else if (v === 'fail') fail++;
+      else if (v === 'skip') skip++;
+    });
+    const tot = (pass + fail + skip) || 1;
+    const pw = Math.round(pass/tot*100), fw = Math.round(fail/tot*100), sw = Math.round(skip/tot*100);
+    bars += `<div class="tc-row">
+      <div class="tc-row-id">${tc.id}</div>
+      <div class="tc-row-desc" title="${esc(tc.desc)}">${esc(tc.desc)}</div>
+      <div class="tc-bar-wrap">
+        <div class="tc-bar-seg tc-bar-pass" style="width:${pw}%"></div>
+        <div class="tc-bar-seg tc-bar-skip" style="width:${sw}%"></div>
+        <div class="tc-bar-seg tc-bar-fail" style="width:${fw}%"></div>
       </div>
-      <span class="sub-pct">${pct}%</span>
-      <span class="sub-date">${ts}</span>
-      <span class="chev">▾</span>`;
-    hdr.addEventListener('click', () => {
-      body.classList.toggle('hidden');
-      hdr.classList.toggle('open');
-    });
-
-    const body = document.createElement('div');
-    body.className = 'sub-body hidden';
-
-    // TC answers
-    const ratedList = ALL_TCS.filter(id => !OPEN_TCS.includes(id));
-    ratedList.forEach(id => {
-      const val  = r[id] || '';
-      const note = r[id+'_note'] || '';
-      const m    = TC_META[id];
-      const label = val === 'pass' ? (m?.pa||'pass') : val === 'skip' ? (m?.sk||'N/A') : val === 'fail' ? (m?.fa||'fail') : '';
-      const cls  = !val ? 'val-empty' : NEUTRAL_TCS.has(id) ? 'val-neutral' : 'val-'+val;
-      const row  = document.createElement('div');
-      row.className = 'sub-row';
-      row.innerHTML = `<span class="sub-tc-id">${id}</span><span class="sub-val ${cls}">${escHtml(label)||'—'}</span>`;
-      body.appendChild(row);
-    });
-
-    // Open notes
-    OPEN_TCS.forEach(id => {
-      const note = (r[id+'_note']||'').trim();
-      if (!note) return;
-      const div = document.createElement('div');
-      div.className = 'sub-note';
-      div.innerHTML = `<span class="sub-note-lbl">${escHtml(OPEN_Q[id])}</span>${escHtml(note)}`;
-      body.appendChild(div);
-    });
-
-    card.appendChild(hdr);
-    card.appendChild(body);
-    grid.appendChild(card);
+      <div class="tc-counts">
+        <span class="cnt-pass">✓ ${pass}</span>
+        <span class="cnt-skip">– ${skip}</span>
+        <span class="cnt-fail">✗ ${fail}</span>
+      </div>
+    </div>`;
   });
+
+  /* ── Open notes ── */
+  let noteSections = '';
+  ['TC-011','TC-012','TC-013'].forEach(nid => {
+    const noteRows = rows.filter(r => r.notes?.[nid]?.trim());
+    const items = noteRows.length === 0
+      ? '<div style="padding:12px 16px;font-size:12px;color:var(--text2)">No responses yet.</div>'
+      : noteRows.map(r => `<div class="note-block">
+          <div class="note-meta">${esc(r.tester||'Unknown')} · ${esc(r.platform||'—')} · ${fmtDate(r.created_at)}</div>
+          <div class="note-text">${esc(r.notes[nid])}</div>
+        </div>`).join('');
+    noteSections += `<div class="notes-group">
+      <div class="notes-group-hdr">${nid} — ${NOTE_TITLES[nid]} <span class="hdr-count">${noteRows.length}</span></div>
+      ${items}
+    </div>`;
+  });
+
+  /* ── Submissions table ── */
+  let trows = '';
+  rows.forEach(r => {
+    let pass=0, fail=0, skip=0;
+    TC_META.filter(t => !t.noteOnly).forEach(tc => {
+      const v = r.answers?.[tc.id];
+      if (v==='pass') pass++;
+      else if (v==='fail') fail++;
+      else if (v==='skip') skip++;
+    });
+    trows += `<tr>
+      <td><span class="tester-name">${esc(r.tester||'—')}</span></td>
+      <td>${esc(r.platform||'—')}</td>
+      <td>${esc(r.display||'—')}</td>
+      <td style="color:var(--text2)">${fmtDate(r.created_at)}</td>
+      <td><span class="badge badge-pass">✓ ${pass}</span></td>
+      <td><span class="badge badge-skip">– ${skip}</span></td>
+      <td><span class="badge badge-fail">✗ ${fail}</span></td>
+    </tr>`;
+  });
+
+  document.getElementById('dashboard').innerHTML = stats + `
+    <div class="dash-section">
+      <div class="dash-section-hdr">Question Results <span class="hdr-count">${n} submissions</span></div>
+      ${bars}
+    </div>
+    <div class="dash-section">
+      <div class="dash-section-hdr">Open Feedback</div>
+      ${noteSections}
+    </div>
+    <div class="dash-section">
+      <div class="dash-section-hdr">All Submissions <span class="hdr-count">${n}</span></div>
+      <div class="tbl-wrap">
+        <table class="sub-table">
+          <thead><tr>
+            <th>Tester</th><th>Platform</th><th>Display</th><th>Submitted</th>
+            <th>Pass</th><th>N/A</th><th>Fail</th>
+          </tr></thead>
+          <tbody>${trows}</tbody>
+        </table>
+      </div>
+    </div>`;
+  document.getElementById('dashboard').style.display = 'block';
 }
 
-function escHtml(s) {
+function fmtDate(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('en-GB', {
+    day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'
+  });
+}
+function esc(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+function toggleTheme() {
+  const el = document.documentElement;
+  el.setAttribute('data-theme', el.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+}
 
-// Init
 loadData();
 setInterval(loadData, 30000);
 </script>
