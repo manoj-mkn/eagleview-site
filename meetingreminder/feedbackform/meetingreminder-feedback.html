@@ -738,6 +738,7 @@ function saveAsTestedFile(btn) {
   if (!t || !p || !d) return;
   document.body.classList.remove('pre-save');
   document.body.setAttribute('data-saved', '1');
+  setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 50);
 }
 
 function onMetaChange() {
