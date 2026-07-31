@@ -334,6 +334,14 @@ body[data-submitted] #submit-banner{display:none!important}
   opacity:0;transition:opacity 0.3s,transform 0.3s;pointer-events:none;white-space:nowrap;
 }
 .feedback-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* ── PDF timestamp ── */
+#pdf-timestamp{
+  display:none;
+  font-size:11px;color:var(--text2);
+  padding:6px 0 10px;margin-bottom:8px;
+  border-bottom:1px solid var(--border);
+  letter-spacing:0.1px;
+}
 /* ── Print ── */
 @media print{
   html{zoom:100%!important}
@@ -348,6 +356,7 @@ body[data-submitted] #submit-banner{display:none!important}
   .tc.tc-pass::before{content:'✓ ';color:green}
   .tc.tc-fail::before{content:'✗ ';color:red}
   .tc.tc-skip::before{content:'– ';color:gray}
+  #pdf-timestamp{display:block!important}
 }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -431,6 +440,7 @@ body[data-submitted] #submit-banner{display:none!important}
 </div>
 
 <main>
+<div id="pdf-timestamp"></div>
 
 <!-- S1 ─────────────────────────────────────── -->
 <div class="section" id="s1">
@@ -525,9 +535,18 @@ body[data-submitted] #submit-banner{display:none!important}
 </div>
 
 <script>
+function pdfTimestampText() {
+  const tester   = document.getElementById('sel-tester').value   || '—';
+  const platform = document.getElementById('sel-platform').value || '—';
+  const display  = document.getElementById('sel-display').value  || '—';
+  const when = new Date().toLocaleString('en-GB', {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  return `Generated: ${when}  ·  Tester: ${tester}  ·  Platform: ${platform}  ·  Display: ${display}`;
+}
 function savePDF() {
   const tester   = document.getElementById('sel-tester').value   || 'Unknown';
   const platform = document.getElementById('sel-platform').value || 'Unknown';
+  const ts = document.getElementById('pdf-timestamp');
+  if (ts) ts.textContent = pdfTimestampText();
   const prev = document.title;
   document.title = `MeetingReminder_Feedback_v1.1.0_${platform}_${tester}`.replace(/\s+/g,'_');
   window.print();
@@ -569,9 +588,11 @@ async function savePDFDirect(btn) {
       '#topbar{position:static!important;overflow:visible!important}' +
       '.topbar-row1,.meta-row{overflow:visible!important}' +
       '.meta-select{background-image:none!important}';
+    const tsEl = document.getElementById('pdf-timestamp');
     let canvas;
     try {
       document.documentElement.style.zoom = '1';
+      if (tsEl) { tsEl.textContent = pdfTimestampText(); tsEl.style.display = 'block'; }
       hiddenBodies.forEach(s => s.classList.remove('hidden'));
       window.scrollTo(0, 0);
       toHide.forEach(el => { el.dataset.pdfHide = '1'; el.style.display = 'none'; });
@@ -593,6 +614,7 @@ async function savePDFDirect(btn) {
         windowHeight: document.body.scrollHeight
       });
     } finally {
+      if (tsEl) tsEl.style.display = '';
       document.documentElement.style.zoom = prevZoom;
       hiddenBodies.forEach(s => s.classList.add('hidden'));
       window.scrollTo(0, prevScrollY);
