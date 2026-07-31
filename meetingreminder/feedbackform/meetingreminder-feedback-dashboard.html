@@ -230,7 +230,7 @@ async function loadData() {
     return;
   }
 
-  allRows = data || [];
+  allRows = (data || []).filter(r => !/test/i.test(r.tester || ''));
   selectedTesters = new Set(); // reset on refresh
   buildTesterPanel(allRows);
 
