@@ -80,6 +80,20 @@ main{max-width:1200px;margin:0 auto;padding:24px 16px 60px}
 .badge-skip{background:var(--skip-bg);color:var(--skip)}
 .tester-name{font-weight:700;color:var(--text)}
 
+/* ── Tester filter panel ── */
+#tester-panel{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:20px;display:none}
+.tp-label{font-size:10px;font-weight:800;color:var(--text2);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.tp-actions{margin-left:auto;display:flex;gap:6px}
+.tp-action{font-size:11px;font-weight:700;color:var(--accent);cursor:pointer;background:none;border:none;padding:0;text-decoration:underline}
+.tester-chips{display:flex;flex-wrap:wrap;gap:8px}
+.tester-chip{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;
+  border:1.5px solid var(--border);background:var(--bg3);color:var(--text2);
+  transition:all 0.15s;user-select:none;
+}
+.tester-chip.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.tester-chip .chip-count{font-size:10px;opacity:0.8}
 /* ── Loading / empty / error ── */
 #loading{text-align:center;padding:70px 20px;color:var(--text2);font-size:13px}
 .spinner{display:block;width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 14px}
@@ -101,6 +115,16 @@ main{max-width:1200px;margin:0 auto;padding:24px 16px 60px}
 
 <main>
   <div id="loading"><span class="spinner"></span>Loading feedback data…</div>
+  <div id="tester-panel">
+    <div class="tp-label">
+      Filter by Tester
+      <div class="tp-actions">
+        <button class="tp-action" onclick="selectAll()">Select All</button>
+        <button class="tp-action" onclick="selectNone()">Clear</button>
+      </div>
+    </div>
+    <div class="tester-chips" id="tester-chips"></div>
+  </div>
   <div id="dashboard" style="display:none"></div>
 </main>
 
@@ -134,6 +158,60 @@ const NOTE_TITLES = {
   'TC-013': 'Advice for coworkers'
 };
 
+let allRows = [];
+let selectedTesters = new Set();
+
+function buildTesterPanel(rows) {
+  const counts = {};
+  rows.forEach(r => {
+    const name = r.tester || 'Unknown';
+    counts[name] = (counts[name] || 0) + 1;
+  });
+  const testers = Object.keys(counts).sort();
+  // default: all selected
+  testers.forEach(t => selectedTesters.add(t));
+
+  const wrap = document.getElementById('tester-chips');
+  wrap.innerHTML = testers.map(t => `
+    <div class="tester-chip active" data-tester="${esc(t)}" onclick="toggleTester(this,'${esc(t)}')">
+      ${esc(t)} <span class="chip-count">${counts[t]}</span>
+    </div>`).join('');
+  document.getElementById('tester-panel').style.display = testers.length > 0 ? 'block' : 'none';
+}
+
+function toggleTester(chip, name) {
+  if (selectedTesters.has(name)) {
+    selectedTesters.delete(name);
+    chip.classList.remove('active');
+  } else {
+    selectedTesters.add(name);
+    chip.classList.add('active');
+  }
+  applyFilter();
+}
+function selectAll() {
+  allRows.forEach(r => selectedTesters.add(r.tester || 'Unknown'));
+  document.querySelectorAll('.tester-chip').forEach(c => c.classList.add('active'));
+  applyFilter();
+}
+function selectNone() {
+  selectedTesters.clear();
+  document.querySelectorAll('.tester-chip').forEach(c => c.classList.remove('active'));
+  applyFilter();
+}
+function applyFilter() {
+  const filtered = allRows.filter(r => selectedTesters.has(r.tester || 'Unknown'));
+  const n = filtered.length;
+  document.getElementById('dash-meta').textContent =
+    n + ' of ' + allRows.length + ' submission' + (allRows.length !== 1 ? 's' : '') + ' selected';
+  if (n === 0) {
+    document.getElementById('dashboard').innerHTML = '<div class="empty-msg">No submissions match the current filter.</div>';
+    document.getElementById('dashboard').style.display = 'block';
+  } else {
+    renderDashboard(filtered);
+  }
+}
+
 async function loadData() {
   document.getElementById('loading').innerHTML = '<span class="spinner"></span>Loading…';
   document.getElementById('loading').style.display = 'block';
@@ -152,19 +230,22 @@ async function loadData() {
     return;
   }
 
-  const rows = data || [];
-  const now  = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-  document.getElementById('dash-meta').textContent =
-    rows.length + ' submission' + (rows.length !== 1 ? 's' : '') + ' · Updated ' + now;
+  allRows = data || [];
+  selectedTesters = new Set(); // reset on refresh
+  buildTesterPanel(allRows);
 
-  if (rows.length === 0) {
+  const now = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  document.getElementById('dash-meta').textContent =
+    allRows.length + ' submission' + (allRows.length !== 1 ? 's' : '') + ' · Updated ' + now;
+
+  if (allRows.length === 0) {
     document.getElementById('dashboard').innerHTML =
       '<div class="empty-msg">No submissions yet. Share the feedback form to get started.</div>';
     document.getElementById('dashboard').style.display = 'block';
     return;
   }
 
-  renderDashboard(rows);
+  renderDashboard(allRows);
 }
 
 function renderDashboard(rows) {
