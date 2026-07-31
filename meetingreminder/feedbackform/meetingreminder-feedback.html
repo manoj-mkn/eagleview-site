@@ -302,12 +302,12 @@ main{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
 /* sub-group label */
 .tc-group{padding:5px 14px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;color:var(--accent);border-bottom:1px solid var(--border);background:rgba(232,119,34,0.04)}
 
-/* ── Submit banner ── */
+/* ── Submit banner (PDF buttons) ── */
 main{padding-bottom:90px}
 #submit-banner{
   display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;
-  background:linear-gradient(90deg,#0d2010,#122018);
-  border-top:2px solid var(--pass);
+  background:linear-gradient(90deg,#0d1a2b,#0d2018);
+  border-top:2px solid var(--accent);
   padding:12px 24px;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;
 }
 #submit-banner.ready{display:flex;animation:banner-up 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards}
@@ -315,22 +315,25 @@ main{padding-bottom:90px}
 .sb-label{display:flex;flex-direction:column;gap:2px}
 .sb-title{font-size:13px;font-weight:800;color:#fff}
 .sb-sub{font-size:11px;color:rgba(255,255,255,0.55)}
+.sb-actions{display:flex;gap:10px;flex-wrap:nowrap}
 .submit-btn{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:10px 26px;background:var(--pass);color:#fff;
+  display:inline-flex;align-items:center;gap:7px;
+  padding:10px 22px;background:var(--accent);color:#fff;
   border:none;border-radius:8px;font-size:13px;font-weight:800;
   cursor:pointer;letter-spacing:0.3px;transition:all 0.15s;white-space:nowrap;
 }
-.submit-btn:hover{background:#16a34a;transform:translateY(-2px);box-shadow:0 4px 16px rgba(34,197,94,0.45)}
+.submit-btn:hover{background:var(--accent2);transform:translateY(-2px);box-shadow:0 4px 16px rgba(232,119,34,0.45)}
 .submit-btn:disabled{opacity:0.6;cursor:not-allowed;transform:none}
-/* Success message */
-#submit-success{
-  display:none;text-align:center;padding:40px 20px;margin:20px 14px 10px;
-  background:rgba(34,197,94,0.08);border:2px solid rgba(34,197,94,0.3);border-radius:12px;
-}
-body[data-submitted] #submit-success{display:block}
 body[data-submitted] #submit-banner{display:none!important}
 @media print{main{padding-bottom:0!important}#submit-banner{display:none!important}}
+/* Toast */
+.feedback-toast{
+  position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(10px);
+  background:#22C55E;color:#fff;font-size:13px;font-weight:700;
+  padding:10px 22px;border-radius:8px;z-index:999;
+  opacity:0;transition:opacity 0.3s,transform 0.3s;pointer-events:none;white-space:nowrap;
+}
+.feedback-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 /* ── Print ── */
 @media print{
   html{zoom:100%!important}
@@ -349,6 +352,7 @@ body[data-submitted] #submit-banner{display:none!important}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 </head>
 <body>
 
@@ -507,20 +511,17 @@ body[data-submitted] #submit-banner{display:none!important}
   </div>
 </div>
 
-<div id="submit-success">
-  <div style="font-size:42px;margin-bottom:12px">🎉</div>
-  <div style="font-size:18px;font-weight:800;color:var(--pass);margin-bottom:8px">Feedback Submitted!</div>
-  <div style="font-size:13px;color:var(--text2)">Thank you — your responses have been saved to the dashboard.</div>
-</div>
-
 </main>
 
 <div id="submit-banner">
   <div class="sb-label">
-    <span class="sb-title">✅ All questions answered!</span>
-    <span class="sb-sub">Ready to send your feedback</span>
+    <span class="sb-title">✅ All done — save your PDF to submit</span>
+    <span class="sb-sub">Your responses will be sent to the dashboard automatically</span>
   </div>
-  <button class="submit-btn" id="submit-btn" onclick="submitFeedback(this)">🚀 Submit Feedback</button>
+  <div class="sb-actions">
+    <button class="submit-btn" onclick="submitThenSavePDF(this)">⬇ Save as PDF</button>
+    <button class="submit-btn" onclick="submitThenDirectPDF(this)">⬇ Direct PDF</button>
+  </div>
 </div>
 
 <script>
@@ -625,51 +626,62 @@ async function savePDFDirect(btn) {
   }
 }
 
-/* ── Google Apps Script endpoint (paste your deployed URL here after setup) ── */
-const SCRIPT_URL = 'PASTE_YOUR_SCRIPT_URL_HERE';
+/* ── Supabase ── */
+const _sb = supabase.createClient(
+  'https://jedwogtewefvwbwlaenb.supabase.co',
+  'sb_publishable_Uww5sEdF1AQAWkxCtsGlkQ_xfx24-8c'
+);
 const ALL_TC_IDS = ['TC-001','TC-002','TC-003','TC-004','TC-005','TC-006',
                     'TC-007','TC-008','TC-009','TC-010','TC-011','TC-012',
                     'TC-013','TC-014','TC-015','TC-016'];
+
+function showToast(msg, color) {
+  const t = document.createElement('div');
+  t.className = 'feedback-toast';
+  if (color) t.style.background = color;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.classList.add('show'), 10);
+  setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 3500);
+}
+
+async function submitToSupabase() {
+  if (document.body.dataset.submitted) return;
+  const tester   = document.getElementById('sel-tester').value;
+  const platform = document.getElementById('sel-platform').value;
+  const display  = document.getElementById('sel-display').value;
+  const answers = {}, notes = {};
+  ALL_TC_IDS.forEach(id => {
+    answers[id] = state[id] || '';
+    notes[id]   = state[id + '_note'] || '';
+  });
+  const { error } = await _sb.from('meeting_feedback').insert({ tester, platform, display, answers, notes });
+  if (error) throw new Error(error.message);
+  document.body.dataset.submitted = '1';
+  showToast('✓ Feedback saved to dashboard');
+}
+
+async function submitThenSavePDF(btn) {
+  const orig = btn.textContent;
+  btn.textContent = '⏳ Saving…'; btn.disabled = true;
+  try { await submitToSupabase(); } catch(e) { showToast('⚠ Save failed — PDF still downloading', '#E87722'); }
+  btn.textContent = orig; btn.disabled = false;
+  savePDF();
+}
+
+async function submitThenDirectPDF(btn) {
+  const orig = btn.textContent;
+  btn.textContent = '⏳ Saving…'; btn.disabled = true;
+  try { await submitToSupabase(); } catch(e) { showToast('⚠ Save failed — PDF still downloading', '#E87722'); }
+  btn.textContent = orig; btn.disabled = false;
+  await savePDFDirect(btn);
+}
 
 function checkSubmitReady(done, total) {
   const banner = document.getElementById('submit-banner');
   if (!banner || document.body.dataset.submitted) return;
   const unlocked = !document.body.classList.contains('pre-save');
   banner.classList.toggle('ready', unlocked && done === total && total > 0);
-}
-
-async function submitFeedback(btn) {
-  if (document.body.dataset.submitted) return;
-  if (SCRIPT_URL === 'PASTE_YOUR_SCRIPT_URL_HERE') {
-    alert('Setup needed: paste your Google Apps Script URL into SCRIPT_URL in the HTML file.'); return;
-  }
-  const tester   = document.getElementById('sel-tester').value;
-  const platform = document.getElementById('sel-platform').value;
-  const display  = document.getElementById('sel-display').value;
-  if (!tester || !platform || !display) {
-    alert('Please fill in Tester, Platform, and Display before submitting.'); return;
-  }
-  const orig = btn.textContent;
-  btn.textContent = '⏳ Submitting…';
-  btn.disabled = true;
-  const data = { timestamp: new Date().toISOString(), tester, platform, display };
-  ALL_TC_IDS.forEach(id => {
-    data[id] = state[id] || '';
-    data[id + '_note'] = state[id + '_note'] || '';
-  });
-  try {
-    await fetch(SCRIPT_URL, {
-      method: 'POST', mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify(data)
-    });
-    document.body.dataset.submitted = '1';
-    document.getElementById('submit-success')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  } catch(err) {
-    alert('Submit failed: ' + err.message + '\n\nPlease use Direct PDF or Export CSV instead.');
-    btn.textContent = orig;
-    btn.disabled = false;
-  }
 }
 
 const FILE_ID  = 'MeetingReminder_Feedback_v1.1.0';
