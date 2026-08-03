@@ -28,6 +28,7 @@ body{min-height:100vh}
 #header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .dash-title{font-size:18px;font-weight:800;color:var(--accent);flex:1;min-width:0}
 .dash-meta{font-size:12px;color:var(--text2);white-space:nowrap}
+.dash-version{font-size:11px;font-weight:700;color:var(--text2);background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:2px 7px;white-space:nowrap;flex-shrink:0}
 .hdr-btn{padding:5px 13px;border:1px solid var(--border);border-radius:6px;background:var(--bg3);color:var(--text2);font-size:11px;font-weight:600;cursor:pointer;transition:all 0.15s;white-space:nowrap}
 .hdr-btn:hover{background:var(--accent);border-color:var(--accent);color:#fff}
 
@@ -133,6 +134,7 @@ main{max-width:1200px;margin:0 auto;padding:24px 16px 60px}
 <div id="header">
   <div id="header-inner">
     <div class="dash-title">Meeting Reminder — Feedback Dashboard</div>
+    <span class="dash-version">v1.0.0</span>
     <div class="dash-meta" id="dash-meta">Loading…</div>
     <button class="hdr-btn" onclick="savePDF()">⬇ Save as PDF</button>
     <button class="hdr-btn" onclick="savePDFDirect(this)">⬇ Direct PDF</button>
