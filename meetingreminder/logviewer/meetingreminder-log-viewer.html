@@ -180,6 +180,75 @@ td{padding:7px 14px;vertical-align:top;}
   text-align:center;padding:56px 20px;
   color:#3A6460;font-style:italic;font-size:13px;
 }
+
+/* ═══════════════════════════════════
+   MOBILE & RESPONSIVE
+═══════════════════════════════════ */
+
+/* Truncate long filenames */
+.fname{
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:260px;
+}
+
+/* Tablet / small desktop — make toolbar single scrollable row */
+@media (max-width:900px){
+  .tbar{
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    padding:6px 14px;
+  }
+  .tbar::-webkit-scrollbar{display:none;}
+  .fbtn,.sel,.abtn,.newfile,.sep,.cnt{flex-shrink:0;}
+  .srch{min-width:110px;max-width:150px;flex-shrink:0;}
+}
+
+/* Mobile — header, pills, drop zone, table */
+@media (max-width:640px){
+  /* Drop zone */
+  .drop-box{padding:40px 24px;}
+  .drop-title{font-size:18px;}
+  .drop-sub{font-size:12px;margin-bottom:22px;}
+
+  /* Header row: no-wrap, pills scroll horizontally */
+  .hdr{flex-wrap:nowrap;gap:8px;padding:8px 12px;align-items:flex-start;}
+  .hstretch{display:none;}
+  .htitle{font-size:14px;}
+  .hsub{font-size:10px;white-space:normal;line-height:1.4;}
+  .pills{
+    flex-wrap:nowrap;
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    padding-bottom:1px;
+    gap:5px;
+  }
+  .pills::-webkit-scrollbar{display:none;}
+  .pill{font-size:10.5px;padding:2px 8px;}
+
+  /* File strip */
+  .file-strip{padding:3px 12px;}
+  .fname{max-width:160px;}
+
+  /* Table cells */
+  td{padding:5px 10px;}
+  thead th{padding:6px 10px;}
+  .ts{font-size:10px;}
+  .msg{font-size:11px;}
+  .badge{font-size:10px;padding:1px 6px;}
+
+  /* Touch targets */
+  .fbtn,.abtn,.newfile{min-height:32px;padding-top:5px;padding-bottom:5px;}
+  .drop-btn{padding:11px 28px;}
+}
+
+/* Very small screens */
+@media (max-width:380px){
+  .drop-box{padding:32px 16px;}
+  .drop-title{font-size:16px;}
+  .htitle{font-size:13px;}
+}
 </style>
 </head>
 <body>
@@ -484,9 +553,15 @@ function copyVis(){
 // ── Layout helpers ──
 function fixPad(){
   var bar=document.getElementById('bar');
-  if(bar) document.getElementById('content').style.paddingTop=(bar.offsetHeight+2)+'px';
+  if(!bar) return;
+  var h=bar.offsetHeight+2;
+  document.getElementById('content').style.paddingTop=h+'px';
+  // Sticky thead sits just below the fixed bar
+  document.querySelectorAll('thead th').forEach(function(th){ th.style.top=h+'px'; });
 }
 window.addEventListener('resize', fixPad);
+// Re-run on orientation change (mobile)
+window.addEventListener('orientationchange', function(){ setTimeout(fixPad,200); });
 
 // Keyboard shortcut: Cmd/Ctrl+F → focus search
 document.addEventListener('keydown',function(e){
