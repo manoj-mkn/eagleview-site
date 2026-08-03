@@ -107,7 +107,22 @@ main{max-width:1200px;margin:0 auto;padding:24px 16px 60px}
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
   body{background:white!important}
   #pdf-timestamp{display:block!important}
+  body.print-main-only #tester-panel{display:none!important}
+  body.print-main-only #section-all-submissions{display:none!important}
 }
+
+/* ── Print scope modal ── */
+#print-scope-modal{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center}
+#print-scope-backdrop{position:absolute;inset:0;background:rgba(0,0,0,0.45);backdrop-filter:blur(2px)}
+#print-scope-box{position:relative;z-index:1;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:28px 32px;min-width:300px;box-shadow:0 8px 32px rgba(0,0,0,0.28);display:flex;flex-direction:column;gap:10px}
+#print-scope-title{font-size:15px;font-weight:800;color:var(--text);margin-bottom:4px}
+#print-scope-note{font-size:11px;color:var(--text2);line-height:1.5;margin-top:2px}
+.psc-btn{padding:10px 16px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;transition:opacity 0.15s}
+#psc-whole{border:1.5px solid var(--accent);background:var(--accent);color:#fff}
+#psc-whole:hover{opacity:0.85}
+#psc-section{border:1.5px solid var(--border);background:var(--bg3);color:var(--text)}
+#psc-section:hover{opacity:0.75}
+#psc-cancel{margin-top:2px;padding:6px;background:none;border:none;color:var(--text2);font-size:12px;cursor:pointer;text-decoration:underline;text-align:center}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -123,6 +138,17 @@ main{max-width:1200px;margin:0 auto;padding:24px 16px 60px}
     <button class="hdr-btn" onclick="savePDFDirect(this)">⬇ Direct PDF</button>
     <button class="hdr-btn" onclick="toggleTheme()">☀ / ☾</button>
     <button class="hdr-btn" onclick="loadData()">↻ Refresh</button>
+  </div>
+</div>
+
+<div id="print-scope-modal">
+  <div id="print-scope-backdrop"></div>
+  <div id="print-scope-box">
+    <div id="print-scope-title">What would you like to print?</div>
+    <button class="psc-btn" id="psc-whole">Whole Print</button>
+    <button class="psc-btn" id="psc-section">Main Section Only</button>
+    <div id="print-scope-note">Main section excludes "Filter by Tester" and "All Submissions"</div>
+    <button id="psc-cancel">Cancel</button>
   </div>
 </div>
 
@@ -371,7 +397,7 @@ function renderDashboard(rows) {
       <div class="dash-section-hdr">Open Feedback</div>
       ${noteSections}
     </div>
-    <div class="dash-section">
+    <div class="dash-section" id="section-all-submissions">
       <div class="dash-section-hdr">All Submissions <span class="hdr-count">${n}</span></div>
       <div class="tbl-wrap">
         <table class="sub-table">
@@ -404,16 +430,36 @@ function pdfTimestampText() {
   const when = new Date().toLocaleString('en-GB', {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
   return `Generated: ${when}`;
 }
-function savePDF() {
+
+function showPrintDialog() {
+  return new Promise(resolve => {
+    const modal = document.getElementById('print-scope-modal');
+    modal.style.display = 'flex';
+    function done(val) { modal.style.display = 'none'; resolve(val); }
+    document.getElementById('psc-whole').onclick = () => done('whole');
+    document.getElementById('psc-section').onclick = () => done('section');
+    document.getElementById('psc-cancel').onclick = () => done(null);
+    document.getElementById('print-scope-backdrop').onclick = () => done(null);
+  });
+}
+
+async function savePDF() {
+  const scope = await showPrintDialog();
+  if (!scope) return;
   const ts = document.getElementById('pdf-timestamp');
   if (ts) ts.textContent = pdfTimestampText();
   const prev = document.title;
   document.title = `MeetingReminder_Feedback_Dashboard_${new Date().toISOString().slice(0,10)}`;
+  if (scope === 'section') document.body.classList.add('print-main-only');
   window.print();
+  if (scope === 'section') document.body.classList.remove('print-main-only');
   document.title = prev;
   if (ts) ts.textContent = '';
 }
+
 async function savePDFDirect(btn) {
+  const scope = await showPrintDialog();
+  if (!scope) return;
   if (!window.html2canvas || !window.jspdf) {
     alert('PDF library not loaded — please check your internet connection.'); return;
   }
@@ -425,7 +471,9 @@ async function savePDFDirect(btn) {
     const tsEl = document.getElementById('pdf-timestamp');
     const overrideStyle = document.createElement('style');
     overrideStyle.id = 'pdf-cap-override';
-    overrideStyle.textContent = '#header{display:none!important}';
+    let hideCSS = '#header{display:none!important}';
+    if (scope === 'section') hideCSS += '#tester-panel{display:none!important}#section-all-submissions{display:none!important}';
+    overrideStyle.textContent = hideCSS;
     let canvas;
     try {
       if (tsEl) { tsEl.textContent = pdfTimestampText(); tsEl.style.display = 'block'; }
