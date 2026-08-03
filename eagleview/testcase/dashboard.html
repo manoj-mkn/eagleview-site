@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eagle View — QA Dashboard</title>
+<style>
+/* ── Tokens ── */
+:root{
+  --bg:#0B0F1A;--bg2:#131929;--bg3:#1A2235;--bg4:#212D42;
+  --border:#263047;--border2:#1E2A3C;
+  --text:#CBD5E1;--text2:#4E6280;--text3:#8FA3BF;
+  --accent:#34D399;--accent2:#059669;--accent-dim:rgba(52,211,153,0.12);
+  --pass:#34D399;--fail:#F87171;--skip:#64748B;--untested:#1E2A3C;
+  --pass-bg:rgba(52,211,153,0.13);--fail-bg:rgba(248,113,113,0.13);--skip-bg:rgba(100,116,139,0.13);
+  --shadow:0 2px 12px rgba(0,0,0,0.4);--shadow-lg:0 6px 28px rgba(0,0,0,0.5);
+  --mono:'SF Mono','Cascadia Code',Consolas,'Courier New',monospace;
+  --radius:10px;
+}
+@media(prefers-color-scheme:light){:root{
+  --bg:#F0F4F8;--bg2:#FFFFFF;--bg3:#E8EEF5;--bg4:#D9E3EE;
+  --border:#C8D5E3;--border2:#D6E2EE;
+  --text:#0F1A2C;--text2:#6B84A0;--text3:#4A6380;
+  --accent:#059669;--accent2:#047857;--accent-dim:rgba(5,150,105,0.10);
+  --untested:#E8EEF5;
+  --shadow:0 2px 8px rgba(0,0,0,0.08);--shadow-lg:0 6px 20px rgba(0,0,0,0.12);
+}}
+:root[data-theme="dark"]{
+  --bg:#0B0F1A;--bg2:#131929;--bg3:#1A2235;--bg4:#212D42;
+  --border:#263047;--border2:#1E2A3C;
+  --text:#CBD5E1;--text2:#4E6280;--text3:#8FA3BF;
+  --accent:#34D399;--accent2:#059669;--accent-dim:rgba(52,211,153,0.12);
+  --untested:#1E2A3C;
+  --shadow:0 2px 12px rgba(0,0,0,0.4);--shadow-lg:0 6px 28px rgba(0,0,0,0.5);
+}
+:root[data-theme="light"]{
+  --bg:#F0F4F8;--bg2:#FFFFFF;--bg3:#E8EEF5;--bg4:#D9E3EE;
+  --border:#C8D5E3;--border2:#D6E2EE;
+  --text:#0F1A2C;--text2:#6B84A0;--text3:#4A6380;
+  --accent:#059669;--accent2:#047857;--accent-dim:rgba(5,150,105,0.10);
+  --untested:#E8EEF5;
+  --shadow:0 2px 8px rgba(0,0,0,0.08);--shadow-lg:0 6px 20px rgba(0,0,0,0.12);
+}
+
+/* ── Reset ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;font-size:13px;background:var(--bg);color:var(--text);min-height:100vh}
+button{font-family:inherit;cursor:pointer}
+
+/* ── Topbar ── */
+#topbar{
+  position:sticky;top:0;z-index:200;
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  padding:0 20px;height:52px;
+  display:flex;align-items:center;gap:12px;
+}
+.tb-logo{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.tb-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0;box-shadow:0 0 8px var(--accent)}
+.tb-title{font-size:14px;font-weight:800;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-subtitle{font-size:10px;color:var(--text2);font-family:var(--mono);white-space:nowrap}
+.tb-sep{width:1px;height:22px;background:var(--border);flex-shrink:0}
+.tb-btn{
+  padding:5px 12px;border:1px solid var(--border);border-radius:6px;
+  background:transparent;color:var(--text2);font-size:11px;font-weight:600;
+  white-space:nowrap;transition:all 0.15s;flex-shrink:0;
+}
+.tb-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
+.tb-meta{font-size:11px;color:var(--text2);font-family:var(--mono);white-space:nowrap;flex-shrink:0}
+
+/* ── Main ── */
+main{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
+
+/* ── Metric tiles ── */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+@media(max-width:640px){.metrics{grid-template-columns:repeat(2,1fr)}}
+.metric{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+  padding:16px 14px;position:relative;overflow:hidden;
+}
+.metric::before{
+  content:'';position:absolute;inset:0 0 auto 0;height:2px;background:var(--m-color,var(--accent));
+}
+.metric-val{font-size:28px;font-weight:900;color:var(--m-color,var(--accent));font-family:var(--mono);line-height:1;margin-bottom:6px}
+.metric-label{font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.7px}
+.metric-sub{font-size:10px;color:var(--text3);margin-top:3px;font-family:var(--mono)}
+
+/* ── Filter bar ── */
+.filter-bar{
+  display:flex;gap:8px;margin-bottom:16px;
+  overflow-x:auto;padding-bottom:4px;
+  scrollbar-width:none;
+}
+.filter-bar::-webkit-scrollbar{display:none}
+.filter-section{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.filter-label{font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap}
+.filter-chip{
+  padding:4px 11px;border-radius:20px;border:1px solid var(--border);
+  background:var(--bg3);color:var(--text3);font-size:11px;font-weight:600;
+  cursor:pointer;white-space:nowrap;transition:all 0.15s;
+}
+.filter-chip.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
+.filter-divider{width:1px;height:20px;background:var(--border);flex-shrink:0;margin:0 4px}
+
+/* ── Run cards ── */
+#run-list{display:flex;flex-direction:column;gap:10px}
+
+.run-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+  overflow:hidden;transition:border-color 0.15s;
+}
+.run-card:hover{border-color:var(--text3)}
+.run-card.expanded{border-color:var(--accent)}
+
+.run-head{
+  display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer;
+}
+.run-num{
+  font-size:10px;font-weight:700;color:var(--text2);font-family:var(--mono);
+  min-width:28px;flex-shrink:0;
+}
+.run-who{flex:0 0 auto}
+.run-name{font-size:13px;font-weight:700;color:var(--text)}
+.run-meta{font-size:10px;color:var(--text2);font-family:var(--mono);margin-top:1px}
+.run-tags{display:flex;gap:6px;flex-shrink:0}
+.tag{
+  padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;
+  border:1px solid var(--border);background:var(--bg3);color:var(--text3);
+  font-family:var(--mono);white-space:nowrap;
+}
+.tag-platform{border-color:rgba(148,163,184,0.3);color:#94A3B8}
+.tag-display{border-color:rgba(148,163,184,0.2);color:var(--text2)}
+.run-heatmap{
+  display:flex;flex-wrap:wrap;gap:3px;
+  flex:1;min-width:0;justify-content:flex-end;
+}
+.heat-dot{
+  width:9px;height:9px;border-radius:2px;flex-shrink:0;
+}
+.heat-pass{background:var(--pass)}
+.heat-fail{background:var(--fail)}
+.heat-skip{background:var(--skip);opacity:0.5}
+.heat-none{background:var(--untested);border:1px solid var(--border)}
+.run-counts{display:flex;gap:8px;flex-shrink:0;align-items:center}
+.count-pill{font-size:11px;font-weight:700;font-family:var(--mono);white-space:nowrap}
+.cp-pass{color:var(--pass)}.cp-fail{color:var(--fail)}.cp-skip{color:var(--skip)}
+.run-chevron{
+  font-size:10px;color:var(--text2);flex-shrink:0;
+  transition:transform 0.2s;display:flex;align-items:center;
+}
+.run-card.expanded .run-chevron{transform:rotate(180deg)}
+
+.run-body{
+  display:none;border-top:1px solid var(--border);padding:14px;
+}
+.run-card.expanded .run-body{display:block}
+
+/* ── TC detail grid ── */
+.tc-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:6px;margin-bottom:12px;
+}
+.tc-item{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 10px;border-radius:6px;background:var(--bg3);border:1px solid var(--border2);
+}
+.tc-id{font-size:10px;font-weight:700;color:var(--text2);font-family:var(--mono);min-width:52px;flex-shrink:0}
+.tc-badge{
+  padding:1px 7px;border-radius:3px;font-size:10px;font-weight:700;
+  font-family:var(--mono);flex-shrink:0;
+}
+.tc-badge-pass{background:var(--pass-bg);color:var(--pass)}
+.tc-badge-fail{background:var(--fail-bg);color:var(--fail)}
+.tc-badge-skip{background:var(--skip-bg);color:var(--skip)}
+.tc-badge-none{background:var(--bg4);color:var(--text2)}
+
+/* ── Notes in card ── */
+.notes-heading{
+  font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;
+  letter-spacing:0.5px;margin:12px 0 8px;
+}
+.note-item{
+  padding:8px 10px;border-radius:6px;background:var(--bg3);border-left:2px solid var(--accent);
+  margin-bottom:6px;
+}
+.note-item-id{font-size:10px;font-weight:700;color:var(--accent);font-family:var(--mono);margin-bottom:3px}
+.note-item-text{font-size:12px;color:var(--text);line-height:1.55;white-space:pre-wrap}
+
+/* ── Loading / empty / error ── */
+#loading{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:80px 20px;gap:14px;color:var(--text2);font-size:13px;
+}
+.spinner{
+  width:28px;height:28px;border:2px solid var(--border);border-top-color:var(--accent);
+  border-radius:50%;animation:spin 0.75s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty-state{
+  text-align:center;padding:60px 20px;color:var(--text2);font-size:13px;
+}
+.empty-icon{font-size:28px;margin-bottom:10px}
+.error-msg{
+  background:var(--fail-bg);border:1px solid var(--fail);border-radius:8px;
+  padding:14px 16px;color:var(--fail);font-size:12px;margin-bottom:16px;
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+</head>
+<body>
+
+<div id="topbar">
+  <div class="tb-logo">
+    <div class="tb-dot"></div>
+    <div>
+      <div class="tb-title">Eagle View — QA Dashboard</div>
+      <div class="tb-subtitle">eagleview_TestCase · v1.1.3</div>
+    </div>
+  </div>
+  <div class="tb-meta" id="tb-meta">—</div>
+  <div class="tb-sep"></div>
+  <button class="tb-btn" onclick="loadData()">↻ Refresh</button>
+  <button class="tb-btn" onclick="toggleTheme()">☀ / ☾</button>
+</div>
+
+<main>
+  <div id="loading"><div class="spinner"></div>Fetching QA runs…</div>
+
+  <div id="dashboard" style="display:none">
+    <div class="metrics" id="metrics"></div>
+    <div class="filter-bar" id="filter-bar"></div>
+    <div id="run-list"></div>
+  </div>
+</main>
+
+<script>
+const _sb = supabase.createClient(
+  'https://zjppzsjtacfcgoskeynj.supabase.co',
+  'sb_publishable_98NHJeyCD8JtPK0Njhdidw_NAWgJjy4'
+);
+
+let allRows = [];
+let activeTester = null;
+let activePlatform = null;
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function formatDate(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+}
+
+function toggleTheme() {
+  const root = document.documentElement;
+  root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+}
+
+/* ── Data load ── */
+async function loadData() {
+  document.getElementById('loading').style.display = 'flex';
+  document.getElementById('dashboard').style.display = 'none';
+
+  const { data, error } = await _sb
+    .from('eagleview_qa')
+    .select('*')
+    .order('submitted_at', { ascending: false });
+
+  document.getElementById('loading').style.display = 'none';
+
+  if (error) {
+    document.getElementById('dashboard').innerHTML =
+      `<div class="error-msg">⚠ Failed to load: ${esc(error.message)}</div>`;
+    document.getElementById('dashboard').style.display = 'block';
+    return;
+  }
+
+  allRows = data || [];
+  activeTester = null;
+  activePlatform = null;
+  document.getElementById('dashboard').style.display = 'block';
+  renderAll();
+}
+
+/* ── Collect unique TC ids across all rows ── */
+function allTCIds(rows) {
+  const ids = new Set();
+  rows.forEach(r => {
+    if (r.answers) Object.keys(r.answers).forEach(k => ids.add(k));
+  });
+  return Array.from(ids).sort((a, b) => {
+    const na = parseInt(a.replace(/\D/g,'')) || 0;
+    const nb = parseInt(b.replace(/\D/g,'')) || 0;
+    return na - nb;
+  });
+}
+
+/* ── Render everything ── */
+function renderAll() {
+  const filtered = allRows.filter(r => {
+    if (activeTester && (r.tester || '—') !== activeTester) return false;
+    if (activePlatform && (r.platform || '—') !== activePlatform) return false;
+    return true;
+  });
+
+  renderMetrics(filtered);
+  renderFilters();
+  renderCards(filtered);
+
+  const total = allRows.length;
+  const shown = filtered.length;
+  document.getElementById('tb-meta').textContent =
+    shown === total ? `${total} run${total !== 1 ? 's' : ''}` : `${shown} / ${total} runs`;
+}
+
+/* ── Metrics ── */
+function renderMetrics(rows) {
+  const tcIds = allTCIds(rows);
+  let totalAnswered = 0, totalPass = 0, totalFail = 0;
+  rows.forEach(r => {
+    const ans = r.answers || {};
+    Object.values(ans).forEach(v => {
+      totalAnswered++;
+      if (v === 'pass') totalPass++;
+      if (v === 'fail') totalFail++;
+    });
+  });
+  const passRate = totalAnswered ? Math.round(totalPass / totalAnswered * 100) : 0;
+  const failRate = totalAnswered ? Math.round(totalFail / totalAnswered * 100) : 0;
+  const testers = new Set(rows.map(r => r.tester)).size;
+
+  document.getElementById('metrics').innerHTML = `
+    <div class="metric">
+      <div class="metric-val">${rows.length}</div>
+      <div class="metric-label">Total Runs</div>
+      <div class="metric-sub">${testers} tester${testers !== 1 ? 's' : ''}</div>
+    </div>
+    <div class="metric" style="--m-color:var(--pass)">
+      <div class="metric-val">${passRate}%</div>
+      <div class="metric-label">Pass Rate</div>
+      <div class="metric-sub">${totalPass} passed</div>
+    </div>
+    <div class="metric" style="--m-color:var(--fail)">
+      <div class="metric-val">${failRate}%</div>
+      <div class="metric-label">Fail Rate</div>
+      <div class="metric-sub">${totalFail} failed</div>
+    </div>
+    <div class="metric" style="--m-color:#94A3B8">
+      <div class="metric-val">${tcIds.length}</div>
+      <div class="metric-label">Unique TCs</div>
+      <div class="metric-sub">across all runs</div>
+    </div>
+  `;
+}
+
+/* ── Filter bar ── */
+function renderFilters() {
+  const testers = [...new Set(allRows.map(r => r.tester || '—'))].sort();
+  const platforms = [...new Set(allRows.map(r => r.platform || '—'))].sort();
+
+  let html = '<div class="filter-section"><div class="filter-label">Tester</div>';
+  testers.forEach(t => {
+    const active = activeTester === t ? 'active' : '';
+    html += `<button class="filter-chip ${active}" onclick="setFilter('tester','${esc(t)}')">${esc(t)}</button>`;
+  });
+  html += '</div>';
+
+  if (platforms.length > 1) {
+    html += '<div class="filter-divider"></div><div class="filter-section"><div class="filter-label">Platform</div>';
+    platforms.forEach(p => {
+      const active = activePlatform === p ? 'active' : '';
+      html += `<button class="filter-chip ${active}" onclick="setFilter('platform','${esc(p)}')">${esc(p)}</button>`;
+    });
+    html += '</div>';
+  }
+
+  document.getElementById('filter-bar').innerHTML = html;
+}
+
+function setFilter(type, val) {
+  if (type === 'tester') activeTester = activeTester === val ? null : val;
+  if (type === 'platform') activePlatform = activePlatform === val ? null : val;
+  renderAll();
+}
+
+/* ── Run cards ── */
+function renderCards(rows) {
+  const tcIds = allTCIds(allRows);
+  const list = document.getElementById('run-list');
+
+  if (rows.length === 0) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div>No runs match the current filter.</div>';
+    return;
+  }
+
+  list.innerHTML = rows.map((r, i) => {
+    const ans = r.answers || {};
+    const notes = r.notes || {};
+    const pass = Object.values(ans).filter(v => v === 'pass').length;
+    const fail = Object.values(ans).filter(v => v === 'fail').length;
+    const skip = Object.values(ans).filter(v => v === 'skip').length;
+
+    const heatmap = tcIds.map(id => {
+      const v = ans[id];
+      if (v === 'pass') return '<div class="heat-dot heat-pass" title="' + id + ': pass"></div>';
+      if (v === 'fail') return '<div class="heat-dot heat-fail" title="' + id + ': fail"></div>';
+      if (v === 'skip') return '<div class="heat-dot heat-skip" title="' + id + ': skip"></div>';
+      return '<div class="heat-dot heat-none" title="' + id + ': —"></div>';
+    }).join('');
+
+    const tcDetail = tcIds.map(id => {
+      const v = ans[id];
+      let badgeCls = 'tc-badge-none', badgeTxt = '—';
+      if (v === 'pass') { badgeCls = 'tc-badge-pass'; badgeTxt = 'PASS'; }
+      if (v === 'fail') { badgeCls = 'tc-badge-fail'; badgeTxt = 'FAIL'; }
+      if (v === 'skip') { badgeCls = 'tc-badge-skip'; badgeTxt = 'SKIP'; }
+      return `<div class="tc-item">
+        <span class="tc-id">${esc(id)}</span>
+        <span class="tc-badge ${badgeCls}">${badgeTxt}</span>
+      </div>`;
+    }).join('');
+
+    const noteEntries = Object.entries(notes).filter(([,v]) => v);
+    const notesHtml = noteEntries.length ? `
+      <div class="notes-heading">Notes</div>
+      ${noteEntries.map(([id, txt]) => `
+        <div class="note-item">
+          <div class="note-item-id">${esc(id)}</div>
+          <div class="note-item-text">${esc(txt)}</div>
+        </div>`).join('')}` : '';
+
+    return `
+      <div class="run-card" id="card-${i}">
+        <div class="run-head" onclick="toggleCard(${i})">
+          <div class="run-num">#${rows.length - i}</div>
+          <div class="run-who">
+            <div class="run-name">${esc(r.tester || '—')}</div>
+            <div class="run-meta">${formatDate(r.submitted_at)}</div>
+          </div>
+          <div class="run-tags">
+            <span class="tag tag-platform">${esc(r.platform || '—')}</span>
+            <span class="tag tag-display">${esc(r.display || '—')}</span>
+          </div>
+          <div class="run-heatmap">${heatmap}</div>
+          <div class="run-counts">
+            <span class="count-pill cp-pass">${pass}P</span>
+            <span class="count-pill cp-fail">${fail}F</span>
+            <span class="count-pill cp-skip">${skip}S</span>
+          </div>
+          <div class="run-chevron">▾</div>
+        </div>
+        <div class="run-body">
+          <div class="tc-grid">${tcDetail}</div>
+          ${notesHtml}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function toggleCard(i) {
+  document.getElementById('card-' + i).classList.toggle('expanded');
+}
+
+/* ── Boot ── */
+loadData();
+</script>
+</body>
+</html>
