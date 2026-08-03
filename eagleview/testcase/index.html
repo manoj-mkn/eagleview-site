@@ -1512,7 +1512,7 @@ function updateProgress() {
   document.getElementById('prog-bar-fill').style.width = pct+'%';
   document.getElementById('prog-pct').textContent = pct+'%';
   updateSectionBadges();
-  checkSubmitReady(done, total);
+  if (typeof checkSubmitReady === 'function') checkSubmitReady(done, total);
 }
 
 function updateSectionBadges() {
