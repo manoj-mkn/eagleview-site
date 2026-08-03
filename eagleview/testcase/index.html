@@ -1290,11 +1290,12 @@ function saveAsTestedFile(btn) {
     html = html.slice(0, bodyIdx) + '<script>' + restoreJs + '\x3c/script>' + html.slice(bodyIdx);
   }
 
-  // Restore original file state
-  document.body.removeAttribute('data-saved');
-  document.body.classList.add('pre-save', 'file-saved');
+  // Restore filter/nudge, then permanently unlock (like feedback form — floppy press = unlock)
+  document.body.setAttribute('data-saved', '1');
+  document.body.classList.remove('pre-save', 'file-saved');
   if (nudge) { nudge.className = nudgeCls; nudge.textContent = nudgeTxt; }
   if (prevFilter !== 'all') setFilter(prevFilter);
+  updateProgress();
 
   // Download
   const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
