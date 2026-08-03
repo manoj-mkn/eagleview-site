@@ -134,6 +134,7 @@ main{max-width:1200px;margin:0 auto;padding:24px 16px 60px}
   <div id="header-inner">
     <div class="dash-title">Meeting Reminder — Feedback Dashboard</div>
     <div class="dash-meta" id="dash-meta">Loading…</div>
+    <button class="hdr-btn" id="btn-hide-user" onclick="toggleUserHide()">Hide User</button>
     <button class="hdr-btn" onclick="savePDF()">⬇ Save as PDF</button>
     <button class="hdr-btn" onclick="savePDFDirect(this)">⬇ Direct PDF</button>
     <button class="hdr-btn" onclick="toggleTheme()">☀ / ☾</button>
@@ -200,6 +201,18 @@ const NOTE_TITLES = {
 
 let allRows = [];
 let selectedTesters = new Set();
+let userHidden = false;
+let userMap = {};
+
+function maskName(name) {
+  return userHidden ? (userMap[String(name)] || name) : name;
+}
+function toggleUserHide() {
+  userHidden = !userHidden;
+  document.getElementById('btn-hide-user').textContent = userHidden ? 'Unhide User' : 'Hide User';
+  buildTesterPanel(allRows);
+  applyFilter();
+}
 
 function buildTesterPanel(rows) {
   const counts = {};
@@ -214,7 +227,7 @@ function buildTesterPanel(rows) {
   const wrap = document.getElementById('tester-chips');
   wrap.innerHTML = testers.map(t => `
     <div class="tester-chip active" data-tester="${esc(t)}" onclick="toggleTester(this,'${esc(t)}')">
-      ${esc(t)} <span class="chip-count">${counts[t]}</span>
+      ${esc(maskName(t))} <span class="chip-count">${counts[t]}</span>
     </div>`).join('');
   document.getElementById('tester-panel').style.display = testers.length > 0 ? 'block' : 'none';
 }
@@ -272,6 +285,12 @@ async function loadData() {
 
   allRows = (data || []).filter(r => !/test/i.test(r.tester || ''));
   selectedTesters = new Set(); // reset on refresh
+
+  // Build stable alias map (alphabetical → User1…UserN)
+  const testerNames = [...new Set(allRows.map(r => r.tester || 'Unknown'))].sort();
+  userMap = {};
+  testerNames.forEach((t, i) => { userMap[t] = 'User' + (i + 1); });
+
   buildTesterPanel(allRows);
 
   const now = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
@@ -358,7 +377,7 @@ function renderDashboard(rows) {
     const items = noteRows.length === 0
       ? '<div style="padding:12px 16px;font-size:12px;color:var(--text2)">No responses yet.</div>'
       : noteRows.map(r => `<div class="note-block">
-          <div class="note-meta">${esc(r.tester||'Unknown')} · ${esc(r.platform||'—')} · ${fmtDate(r.created_at)}</div>
+          <div class="note-meta">${esc(maskName(r.tester||'Unknown'))} · ${esc(r.platform||'—')} · ${fmtDate(r.created_at)}</div>
           <div class="note-text">${esc(r.notes[nid])}</div>
         </div>`).join('');
     noteSections += `<div class="notes-group">
@@ -378,7 +397,7 @@ function renderDashboard(rows) {
       else if (v==='skip') skip++;
     });
     trows += `<tr>
-      <td><span class="tester-name">${esc(r.tester||'—')}</span></td>
+      <td><span class="tester-name">${esc(maskName(r.tester||'—'))}</span></td>
       <td>${esc(r.platform||'—')}</td>
       <td>${esc(r.display||'—')}</td>
       <td style="color:var(--text2)">${fmtDate(r.created_at)}</td>
