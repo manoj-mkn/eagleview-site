@@ -134,7 +134,6 @@ main{max-width:1200px;margin:0 auto;padding:24px 16px 60px}
   <div id="header-inner">
     <div class="dash-title">Meeting Reminder — Feedback Dashboard</div>
     <div class="dash-meta" id="dash-meta">Loading…</div>
-    <button class="hdr-btn" id="btn-hide-user" onclick="toggleUserHide()">Hide User</button>
     <button class="hdr-btn" onclick="savePDF()">⬇ Save as PDF</button>
     <button class="hdr-btn" onclick="savePDFDirect(this)">⬇ Direct PDF</button>
     <button class="hdr-btn" onclick="toggleTheme()">☀ / ☾</button>
@@ -201,7 +200,7 @@ const NOTE_TITLES = {
 
 let allRows = [];
 let selectedTesters = new Set();
-let userHidden = false;
+let userHidden = true;
 let userMap = {};
 
 function maskName(name) {
@@ -209,7 +208,6 @@ function maskName(name) {
 }
 function toggleUserHide() {
   userHidden = !userHidden;
-  document.getElementById('btn-hide-user').textContent = userHidden ? 'Unhide User' : 'Hide User';
   buildTesterPanel(allRows);
   applyFilter();
 }
@@ -529,6 +527,11 @@ async function savePDFDirect(btn) {
     btn.disabled = false;
   }
 }
+
+document.getElementById('header').addEventListener('dblclick', function(e) {
+  if (e.target.closest('button')) return;
+  toggleUserHide();
+});
 
 loadData();
 </script>
