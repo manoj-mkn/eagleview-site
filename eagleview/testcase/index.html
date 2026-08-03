@@ -1,0 +1,1620 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eagle View — QA Checklist v1.1.3</title>
+<style>
+/* ── Tester Meta Dropdowns ── */
+.meta-row{display:flex;align-items:center;gap:4px;flex-wrap:nowrap;margin-top:5px;padding-top:5px;border-top:1px solid var(--border);overflow-x:auto}
+.meta-label{font-size:10px;font-weight:700;color:var(--text2);white-space:nowrap;flex-shrink:0}
+.meta-select{
+  padding:3px 20px 3px 7px;
+  border:1px solid var(--border);
+  border-radius:6px;
+  background:var(--bg3);
+  color:var(--text);
+  font-size:11.5px;
+  font-weight:600;
+  cursor:pointer;
+  appearance:none;
+  -webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5' viewBox='0 0 8 5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%239898A8'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 7px center;
+  transition:border-color 0.15s,background-color 0.15s;
+  min-width:0;
+}
+#sel-tester{min-width:104px}
+#sel-platform{min-width:90px}
+#sel-display{min-width:108px}
+.meta-select:hover{border-color:var(--accent)}
+.meta-select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(232,119,34,0.15)}
+.meta-select option{background:var(--bg2);color:var(--text)}
+#meta-badge-wrap{display:none}
+.meta-sep{color:var(--border);font-size:12px;margin:0 1px;flex-shrink:0}
+/* Custom tester input */
+#custom-tester{
+  display:none;
+  padding:3px 8px;border:1px solid var(--accent);border-radius:6px;
+  background:var(--bg3);color:var(--text);font-size:11.5px;font-weight:600;
+  min-width:104px;outline:none;
+  box-shadow:0 0 0 2px rgba(232,119,34,0.15);
+}
+#custom-tester::placeholder{color:var(--text2);font-style:italic;font-weight:400}
+/* Logo */
+.app-logo{display:flex;align-items:center;gap:8px}
+.app-logo img{width:28px;height:28px;flex-shrink:0}
+.app-logo-text{font-size:17px;font-weight:800;color:var(--accent);letter-spacing:-0.3px}
+#testing-mode-tag{display:none;font-size:11px;font-weight:700;color:var(--text2);letter-spacing:0;white-space:nowrap}
+#testing-mode-tag.visible{display:inline}
+/* Filter row */
+.filter-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:4px;padding-top:4px;border-top:1px solid var(--border)}
+.filter-btn{
+  padding:3px 9px;border:1px solid var(--border);border-radius:20px;
+  background:var(--bg3);color:var(--text2);font-size:11px;font-weight:700;
+  cursor:pointer;transition:all 0.15s;white-space:nowrap;
+}
+.filter-btn:hover{border-color:var(--accent);color:var(--accent)}
+.filter-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.filter-btn[data-filter="pass"].active{background:var(--pass);border-color:var(--pass);color:#fff}
+.filter-btn[data-filter="fail"].active{background:var(--fail);border-color:var(--fail);color:#fff}
+.filter-btn[data-filter="skip"].active{background:var(--skip);border-color:var(--skip);color:#fff}
+.tc.filter-hidden{display:none!important}
+.tc.platform-hidden{display:none!important}
+.tc-group.platform-hidden{display:none!important}
+/* Zoom controls */
+.zoom-ctrl{display:inline-flex;align-items:center;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden}
+.zoom-btn{border:none!important;border-radius:0!important;padding:5px 10px!important;min-width:28px;font-size:14px;font-weight:700;line-height:1}
+.zoom-btn:first-child{border-right:1px solid var(--border)!important}
+.zoom-btn:last-child{border-left:1px solid var(--border)!important}
+.zoom-label{font-size:11px;font-weight:700;color:var(--text2);padding:0 8px;min-width:38px;text-align:center;white-space:nowrap;user-select:none}
+/* Floppy save button */
+.floppy-btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:30px;height:30px;border-radius:6px;
+  border:1px solid var(--border);background:var(--bg3);
+  color:var(--text2);cursor:not-allowed;opacity:0.4;
+  transition:all 0.15s;flex-shrink:0;
+}
+.floppy-btn.ready{opacity:1;cursor:pointer;color:var(--accent);border-color:rgba(232,119,34,0.4);background:rgba(232,119,34,0.08)}
+.floppy-btn.ready:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+.floppy-btn.saved{background:var(--pass)!important;border-color:var(--pass)!important;color:#fff!important;opacity:1}
+/* ── Dropdown entry glow ── */
+@keyframes sel-glow{
+  0%,100%{box-shadow:0 0 0 0 rgba(232,119,34,0);border-color:var(--border)}
+  50%{box-shadow:0 0 0 3px rgba(232,119,34,0.35),0 0 10px 2px rgba(232,119,34,0.2);border-color:var(--accent)}
+}
+body.pre-save .meta-select:not(.has-value){animation:sel-glow 1.6s ease-in-out infinite}
+body.pre-save #sel-platform:not(.has-value){animation-delay:0.25s}
+body.pre-save #sel-display:not(.has-value){animation-delay:0.5s}
+/* ── Pre-save lock state ── */
+#topbar{transition:min-height 0.55s cubic-bezier(0.4,0,0.2,1),padding 0.55s}
+main{transition:filter 0.45s ease,opacity 0.45s ease}
+body.pre-save #topbar{min-height:50vh;display:flex;flex-direction:column;justify-content:center}
+body.pre-save main{filter:blur(5px);opacity:0.18;pointer-events:none;user-select:none}
+#presave-hint{display:none;text-align:center;padding:14px 0 6px;margin-top:6px;border-top:1px solid var(--border)}
+#presave-hint .ph-icon{font-size:36px;line-height:1;display:block;margin-bottom:10px}
+#presave-hint .ph-title{font-size:15px;font-weight:800;color:var(--text);display:block;margin-bottom:5px}
+#presave-hint .ph-sub{font-size:12px;color:var(--text2);display:block}
+body.pre-save #presave-hint{display:block}
+body.file-saved #presave-hint{display:none!important}
+#saved-hint{display:none;text-align:center;padding:14px 0 6px;margin-top:6px;border-top:1px solid var(--border);overflow:hidden;max-height:120px}
+#saved-hint .ph-icon{font-size:36px;line-height:1;display:block;margin-bottom:10px}
+#saved-hint .ph-title{font-size:15px;font-weight:800;color:var(--accent);display:block}
+@keyframes saved-hint-life{
+  0%{opacity:0;transform:translateY(-6px)}
+  7%{opacity:1;transform:translateY(0)}
+  91%{opacity:1}
+  100%{opacity:0;max-height:0;padding:0;margin:0;border-width:0}
+}
+body[data-saved] #saved-hint{display:block;animation:saved-hint-life 10.5s ease forwards}
+/* Hide floppy + nudge in the saved testing file */
+body[data-saved] .floppy-btn{display:none!important}
+body[data-saved] #save-nudge{display:none!important}
+/* Frozen dropdowns in saved file — CSS-only, lock icon replaces dropdown arrow */
+body[data-saved] .meta-select{
+  pointer-events:none!important;cursor:default!important;user-select:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='12' viewBox='0 0 24 24' fill='none' stroke='%239898A8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='11' width='18' height='11' rx='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E");
+  background-size:10px 12px;
+}
+/* saved-hint must never intercept pointer events */
+#saved-hint{pointer-events:none}
+/* Save nudge */
+@keyframes nudge-in{0%{opacity:0;transform:translateX(-6px) scale(0.9)}60%{transform:translateX(3px) scale(1.05)}100%{opacity:1;transform:translateX(0) scale(1)}}
+@keyframes nudge-out{to{opacity:0;transform:scale(0.85)}}
+#save-nudge{
+  display:none;align-items:center;gap:4px;
+  font-size:11.5px;font-weight:700;white-space:nowrap;flex-shrink:0;
+  animation:nudge-in 0.45s cubic-bezier(0.34,1.56,0.64,1) forwards;
+}
+#save-nudge.nudge-red{color:#EF4444}
+#save-nudge.nudge-green{color:#22C55E}
+#save-nudge.visible{display:inline-flex}
+#save-nudge.hiding{animation:nudge-out 0.25s ease forwards}
+</style>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0D0D10;--bg2:#16161A;--bg3:#1E1E24;--border:#2A2A35;
+  --text:#E8E8F0;--text2:#9898A8;--accent:#E87722;--accent2:#C45E00;
+  --pass:#22C55E;--fail:#EF4444;--skip:#6B7280;
+  --pass-bg:rgba(34,197,94,0.20);--fail-bg:rgba(239,68,68,0.20);--skip-bg:rgba(107,114,128,0.18);
+  --shadow:0 2px 8px rgba(0,0,0,0.4);
+}
+@media(prefers-color-scheme:light){:root{
+  --bg:#F0F2F7;--bg2:#FFFFFF;--bg3:#E8EBF2;--border:#D0D4E0;
+  --text:#111120;--text2:#60607A;--shadow:0 2px 8px rgba(0,0,0,0.10);
+  --pass-bg:rgba(34,197,94,0.18);--fail-bg:rgba(239,68,68,0.18);--skip-bg:rgba(107,114,128,0.14);
+}}
+:root[data-theme="dark"]{
+  --bg:#0D0D10;--bg2:#16161A;--bg3:#1E1E24;--border:#2A2A35;
+  --text:#E8E8F0;--text2:#9898A8;
+  --pass-bg:rgba(34,197,94,0.20);--fail-bg:rgba(239,68,68,0.20);--skip-bg:rgba(107,114,128,0.18);
+}
+:root[data-theme="light"]{
+  --bg:#F0F2F7;--bg2:#FFFFFF;--bg3:#E8EBF2;--border:#D0D4E0;
+  --text:#111120;--text2:#60607A;
+  --pass-bg:rgba(34,197,94,0.18);--fail-bg:rgba(239,68,68,0.18);--skip-bg:rgba(107,114,128,0.14);
+}
+html{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;font-size:14px;background:var(--bg);color:var(--text)}
+body{min-height:100vh}
+code{font-family:'SF Mono',Consolas,'Courier New',monospace;font-size:12px;background:rgba(255,255,255,0.08);border-radius:3px;padding:1px 4px}
+
+/* ── Sticky header ── */
+#topbar{
+  position:sticky;top:0;z-index:100;
+  background:var(--bg2);border-bottom:1px solid var(--border);
+  padding:6px 20px;box-shadow:var(--shadow);
+}
+#topbar-inner{max-width:1100px;margin:0 auto;}
+.topbar-row1{display:flex;align-items:center;gap:10px;flex-wrap:nowrap;margin-bottom:5px;overflow-x:auto;}
+.app-title{font-size:17px;font-weight:800;color:var(--accent);letter-spacing:-0.3px}
+.app-sub{font-size:12px;color:var(--text2);margin-top:2px}
+.topbar-actions{display:flex;gap:6px;margin-left:auto;flex-shrink:0;flex-wrap:nowrap;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border:1px solid var(--border);border-radius:6px;background:var(--bg3);color:var(--text2);font-size:11px;font-weight:600;cursor:pointer;transition:all 0.15s;white-space:nowrap}
+.btn:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn-danger:hover{background:#EF4444;border-color:#EF4444;color:#fff}
+
+/* Progress bar */
+#progress{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+#prog-bar-wrap{flex:1;min-width:120px;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden}
+#prog-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));border-radius:3px;transition:width 0.3s}
+.prog-stat{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:700;white-space:nowrap}
+.prog-stat .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dot-pass{background:var(--pass)}.dot-fail{background:var(--fail)}.dot-skip{background:var(--skip)}.dot-total{background:var(--accent)}
+#prog-pct{font-size:12px;color:var(--text2);min-width:36px;text-align:right}
+
+/* ── Main layout ── */
+main{max-width:1100px;margin:0 auto;padding:20px 16px 60px}
+
+/* ── Section ── */
+.section{margin-bottom:10px;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--bg2)}
+.sec-header{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;cursor:pointer;user-select:none;
+  background:var(--bg3);border-bottom:1px solid var(--border);
+  transition:background 0.15s;
+}
+.sec-header:hover{background:var(--border)}
+.sec-num{font-size:11px;font-weight:800;color:var(--accent);background:rgba(232,119,34,0.15);border-radius:4px;padding:2px 6px;min-width:32px;text-align:center;flex-shrink:0}
+.sec-title{font-size:13px;font-weight:700;color:var(--text);flex:1;display:flex;align-items:center;gap:6px}
+.sec-badge{font-size:11px;color:var(--text2);margin-right:6px;white-space:nowrap}
+.sec-badge .b-pass{color:var(--pass);font-weight:700}
+.sec-badge .b-fail{color:var(--fail);font-weight:700}
+.sec-chevron{font-size:11px;color:var(--text2);transition:transform 0.2s;flex-shrink:0}
+.sec-header.collapsed .sec-chevron{transform:rotate(-90deg)}
+.sec-body{display:block}
+.sec-body.hidden{display:none}
+.new-badge{font-size:9px;font-weight:800;background:var(--accent);color:#fff;border-radius:3px;padding:1px 5px;letter-spacing:0.5px;flex-shrink:0}
+
+/* ── Test case row ── */
+.tc{
+  display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;
+  padding:8px 14px;border-bottom:1px solid var(--border);
+  transition:background 0.12s;
+}
+.tc:last-child{border-bottom:none}
+.tc:hover{background:rgba(255,255,255,0.025)}
+.tc.tc-pass{background:var(--pass-bg)!important}
+.tc.tc-fail{background:var(--fail-bg)!important}
+.tc.tc-skip{background:var(--skip-bg)!important}
+.tc-id{font-size:10px;font-weight:700;color:var(--text2);white-space:nowrap;min-width:52px;padding-top:2px;font-family:'SF Mono',Consolas,monospace;flex-shrink:0;cursor:pointer;user-select:none}
+.tc-id:hover{color:var(--accent)}
+.tc-note-wrap{width:100%;display:none;padding:4px 0 2px 0}
+.tc-note-wrap.open{display:block}
+.tc-note-input{width:100%;box-sizing:border-box;padding:6px 10px;border:1px solid var(--accent);border-radius:5px;background:var(--bg);color:var(--text);font-size:12px;font-family:inherit;resize:vertical;min-height:44px;outline:none;opacity:0.9}
+.tc-note-input:focus{opacity:1;box-shadow:0 0 0 2px rgba(232,119,34,0.2)}
+.tc-note-input::placeholder{color:var(--text2);font-style:italic}
+.tc-desc{flex:1;font-size:13px;color:var(--text);line-height:1.5}
+.tc-desc .note{display:block;font-size:11px;color:var(--text2);margin-top:3px;font-style:italic}
+.tc-btns{display:flex;gap:5px;flex-shrink:0;padding-top:1px}
+.tc-btn{
+  padding:3px 10px;border-radius:4px;border:1px solid var(--border);
+  font-size:11px;font-weight:700;cursor:pointer;transition:all 0.12s;
+  background:var(--bg3);color:var(--text2);
+}
+.tc-btn.pass{background:rgba(34,197,94,0.12);border-color:rgba(34,197,94,0.35);color:var(--pass)}
+.tc-btn.fail{background:rgba(239,68,68,0.12);border-color:rgba(239,68,68,0.35);color:var(--fail)}
+.tc-btn.skip{background:rgba(107,114,128,0.12);border-color:rgba(107,114,128,0.35);color:var(--skip)}
+.tc-btn.active-pass{background:var(--pass)!important;color:#fff!important;border-color:var(--pass)!important}
+.tc-btn.active-fail{background:var(--fail)!important;color:#fff!important;border-color:var(--fail)!important}
+.tc-btn.active-skip{background:var(--skip)!important;color:#fff!important;border-color:var(--skip)!important}
+.tc-btn:hover{opacity:0.8}
+
+/* sub-group label */
+.tc-group{padding:5px 14px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;color:var(--accent);border-bottom:1px solid var(--border);background:rgba(232,119,34,0.04)}
+
+/* ── Print ── */
+@media print{
+  html{zoom:100%!important}
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  @page{margin:10mm 8mm}
+  body{min-height:auto}
+  #topbar{position:static;box-shadow:none;max-width:100%!important}
+  #topbar-inner{max-width:100%!important}
+  main{max-width:100%!important;padding:4px 8mm!important}
+  .topbar-actions{display:none}
+  .sec-body.hidden{display:block!important}
+  .tc-btn{display:none}
+  .tc.tc-pass::before{content:'✅ ';color:green}
+  .tc.tc-fail::before{content:'❌ ';color:red}
+  .tc.tc-skip::before{content:'⏭ ';color:gray}
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+
+<div id="topbar">
+  <div id="topbar-inner">
+    <div class="topbar-row1">
+      <div class="app-logo">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAeGVYSWZNTQAqAAAACAAEARoABQAAAAEAAAA+ARsABQAAAAEAAABGASgAAwAAAAEAAgAAh2kABAAAAAEAAABOAAAAAAAAAJAAAAABAAAAkAAAAAEAA6ABAAMAAAABAAEAAKACAAQAAAABAAAAIKADAAQAAAABAAAAIAAAAAB+C9pSAAAACXBIWXMAABYlAAAWJQFJUiTwAAABzWlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNi4wLjAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczpleGlmPSJodHRwOi8vbnMuYWRvYmUuY29tL2V4aWYvMS4wLyI+CiAgICAgICAgIDxleGlmOkNvbG9yU3BhY2U+MTwvZXhpZjpDb2xvclNwYWNlPgogICAgICAgICA8ZXhpZjpQaXhlbFhEaW1lbnNpb24+MTAyNDwvZXhpZjpQaXhlbFhEaW1lbnNpb24+CiAgICAgICAgIDxleGlmOlBpeGVsWURpbWVuc2lvbj4xMDI0PC9leGlmOlBpeGVsWURpbWVuc2lvbj4KICAgICAgPC9yZGY6RGVzY3JpcHRpb24+CiAgIDwvcmRmOlJERj4KPC94OnhtcG1ldGE+CsHtO6kAAAZPSURBVFgJvVd9TJVVGD/nvB/3Xu7lgsJVZAbCVT40aVMphSJMRai1bJnDj1x+pHOr5sa0VZbI1Laaf2Tqls71jx/8a1tt4SinQ0mUlZqCiXCh1AuocLnc+36/Pc9LFxMuyi3pGee+vOc8z+/5PM85LyVDaGJJiVPkzEKdkgWUkAoY3BCWmF5NQnQYeziT1Co6rfPX1PT/EwDwH1Dq4vkrGOM+NgmdThklpq4/WPwP/1GOI6YBqMS8ahj6rls//HQsAjfoXWrJS5WUsb2w4DENHQQMQkyw/QmMASzAo9RDKX0jPjOD9rW0nkIjrAiklhSXE8KOg1ZLHy6MFVHUSBn8GMtv1Zyqpp7iYhfPGRdhMgsN+F8IDTCN65rOZvOMaHPB+6x/k28dUoXEscFMjtJ+HfylWaibN02zBMZAzkcpjmw61EhKUhKklZHb3Z2xGwFyqJtOeGEe7DgrJjGopyQkhcmXH24joiCQTVXbSZzdAfJQtKMm2BPgNg9mMPhn1GLIqGoqmZ7pJctKywhjjBw4fpRca7lBBDBm9GTpZAy3yPBhElVRYSjEgF4wdF1TVfLeqreI0+EgDpuNvL9qNdE0bRgfyiIGYmEfGIqD72AALjw8dADLzc5Ws6dlqSIvmLIkEyksEQ2AJEkic2Y8TZaWlA46+/rCheTZmXnWGhqHvCiDsoiBWIg5VA++8wQbzhDSVIWkpqRoOz6t7Ll58yZ/ralJuHT5knituUno+KODr1izjtpEcVBKFERSsWYtefuDrebkyZO16Tm5al5enpKbnaNmZmZq26sqE69cuSwg31CiSfmzhhUAhsbucJiHvz7UhQBWt4IOEgwG6R3/HT73qTTBbbOLblEUIHY0qKpKQJKVq742NWXSJM3lcsE0/IE2dGDdxnc8UjgMGwYb0MMUtQaQpbenh9acrHEwUAxhpwggCDxJT0vXenU91G3o93d+czhcdehgqEvX7/foWih9yhQNeZAXZVAWMRALMaPVQNQUIDMH1tbW1jpWrljZb7OJZiR/uqERh91O6uvr7fsP7I/Hea93qlpYUCBjfUQID7PeQIAhBmJFSzXyRi1CBOWgNbRC+C40NIhud4KJKYkMn8/H79q9K1EOS1SRZbr7s92JrW2tfGQdnyiDsoiBWBEHhj6hEw4vwogXcHSSI0ePuPqCASaDIthOdGp2dri6utrpa2vlHI44i7Xd18bt3bfPWV5eHrzR3OyAajNtNpt54sS3cYgBrSYCOezJo0UjkcDx5JfGRvFcXZ3oTkgwFrzycnfuvLl3i8oWB3+uq8tQFMVCdjldxvOLF/mFpHHSby03kmu/+z450NvLHNAnBB563SN0cPbkpEqs2GgDi0YQRWN+aen9zZ9s6yhb8lqPAI0nw+uVeTxCz9W7sdms3rTxVtmSJT2iaCOF84v78gsLA6qssNsdHTbY/9YJHA0f5yACI6cADymO48xX31zaPS03RwoFg5bH0GjYsjVru9pbfZaC5evWd/X39XGYznAoxJAXZc6fOZOgyjJeREYKMuHEpPGVI67CghwOs0sXG11zCgoC45OTNYiIGQ6FWWP9OWdXZycviDZDVSSW7JmgOd3xBpwH5p++dnHnlq0Z97q6BDwrHkU0fpp35CKwJClRFJk8k58fXLFhw53zp0/HXzh7NqG9pcU+q6jIz/G8eb72x5T0qV5pdsG8wHNFLwaOHTyY8mtDgwtT8rgTkrq8mY8xYMB+A1KF3qAxkBarsNZv++gqBQMO7aiaAXc9okM9oNII76M8j6wNbMNRmIBZtIqSF6B2TOJMcKvemTP7ML2uhEQ1FAhAE4Q1MDTCG1Ey4hMYaVx6GtyP8EIyejJ0jaRn5wTGTfBIsAto7917Nl9zk5vBto2JoGqpIy3tc/Bii7VNYpBmsDvgrEdncavCTR4uVrEQKIVAfkHtqakLKcdOxmpALLqi8qIBurGIEo/HZReFi8CUFZVx7CavS4o6myOhkCLEx3XDsb7UigLEZeyf+EVkvKv5OxutC73W13+Fd8VRUF1sOYy7YizG39EE5Tuk25378HXwi0IL9p/inK7fwftcmPdYvE8qGhYY/JjkKvi+WfZ3fhWZGl65Eyc6baZZCPt5ATBVwBg0MiIU4xM/n/bAdaxWprSO+P0PfZ7/BU9nIob8wL71AAAAAElFTkSuQmCC" alt="Eagle View">
+        <div>
+          <div class="app-logo-text" ondblclick="unlockTesting()">Eagle View — QA Checklist <span id="testing-mode-tag"></span></div>
+          <div class="app-sub">v1.1.3 · Tauri v2 · React · macOS &amp; Windows · Updated 2026-07-29</div>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn" onclick="toggleTheme()">☀︎ / ☾</button>
+        <button class="btn" id="btn-toggle-sections" onclick="toggleAllSections()">Collapse All</button>
+        <button class="btn" onclick="exportCSV()">Export CSV</button>
+        <button class="btn btn-danger" onclick="clearAll()">Clear All</button>
+        <button class="btn" onclick="savePDF()">⬇ Save as PDF</button>
+        <button class="btn" onclick="savePDFDirect(this)">⬇ Direct PDF</button>
+        <div class="zoom-ctrl">
+          <button class="btn zoom-btn" onclick="zoomOut()" title="Zoom Out">−</button>
+          <span id="zoom-label" class="zoom-label">100%</span>
+          <button class="btn zoom-btn" onclick="zoomIn()" title="Zoom In">+</button>
+        </div>
+      </div>
+    </div>
+    <div id="progress">
+      <div id="prog-bar-wrap"><div id="prog-bar-fill" style="width:0%"></div></div>
+      <div class="prog-stat"><div class="dot dot-pass"></div><span id="prog-pass">0</span> Pass</div>
+      <div class="prog-stat"><div class="dot dot-fail"></div><span id="prog-fail">0</span> Fail</div>
+      <div class="prog-stat"><div class="dot dot-skip"></div><span id="prog-skip">0</span> N/A</div>
+      <div class="prog-stat"><div class="dot dot-total"></div><span id="prog-total">0/0</span></div>
+      <div id="prog-pct">0%</div>
+    </div>
+    <!-- ── Meta selectors ── -->
+    <div class="meta-row">
+      <span class="meta-label">Tester:</span>
+      <select id="sel-tester" class="meta-select" onchange="onMetaChange()">
+        <option value="">— Tester —</option>
+        <option value="Manoj Kumar M">Manoj Kumar M</option>
+        <option value="Sowbharani Raman">Sowbharani Raman</option>
+        <option value="__custom__">✏ Add custom…</option>
+      </select>
+      <input id="custom-tester" type="text" placeholder="Type name, press Enter"
+        onkeydown="if(event.key==='Enter')applyCustomTester()"
+        onblur="applyCustomTester()">
+      <span class="meta-sep">·</span>
+      <span class="meta-label">Platform:</span>
+      <select id="sel-platform" class="meta-select" onchange="onMetaChange()">
+        <option value="">— Platform —</option>
+        <option value="Mac Intel">Mac Intel</option>
+        <option value="Mac Silicon">Mac Silicon</option>
+        <option value="Windows 10">Windows 10</option>
+        <option value="Windows 11">Windows 11</option>
+      </select>
+      <span class="meta-sep">·</span>
+      <span class="meta-label">Display:</span>
+      <select id="sel-display" class="meta-select" onchange="onMetaChange()">
+        <option value="">— Display —</option>
+        <option value="Normal Display">Normal Display</option>
+        <option value="Touch Screen">Touch Screen</option>
+      </select>
+      <span id="meta-badge-wrap"></span>
+      <button id="btn-floppy" class="floppy-btn" onclick="saveAsTestedFile(this)" title="Select Tester, Platform &amp; Display first" disabled>
+        <svg viewBox="0 0 14 14" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="1" y="1" width="12" height="12" rx="1.5"/>
+          <rect x="3.5" y="1" width="5" height="4" rx="0.5"/>
+          <line x1="5.5" y1="2.2" x2="5.5" y2="4.8"/>
+          <rect x="2.5" y="7.5" width="9" height="4.5" rx="0.5"/>
+        </svg>
+      </button>
+      <span id="save-nudge"></span>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:5px;flex-shrink:0;padding-left:6px">
+        <span class="meta-label">Filter:</span>
+        <button class="filter-btn active" data-filter="all"      onclick="setFilter('all')">All</button>
+        <button class="filter-btn"        data-filter="pass"     onclick="setFilter('pass')">Pass</button>
+        <button class="filter-btn"        data-filter="fail"     onclick="setFilter('fail')">Fail</button>
+        <button class="filter-btn"        data-filter="skip"     onclick="setFilter('skip')">N/A</button>
+        <button class="filter-btn"        data-filter="untested" onclick="setFilter('untested')">Not Tested</button>
+      </div>
+    </div>
+    <div id="presave-hint">
+      <span class="ph-icon">🔒</span>
+      <span class="ph-title">Fill in your details and save the file to begin testing</span>
+      <span class="ph-sub">Select Tester → Platform → Display → then click 💾</span>
+    </div>
+    <div id="saved-hint">
+      <span class="ph-icon">🚀</span>
+      <span class="ph-title">Now Start Your Process</span>
+    </div>
+  </div>
+</div>
+
+<main>
+
+<!-- S1 ═══════════════════════════════════════════ -->
+<div class="section" id="s1">
+  <div class="sec-header" onclick="toggleSection('s1')">
+    <span class="sec-num">01</span><span class="sec-title">Installation &amp; First Launch</span>
+    <span class="sec-badge" id="s1-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s1-body">
+    <div class="tc" data-id="TC-001"><span class="tc-id">TC-001</span><span class="tc-desc">Eagle View installer downloads from the website without error</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-002"><span class="tc-id">TC-002</span><span class="tc-desc">Mac: DMG mounts and shows the Eagle View app icon. App can be dragged to /Applications or run directly from the mounted DMG<br>Win: NSIS installer wizard runs, installs the app, and creates a Start Menu shortcut</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-003"><span class="tc-id">TC-003</span><span class="tc-desc">Mac: Gatekeeper may block on first open — <code>xattr -cr "/Applications/Eagle View.app"</code> clears quarantine and allows launch<br>Win: SmartScreen may warn "Windows protected your PC" — click <strong>More info → Run anyway</strong><span class="note">Expected on first install from website download; not a bug</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-004"><span class="tc-id">TC-004</span><span class="tc-desc">App launches without crash</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-005"><span class="tc-id">TC-005</span><span class="tc-desc">Eagle View tray icon appears in the tray or menu bar immediately on launch</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S2 ═══════════════════════════════════════════ -->
+<div class="section" id="s2">
+  <div class="sec-header" onclick="toggleSection('s2')">
+    <span class="sec-num">02</span><span class="sec-title">License &amp; Expiry</span>
+    <span class="sec-badge" id="s2-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s2-body">
+    <div class="tc" data-id="TC-007"><span class="tc-id">TC-007</span><span class="tc-desc">App functions normally before the license expiry date (2026-10-14)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-008"><span class="tc-id">TC-008</span><span class="tc-desc">License is checked at app startup via the Rust <code>check_license</code> command</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-009"><span class="tc-id">TC-009</span><span class="tc-desc">License is re-checked every 8 hours while the app is running (hourly Rust heartbeat loop; license check fires on every 8th tick)<span class="note">Previously every 60 s — reduced to prevent unnecessary checks</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-010"><span class="tc-id">TC-010</span><span class="tc-desc">On license expiry: a full-screen blurred overlay appears — entire UI is blocked, no interaction possible</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-011"><span class="tc-id">TC-011</span><span class="tc-desc">License expired overlay header shows Eagle View icon + orange gradient banner</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-012"><span class="tc-id">TC-012</span><span class="tc-desc">Overlay body shows 🔒 icon, "License Expired" heading, and "Contact the developer to renew." message</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-013"><span class="tc-id">TC-013</span><span class="tc-desc">Clicking the "Close" button inside the overlay quits the app</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-014"><span class="tc-id">TC-014</span><span class="tc-desc">Keyboard shortcut (Cmd+E / Ctrl+E) does NOT open or toggle the panel when license has expired</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-015"><span class="tc-id">TC-015</span><span class="tc-desc">Widget blur (clicking away) does NOT open or close the panel when license has expired</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S3 ═══════════════════════════════════════════ -->
+<div class="section" id="s3">
+  <div class="sec-header" onclick="toggleSection('s3')">
+    <span class="sec-num">03</span><span class="sec-title">Authentication — Outlook (Device Code Flow)</span>
+    <span class="sec-badge" id="s3-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s3-body">
+    <div class="tc" data-id="TC-016"><span class="tc-id">TC-016</span><span class="tc-desc">On first launch with no saved credentials, the account chooser screen is shown: "Choose your mail provider"</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-017"><span class="tc-id">TC-017</span><span class="tc-desc">Clicking the Outlook button transitions to a "Connecting to Microsoft" screen with three animated dots — there is no "Connecting to Outlook" text and no hourglass</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-018"><span class="tc-id">TC-018</span><span class="tc-desc">The default browser opens to <strong>microsoft.com/devicelogin</strong> automatically</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-019"><span class="tc-id">TC-019</span><span class="tc-desc">A device code (e.g. "ABCD-1234") is displayed inside Eagle View with title "Signing in with Microsoft" and subtitle "Enter this code at microsoft.com/devicelogin"</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-020"><span class="tc-id">TC-020</span><span class="tc-desc">"Copy Code" button copies the code to the clipboard</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-021"><span class="tc-id">TC-021</span><span class="tc-desc">Copy button shows "✓ Copied!" feedback for approximately 2 seconds, then reverts</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-022"><span class="tc-id">TC-022</span><span class="tc-desc">Three animated dots are shown below the device code along with a "← Cancel" button at the bottom — there is no "⏳ Waiting for sign in…" text</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-023"><span class="tc-id">TC-023</span><span class="tc-desc">After successful Microsoft sign-in: mail count, meetings, and to-do data load automatically</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-024"><span class="tc-id">TC-024</span><span class="tc-desc">Footer status after successful login: shows "🟢 Connected" initially, then switches to "Updated / HH:MM:SS" once data loads; turns "Stale / HH:MM:SS" if data hasn't refreshed within 3× the chosen interval</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-025"><span class="tc-id">TC-025</span><span class="tc-desc">Timeout test: on the Outlook device-code login screen, do NOT complete sign-in in the browser — after ~15 minutes (~180 polls × 5 s) the app stops waiting and shows the connection error state<span class="note">To test: open the login screen, leave the browser tab without entering the code, and wait</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-026"><span class="tc-id">TC-026</span><span class="tc-desc">Error state shows "⚠️ Connection failed" with a Retry button; clicking Retry restarts the login flow</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-296"><span class="tc-id">TC-296</span><span class="tc-desc">During all login screens (account chooser, connecting, waiting for browser, waiting for device code): a small "Debug Logs" button is visible below the login area — clicking it opens the HTML log viewer in the default browser</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S4 ═══════════════════════════════════════════ -->
+<div class="section" id="s4">
+  <div class="sec-header" onclick="toggleSection('s4')">
+    <span class="sec-num">04</span><span class="sec-title">Authentication — Gmail (Browser OAuth)</span>
+    <span class="sec-badge" id="s4-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s4-body">
+    <div class="tc" data-id="TC-027"><span class="tc-id">TC-027</span><span class="tc-desc">Clicking Gmail immediately opens the system browser and transitions to a "Signing in with Google" screen with animated dots — there is no intermediate "Connecting to Gmail…" state and no hourglass</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-028"><span class="tc-id">TC-028</span><span class="tc-desc">Default browser opens to the Google OAuth consent screen automatically</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-029"><span class="tc-id">TC-029</span><span class="tc-desc">Eagle View shows title "Signing in with Google" and subtitle "Your browser is open — complete sign-in there and Eagle View will connect automatically."</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-030"><span class="tc-id">TC-030</span><span class="tc-desc"><strong>Windows only:</strong> Warning message shown — "⚠ Windows Firewall may appear — click <strong>Allow</strong> to continue."</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-031"><span class="tc-id">TC-031</span><span class="tc-desc">After completing Google OAuth in the browser, Eagle View detects it and loads data automatically</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-032"><span class="tc-id">TC-032</span><span class="tc-desc">After Gmail login: Gmail M-envelope icon appears on the Mails row (replaces the Outlook blue envelope "O" icon)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-033"><span class="tc-id">TC-033</span><span class="tc-desc">OAuth flow times out after 5 minutes if not completed in browser; error state is shown</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S5 ═══════════════════════════════════════════ -->
+<div class="section" id="s5">
+  <div class="sec-header" onclick="toggleSection('s5')">
+    <span class="sec-num">05</span><span class="sec-title">Account Switching</span>
+    <span class="sec-badge" id="s5-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s5-body">
+    <div class="tc" data-id="TC-034"><span class="tc-id">TC-034</span><span class="tc-desc">In Settings mode: Mails row shows a Switch Account icon button on the right side of the row</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-035"><span class="tc-id">TC-035</span><span class="tc-desc">Clicking the icon expands an account menu showing the current signed-in email address</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-036"><span class="tc-id">TC-036</span><span class="tc-desc">Account menu has a "Switch Account" button; clicking it opens the account chooser with a "← Back" button</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-037"><span class="tc-id">TC-037</span><span class="tc-desc">Clicking "← Back" returns to the connected/settings state without re-logging in</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-038"><span class="tc-id">TC-038</span><span class="tc-desc">Choosing a different account type (e.g. Gmail instead of Outlook) completes the re-login flow correctly</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc-group">Sign Out</div>
+    <div class="tc" data-id="TC-297"><span class="tc-id">TC-297</span><span class="tc-desc">Account menu shows a "Sign Out" button below "Switch Account"</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-298"><span class="tc-id">TC-298</span><span class="tc-desc">Clicking "Sign Out" opens a confirmation overlay: "Sign out and clear all account data?" with Cancel and Sign Out buttons</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-299"><span class="tc-id">TC-299</span><span class="tc-desc">Clicking Cancel in the sign-out overlay dismisses it and returns to the connected state without signing out</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-300"><span class="tc-id">TC-300</span><span class="tc-desc">Clicking Sign Out in the confirmation overlay clears all account data (mails, to-do, meetings, Jira, Teams, Slack) and returns to the account chooser screen</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S6 ═══════════════════════════════════════════ -->
+<div class="section" id="s6">
+  <div class="sec-header" onclick="toggleSection('s6')">
+    <span class="sec-num">06</span><span class="sec-title">Widget Toggle Button (Arrow Tab)</span>
+    <span class="sec-badge" id="s6-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s6-body">
+    <div class="tc" data-id="TC-039"><span class="tc-id">TC-039</span><span class="tc-desc">Toggle button (3-dot pill) is always visible on the left screen edge</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-040"><span class="tc-id">TC-040</span><span class="tc-desc">Button has 3 size options: Small (sm), Medium (md), Large (lg) — selectable in Settings mode</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-041"><span class="tc-id">TC-041</span><span class="tc-desc">Clicking the toggle button opens the panel (if closed) or closes it (if open)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-042"><span class="tc-id">TC-042</span><span class="tc-desc">Dragging the toggle button vertically repositions it up or down on the screen edge</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-043"><span class="tc-id">TC-043</span><span class="tc-desc">After a drag, releasing the mouse does NOT fire a click — panel state stays unchanged</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-044"><span class="tc-id">TC-044</span><span class="tc-desc">Toggle button is hidden when the panel is pinned (isPinned = true)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-045"><span class="tc-id">TC-045</span><span class="tc-desc">In Settings mode: 3 size pickers are shown — the active size is centered and full height; inactive sizes are at the bottom at smaller height and lower opacity (45%)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-046"><span class="tc-id">TC-046</span><span class="tc-desc">Clicking an inactive size picker in Settings mode changes the toggle to that size immediately</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-047"><span class="tc-id">TC-047</span><span class="tc-desc">Selected toggle button size persists after app restart (saved to eagleview-toggle-size)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-295"><span class="tc-id">TC-295</span><span class="tc-desc">The toggle button color matches the active theme's main color gradient on all themes — including the size-picker buttons shown in Settings mode; switching themes updates the button color immediately</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-317"><span class="tc-id">TC-317</span><span class="tc-desc">In Settings mode, the 3 size-picker buttons (sz-transit-btn) apply the theme gradient background — the active size renders at full opacity; the two inactive sizes render at 0.45 opacity — verified across all 5 themes</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S7 ═══════════════════════════════════════════ -->
+<div class="section" id="s7">
+  <div class="sec-header" onclick="toggleSection('s7')">
+    <span class="sec-num">07</span><span class="sec-title">Panel Open / Close &amp; Resize</span>
+    <span class="sec-badge" id="s7-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s7-body">
+    <div class="tc-group">Open / Close Behaviour</div>
+    <div class="tc" data-id="TC-048"><span class="tc-id">TC-048</span><span class="tc-desc">Panel slides in from the left with a smooth CSS animation when opened</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-049"><span class="tc-id">TC-049</span><span class="tc-desc">Panel slides out and closes with a smooth animation when closed</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-050"><span class="tc-id">TC-050</span><span class="tc-desc">OS window shrinks to ~20 px width only AFTER the 350 ms close animation finishes — no visual clipping</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-051"><span class="tc-id">TC-051</span><span class="tc-desc">Clicking outside the panel (widget loses focus) auto-closes it — unless the panel is pinned</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-052"><span class="tc-id">TC-052</span><span class="tc-desc">Pinned panel stays open even when focus moves to another application</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-302"><span class="tc-id">TC-302</span><span class="tc-desc">Each time the panel opens while connected, all three live rows (Mails, To Do, Meetings) are refreshed immediately — without waiting for the next scheduled ticker interval</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-303"><span class="tc-id">TC-303</span><span class="tc-desc">When the panel is closed and a live row count increases, a cycling icon chip appears on/above the toggle button — it cycles through the icons of all rows with new data (each icon shown for ~1.5 s), then collapses when the panel is opened</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-304"><span class="tc-id">TC-304</span><span class="tc-desc">When the panel reopens after being closed: rows whose count increased while closed show a green left-border highlight (row-new-items class); clicking the highlighted row clears the highlight</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc-group">Resize Handles</div>
+    <div class="tc" data-id="TC-053"><span class="tc-id">TC-053</span><span class="tc-desc">Bottom-right corner handle: dragging resizes both width and height simultaneously</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-054"><span class="tc-id">TC-054</span><span class="tc-desc">Right edge handle: dragging changes width only (horizontal resize)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-055"><span class="tc-id">TC-055</span><span class="tc-desc">Bottom edge handle: dragging changes height from the bottom</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-056"><span class="tc-id">TC-056</span><span class="tc-desc">Top edge handle: dragging changes height from the top (moves the window's top edge)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-057"><span class="tc-id">TC-057</span><span class="tc-desc">Width is clamped: minimum 180 px — cannot be dragged narrower</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-058"><span class="tc-id">TC-058</span><span class="tc-desc">Width is clamped: maximum 65% of screen width — cannot be dragged wider</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-059"><span class="tc-id">TC-059</span><span class="tc-desc">Height is clamped: minimum is 35% of screen height (max 400 px) — cannot be dragged shorter</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S8 ═══════════════════════════════════════════ -->
+<div class="section" id="s8">
+  <div class="sec-header" onclick="toggleSection('s8')">
+    <span class="sec-num">08</span><span class="sec-title">Keyboard Shortcuts <span class="new-badge">UPDATED</span></span>
+    <span class="sec-badge" id="s8-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s8-body">
+    <div class="tc" data-id="TC-060"><span class="tc-id">TC-060</span><span class="tc-desc"><strong>macOS:</strong> Cmd+E toggles the panel open/close<br><strong>Windows:</strong> Ctrl+E toggles the panel open/close</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-061"><span class="tc-id">TC-061</span><span class="tc-desc">Shortcut is global — works even when Eagle View is not the focused application</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc-group">Cmd+R Reload (macOS only)</div>
+    <div class="tc" data-id="TC-063"><span class="tc-id">TC-063</span><span class="tc-desc"><strong>macOS only:</strong> Cmd+R triggers an instant webview reload — works even when the panel does not have keyboard focus<span class="note">Registered as an OS-level global shortcut via tauri-plugin-global-shortcut; uses w.eval("window.location.reload()")</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-064"><span class="tc-id">TC-064</span><span class="tc-desc"><strong>macOS only:</strong> Cmd+R does NOT intercept Ctrl+R system-wide on Windows (shortcut is macOS-only; not registered on Windows)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S9 ═══════════════════════════════════════════ -->
+<div class="section" id="s9">
+  <div class="sec-header" onclick="toggleSection('s9')">
+    <span class="sec-num">09</span><span class="sec-title">System Tray</span>
+    <span class="sec-badge" id="s9-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s9-body">
+    <div class="tc" data-id="TC-065"><span class="tc-id">TC-065</span><span class="tc-desc"><strong>macOS:</strong> Icon appears in the menu bar<br><strong>Windows:</strong> Icon appears in the system tray — persists even after restart</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-066"><span class="tc-id">TC-066</span><span class="tc-desc">Left-clicking the tray icon toggles the panel open/close</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-067"><span class="tc-id">TC-067</span><span class="tc-desc">Right-click tray menu shows two items separated by a divider: "Show / Hide Eagle View" (static label — does not change based on panel open/closed state) and "Quit Eagle View"</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-068"><span class="tc-id">TC-068</span><span class="tc-desc">"Show / Hide Eagle View" tray menu item toggles the panel (same as clicking the icon)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-069"><span class="tc-id">TC-069</span><span class="tc-desc">"Quit Eagle View" tray menu item closes the application completely</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S10 ══════════════════════════════════════════ -->
+<div class="section" id="s10">
+  <div class="sec-header" onclick="toggleSection('s10')">
+    <span class="sec-num">10</span><span class="sec-title">Open at Login</span>
+    <span class="sec-badge" id="s10-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s10-body">
+    <div class="tc" data-id="TC-070"><span class="tc-id">TC-070</span><span class="tc-desc">Open at Login is automatically enabled after the first successful Outlook or Gmail login (runs once)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-071"><span class="tc-id">TC-071</span><span class="tc-desc">In Settings mode: the footer shows an "Autostart" button on the left — it fills with the theme's main color when autostart is ON, and shows a bordered transparent style when OFF; there is no "ON / OFF" text label and it is not a row-list item</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-072"><span class="tc-id">TC-072</span><span class="tc-desc">Clicking toggle to OFF disables autostart — app does not open at next system login</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-073"><span class="tc-id">TC-073</span><span class="tc-desc">Clicking toggle to ON re-enables autostart — app opens automatically at next system login</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-074"><span class="tc-id">TC-074</span><span class="tc-desc">Toggle state accurately reflects the actual system autostart registration (not just local UI state)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S11 ══════════════════════════════════════════ -->
+<div class="section" id="s11">
+  <div class="sec-header" onclick="toggleSection('s11')">
+    <span class="sec-num">11</span><span class="sec-title">Header &amp; Settings Mode <span class="new-badge">UPDATED</span></span>
+    <span class="sec-badge" id="s11-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s11-body">
+    <div class="tc" data-id="TC-075"><span class="tc-id">TC-075</span><span class="tc-desc">Header shows Eagle icon + "Eagle View" title with the Siemens orange gradient in normal mode</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-076"><span class="tc-id">TC-076</span><span class="tc-desc">Clicking the header enters Settings mode — title changes to "Settings" with a different gradient</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-077"><span class="tc-id">TC-077</span><span class="tc-desc">Clicking the header again exits Settings mode and returns to the normal row view</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-078"><span class="tc-id">TC-078</span><span class="tc-desc">Entering Settings mode immediately closes all open dropdowns (mails, to-do, meetings, incidents, jira, azure, learn)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-079"><span class="tc-id">TC-079</span><span class="tc-desc">In Settings mode: all 12 data rows are shown (Mails, Meetings, To Do, Incidents, Jira, Azure Boards, Teams, Slack, World Clock, Learn4U, Time Sheet, Peakon) — rows hidden from normal view appear grayed-out (row-hidden-in-settings class)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-080"><span class="tc-id">TC-080</span><span class="tc-desc">While any login screen is active (<code>chooseAccount</code>, <code>connecting</code>, <code>waitingBrowser</code>, <code>waitingCode</code>): clicking the header does nothing — cursor is default and Settings mode cannot be activated<span class="note">onClick and title attributes are removed from the header div for all four login statuses</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-301"><span class="tc-id">TC-301</span><span class="tc-desc">In Settings mode the header shows a version badge "v1.1.3" next to the "Settings" title</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S12 ══════════════════════════════════════════ -->
+<div class="section" id="s12">
+  <div class="sec-header" onclick="toggleSection('s12')">
+    <span class="sec-num">12</span><span class="sec-title">Mails Row</span>
+    <span class="sec-badge" id="s12-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s12-body">
+    <div class="tc" data-id="TC-081"><span class="tc-id">TC-081</span><span class="tc-desc">Badge shows today's unread count (not the total unread count)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-082"><span class="tc-id">TC-082</span><span class="tc-desc">Clicking the Mails row in normal mode expands the mail dropdown</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-083"><span class="tc-id">TC-083</span><span class="tc-desc">Mail dropdown shows a "Today's Unread" summary header row with today's count</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-084"><span class="tc-id">TC-084</span><span class="tc-desc">Mail dropdown shows a "Yesterday's Unread" section (with count) only when yesterday's mails exist</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-085"><span class="tc-id">TC-085</span><span class="tc-desc">Mail dropdown shows a "Total Unread" summary row at the very bottom with total count</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-086"><span class="tc-id">TC-086</span><span class="tc-desc">Each mail row shows sender, subject, and received time</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-087"><span class="tc-id">TC-087</span><span class="tc-desc">Clicking a mail row opens it in the browser</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-088"><span class="tc-id">TC-088</span><span class="tc-desc">Outlook mail links include a <code>login_hint</code> query param with the signed-in email (avoids Microsoft account picker)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-089"><span class="tc-id">TC-089</span><span class="tc-desc">Gmail mail links open directly WITHOUT a login_hint param (avoids breaking Gmail URL format)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-090"><span class="tc-id">TC-090</span><span class="tc-desc">Empty state (no unread mails): "✅ No unread mails" message shown</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-091"><span class="tc-id">TC-091</span><span class="tc-desc">Mail dropdown is scrollable when many mails exist (max-height ~200 px)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-092"><span class="tc-id">TC-092</span><span class="tc-desc">No scrollbar is visible in the mail dropdown (scrollbar-width: none)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-093"><span class="tc-id">TC-093</span><span class="tc-desc">A scroll-fade gradient overlay is visible at the bottom of the mail dropdown when it is scrollable</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-094"><span class="tc-id">TC-094</span><span class="tc-desc">Clicking the Mails row again collapses / closes the dropdown</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S13 ══════════════════════════════════════════ -->
+<div class="section" id="s13">
+  <div class="sec-header" onclick="toggleSection('s13')">
+    <span class="sec-num">13</span><span class="sec-title">To Do Row (Flagged Mails)</span>
+    <span class="sec-badge" id="s13-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s13-body">
+    <div class="tc" data-id="TC-095"><span class="tc-id">TC-095</span><span class="tc-desc">To Do badge shows the flagged mail count; badge turns blue (count-flag) when count is greater than 0</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-096"><span class="tc-id">TC-096</span><span class="tc-desc">Clicking To Do row expands the dropdown showing flagged mails</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-097"><span class="tc-id">TC-097</span><span class="tc-desc">Each flagged mail row shows sender, subject, and received time</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-098"><span class="tc-id">TC-098</span><span class="tc-desc">Clicking a flagged mail opens it in the browser (same link logic as the Mails row)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-099"><span class="tc-id">TC-099</span><span class="tc-desc">Empty state: "✅ No flagged mails" message shown</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-100"><span class="tc-id">TC-100</span><span class="tc-desc">Clicking To Do row again closes the dropdown</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S14 ══════════════════════════════════════════ -->
+<div class="section" id="s14">
+  <div class="sec-header" onclick="toggleSection('s14')">
+    <span class="sec-num">14</span><span class="sec-title">Meetings Row</span>
+    <span class="sec-badge" id="s14-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s14-body">
+    <div class="tc" data-id="TC-101"><span class="tc-id">TC-101</span><span class="tc-desc">A horizontal divider line is shown above the Meetings row in normal mode</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-102"><span class="tc-id">TC-102</span><span class="tc-desc">Badge shows count of meetings that have NOT yet ended (upcoming count only, not all-day total)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-103"><span class="tc-id">TC-103</span><span class="tc-desc">Clicking Meetings row expands the dropdown</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-104"><span class="tc-id">TC-104</span><span class="tc-desc">Empty state: "✅ No meetings today"</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-105"><span class="tc-id">TC-105</span><span class="tc-desc">Future meeting &gt; 30 min away: countdown shows "in Xm" in green</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-106"><span class="tc-id">TC-106</span><span class="tc-desc">Future meeting 10–30 min away: countdown shows "in Xm" in orange</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-107"><span class="tc-id">TC-107</span><span class="tc-desc">Future meeting ≤ 10 min away: countdown shows "in Xm" in red</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-108"><span class="tc-id">TC-108</span><span class="tc-desc">In-progress meeting with no join URL: shows "<span style="color:#FF4444">●</span> Live" in red</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-109"><span class="tc-id">TC-109</span><span class="tc-desc">In-progress meeting with a Teams join URL: shows "<span style="color:#FF4444">●</span> Join" button in red — clicking opens Teams in browser</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-110"><span class="tc-id">TC-110</span><span class="tc-desc">Meeting ended less than 5 minutes ago: still shown in list with "Over" label in dim colour</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-111"><span class="tc-id">TC-111</span><span class="tc-desc">Meeting ended more than 5 minutes ago: completely filtered out from the dropdown list</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-112"><span class="tc-id">TC-112</span><span class="tc-desc">Meeting countdown labels update every 60 seconds (not every second)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S15 ══════════════════════════════════════════ -->
+<div class="section" id="s15">
+  <div class="sec-header" onclick="toggleSection('s15')">
+    <span class="sec-num">15</span><span class="sec-title">Incidents Row (Dummy Data)</span>
+    <span class="sec-badge" id="s15-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s15-body">
+    <div class="tc" data-id="TC-113"><span class="tc-id">TC-113</span><span class="tc-desc">Incidents row badge shows count of 5</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-114"><span class="tc-id">TC-114</span><span class="tc-desc">Clicking Incidents row expands a dropdown table with "Incident No." and "Priority" column headers</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-115"><span class="tc-id">TC-115</span><span class="tc-desc">5 dummy incidents listed: INC0023451 High · INC0018734 Medium · INC0031256 Low · INC0027893 High · INC0019042 Medium</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-116"><span class="tc-id">TC-116</span><span class="tc-desc">Priority badges are colour-coded: High = red, Medium = orange, Low = green</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-117"><span class="tc-id">TC-117</span><span class="tc-desc">No live API call — data is static dummy content</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S16 ══════════════════════════════════════════ -->
+<div class="section" id="s16">
+  <div class="sec-header" onclick="toggleSection('s16')">
+    <span class="sec-num">16</span><span class="sec-title">Jira Row (Dummy Data)</span>
+    <span class="sec-badge" id="s16-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s16-body">
+    <div class="tc" data-id="TC-118"><span class="tc-id">TC-118</span><span class="tc-desc">Jira row badge shows count of 3 (the first project alphabetically is APP, which has 3 issues)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-119"><span class="tc-id">TC-119</span><span class="tc-desc">Clicking Jira row expands the dropdown showing issues with key, summary, and status</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-120"><span class="tc-id">TC-120</span><span class="tc-desc">7 dummy issues across 3 projects (APP, OPS, WEB) — first project APP shows: APP-12 "Fix login page redirect loop" In Progress · APP-9 "Add dark mode toggle to settings" To Do · APP-7 "Update API rate limit handling" To Do (overdue)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-121"><span class="tc-id">TC-121</span><span class="tc-desc">Overdue item (APP-7 "Update API rate limit handling", due 2026-07-10) is visually highlighted with a red/distinct overdue style (jira-overdue class)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-122"><span class="tc-id">TC-122</span><span class="tc-desc">Status abbreviations used: PROG, TO DO, IN REV, DONE, BLOCK</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-123"><span class="tc-id">TC-123</span><span class="tc-desc">No live API call — data is static dummy content</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-320"><span class="tc-id">TC-320</span><span class="tc-desc">Within the selected project, Jira issues are sorted by priority descending (highest → high → medium → low → lowest) using PRIORITY_ORDER mapping</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S17 ══════════════════════════════════════════ -->
+<div class="section" id="s17">
+  <div class="sec-header" onclick="toggleSection('s17')">
+    <span class="sec-num">17</span><span class="sec-title">Azure Boards Row (Dummy Data) <span class="new-badge">NEW</span></span>
+    <span class="sec-badge" id="s17-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s17-body">
+    <div class="tc" data-id="TC-124"><span class="tc-id">TC-124</span><span class="tc-desc">Azure Boards row is present in the main row list</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-125"><span class="tc-id">TC-125</span><span class="tc-desc">Azure icon: blue (#0078D4) rounded square with a white lightning bolt path inside</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-126"><span class="tc-id">TC-126</span><span class="tc-desc">Azure badge shows count of 3 (the first project alphabetically is EagleTest, which has 3 items)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-127"><span class="tc-id">TC-127</span><span class="tc-desc">Clicking Azure row expands the dropdown showing work items with ID, summary, and status</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-128"><span class="tc-id">TC-128</span><span class="tc-desc">8 dummy work items across 3 projects (EagleTest, OpsAutomation, RemindClock) — first project EagleTest shows: #3842 "Implement user authentication flow" Active · #3817 "Fix dashboard loading performance" New · #3801 "API timeout handling for slow networks" Active (overdue)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-129"><span class="tc-id">TC-129</span><span class="tc-desc">Overdue item (#3801) has a distinct overdue highlight (azure-overdue class)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-130"><span class="tc-id">TC-130</span><span class="tc-desc">Status badge colours: Active = blue · New = muted grey · Closed = very faint grey · To Do = light grey · Resolved = green (class exists but no dummy item uses "Resolved")</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-131"><span class="tc-id">TC-131</span><span class="tc-desc">No live API call — data is static dummy content</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S18 ══════════════════════════════════════════ -->
+<div class="section" id="s18">
+  <div class="sec-header" onclick="toggleSection('s18')">
+    <span class="sec-num">18</span><span class="sec-title">Learn4U Row (Dummy Data)</span>
+    <span class="sec-badge" id="s18-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s18-body">
+    <div class="tc" data-id="TC-132"><span class="tc-id">TC-132</span><span class="tc-desc">Learn4U row badge shows count of 3</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-133"><span class="tc-id">TC-133</span><span class="tc-desc">Clicking Learn4U row expands the dropdown with 3 training items</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-134"><span class="tc-id">TC-134</span><span class="tc-desc">3 items: "Cybersecurity Awareness" Due Jul 15 (urgent) · "Data Privacy &amp; GDPR" Due Aug 30 · "Workplace Safety Essentials" Due Sep 12</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-135"><span class="tc-id">TC-135</span><span class="tc-desc">"Cybersecurity Awareness" has an urgent due-date style (red / highlighted)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-136"><span class="tc-id">TC-136</span><span class="tc-desc">No live API call — data is static dummy content</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S19 ══════════════════════════════════════════ -->
+<div class="section" id="s19">
+  <div class="sec-header" onclick="toggleSection('s19')">
+    <span class="sec-num">19</span><span class="sec-title">Time Sheet Row</span>
+    <span class="sec-badge" id="s19-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s19-body">
+    <div class="tc" data-id="TC-137"><span class="tc-id">TC-137</span><span class="tc-desc">Time Sheet row badge shows "2d" (number with day suffix, not a plain count)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-138"><span class="tc-id">TC-138</span><span class="tc-desc">Clicking Time Sheet row in normal mode opens a dropdown with two actions: "Link" (opens the configured timesheet URL in browser) and "Done" (marks timesheet as complete)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+<div class="tc" data-id="TC-139"><span class="tc-id">TC-139</span><span class="tc-desc">In Settings mode: a day/weekday picker is shown — select a day of month (1–28) or a weekday (Mon–Fri only) to set the timesheet reminder</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-311"><span class="tc-id">TC-311</span><span class="tc-desc">Clicking "Done" in the Time Sheet dropdown plays a slide-out animation (~380 ms) then hides the row completely for the rest of the session; the row reappears on the next app launch</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-312"><span class="tc-id">TC-312</span><span class="tc-desc">If no timesheet URL is configured in Settings, clicking "Link" opens the default fallback URL (https://track.toggl.com) in the browser</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S20 ══════════════════════════════════════════ -->
+<div class="section" id="s20">
+  <div class="sec-header" onclick="toggleSection('s20')">
+    <span class="sec-num">20</span><span class="sec-title">Peakon Survey Row</span>
+    <span class="sec-badge" id="s20-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s20-body">
+    <div class="tc" data-id="TC-140"><span class="tc-id">TC-140</span><span class="tc-desc">Peakon row shows an ImportantBadge (yellow/orange warning triangle icon) in normal mode — not a number</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-141"><span class="tc-id">TC-141</span><span class="tc-desc">Clicking the Peakon row in normal mode does NOT expand a dropdown</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-142"><span class="tc-id">TC-142</span><span class="tc-desc">Peakon row appears when a survey mail is received (shows exclamation badge); badge turns to a thumbs-up when a completion mail is received; clicking the thumbs-up dismisses the row</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-305"><span class="tc-id">TC-305</span><span class="tc-desc">When Peakon status is "pending", clicking the ImportantBadge (warning triangle) opens the Peakon survey link in the default browser</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-306"><span class="tc-id">TC-306</span><span class="tc-desc">When Peakon status is "expired" or "none", the Peakon row is completely absent from the normal mode row list</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S21 ══════════════════════════════════════════ -->
+<div class="section" id="s21">
+  <div class="sec-header" onclick="toggleSection('s21')">
+    <span class="sec-num">21</span><span class="sec-title">Notes Feature</span>
+    <span class="sec-badge" id="s21-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s21-body">
+    <div class="tc-group">Visibility &amp; Setup</div>
+    <div class="tc" data-id="TC-143"><span class="tc-id">TC-143</span><span class="tc-desc">Notes row is visible by default on fresh install</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-144"><span class="tc-id">TC-144</span><span class="tc-desc">In Settings mode: Notes row shows an eye-toggle only — no interval stepper</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-145"><span class="tc-id">TC-145</span><span class="tc-desc">After enabling Notes in settings, a horizontal divider appears above the Notes section in normal mode</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc-group">Creating &amp; Editing</div>
+    <div class="tc" data-id="TC-146"><span class="tc-id">TC-146</span><span class="tc-desc">A trailing empty input row is always shown at the bottom of undone notes with placeholder "Add a note…"</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-147"><span class="tc-id">TC-147</span><span class="tc-desc">When the last undone note has text, a new empty trailing input is automatically added below it</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-148"><span class="tc-id">TC-148</span><span class="tc-desc">Note text auto-saves after 400 ms of inactivity (debounced write to eagleview-notes)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-149"><span class="tc-id">TC-149</span><span class="tc-desc">Notes persist after app restart</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc-group">Checkbox (Done / Undone)</div>
+    <div class="tc" data-id="TC-150"><span class="tc-id">TC-150</span><span class="tc-desc">Checking a note plays a tick-draw animation (~380 ms) then moves the note to the bottom (done section)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-151"><span class="tc-id">TC-151</span><span class="tc-desc">Unchecking a done note moves it back to the undone section immediately</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-152"><span class="tc-id">TC-152</span><span class="tc-desc">Done notes show a red trash (delete) button instead of the bell reminder button</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-153"><span class="tc-id">TC-153</span><span class="tc-desc">Clicking the delete button on a done note removes it permanently</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc-group">Reminder Bell</div>
+    <div class="tc" data-id="TC-154"><span class="tc-id">TC-154</span><span class="tc-desc">Bell icon is dim/grey when no reminder is set on an undone note</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-155"><span class="tc-id">TC-155</span><span class="tc-desc">Clicking the bell button opens a reminder popup with hour-option buttons (1h, 2h, 4h, 6h, 10h, 16h) and a calendar date picker — if a reminder is already set, clicking the bell clears it immediately without opening the popup</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-156"><span class="tc-id">TC-156</span><span class="tc-desc">Bell turns gold/yellow when a reminder is set; the hours number is shown inside the bell icon (e.g. "4")</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-157"><span class="tc-id">TC-157</span><span class="tc-desc">When the reminder time elapses, the bell shakes (animation) to alert the user</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-158"><span class="tc-id">TC-158</span><span class="tc-desc">Clicking a shaking bell resets the reminder to off and stops the shake</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-159"><span class="tc-id">TC-159</span><span class="tc-desc">Reminder state is checked every 30 seconds while the app is running</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-307"><span class="tc-id">TC-307</span><span class="tc-desc">Selecting a date in the reminder popup calendar sets a date-based reminder — a calendar icon with the month and day number appears on the note row instead of the bell; the icon shakes on the reminder date</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-308"><span class="tc-id">TC-308</span><span class="tc-desc">Clicking the calendar icon on a note with a date reminder clears it immediately</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc-group">Drag to Reorder</div>
+    <div class="tc" data-id="TC-160"><span class="tc-id">TC-160</span><span class="tc-desc">Dragging a note row (by its body, not the checkbox or button) initiates a drag-to-reorder</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-161"><span class="tc-id">TC-161</span><span class="tc-desc">Dragging over another note row highlights it as the drop target</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-162"><span class="tc-id">TC-162</span><span class="tc-desc">Releasing the drag places the note at the target position; new order is saved immediately</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc-group">Note Expand Popup</div>
+    <div class="tc" data-id="TC-309"><span class="tc-id">TC-309</span><span class="tc-desc">Double-clicking a note row (not on a button or checkbox) opens a full-screen expand popup with a larger auto-focused textarea, a "Mark as done / Done" toggle button, and a copy-to-clipboard send button</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-310"><span class="tc-id">TC-310</span><span class="tc-desc">The expand popup closes when clicking the × button or clicking the backdrop behind it; edits made in the popup are saved to the note</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-321"><span class="tc-id">TC-321</span><span class="tc-desc">A note row with text wider than the row container shows a RAF-driven horizontal scroll animation on hover — text scrolls across then resets, giving a marquee-like effect for long notes</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S22 ══════════════════════════════════════════ -->
+<div class="section" id="s22">
+  <div class="sec-header" onclick="toggleSection('s22')">
+    <span class="sec-num">22</span><span class="sec-title">World Clock</span>
+    <span class="sec-badge" id="s22-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s22-body">
+    <div class="tc" data-id="TC-163"><span class="tc-id">TC-163</span><span class="tc-desc">World Clock row is always pinned at the bottom of the panel — cannot be dragged or reordered</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-164"><span class="tc-id">TC-164</span><span class="tc-desc">World Clock is visible by default on fresh install; it can be shown or hidden via the eye-toggle in settings mode</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-165"><span class="tc-id">TC-165</span><span class="tc-desc">Two timezone clocks are displayed side-by-side (clock 1 left, clock 2 right)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-166"><span class="tc-id">TC-166</span><span class="tc-desc">Each clock shows a city/region label and the current local time in that timezone</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-167"><span class="tc-id">TC-167</span><span class="tc-desc">Double-clicking the left clock label opens the timezone picker for clock 1 with label "← Left clock — select timezone"<span class="note">title attribute reads "Double-click to change timezone"</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-168"><span class="tc-id">TC-168</span><span class="tc-desc">Double-clicking the right clock label opens the timezone picker for clock 2 with label "Right clock → — select timezone"</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-169"><span class="tc-id">TC-169</span><span class="tc-desc">Double-clicking the same clock label again (while picker is open) closes the picker</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-170"><span class="tc-id">TC-170</span><span class="tc-desc">Picker lists 26 cities with flag emoji, city name, and current UTC offset</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-171"><span class="tc-id">TC-171</span><span class="tc-desc">Currently selected timezone is highlighted (wc-picker-active) in the list</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-172"><span class="tc-id">TC-172</span><span class="tc-desc">Selecting a timezone updates the clock immediately and closes the picker</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-173"><span class="tc-id">TC-173</span><span class="tc-desc">Timezone picker is scrollable; no scrollbar visible; scroll-fade gradient at the bottom</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-174"><span class="tc-id">TC-174</span><span class="tc-desc">Clock times update every 60 seconds — NOT every second (minute-level precision)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-175"><span class="tc-id">TC-175</span><span class="tc-desc">Timezone selections persist after app restart (saved to eagleview-clock1-zone / eagleview-clock2-zone)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-176"><span class="tc-id">TC-176</span><span class="tc-desc">In Settings mode: World Clock row shows a 12H / 24H format stepper instead of the clock display</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-177"><span class="tc-id">TC-177</span><span class="tc-desc">12H/24H format change applies immediately and persists after restart (saved to eagleview-wc-format)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-316"><span class="tc-id">TC-316</span><span class="tc-desc">When the panel is dragged to ≤220px width, the flag emoji on both clock cells is hidden (display:none via @media max-width:220px) — only city/time labels remain visible</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S23 ══════════════════════════════════════════ -->
+<div class="section" id="s23">
+  <div class="sec-header" onclick="toggleSection('s23')">
+    <span class="sec-num">23</span><span class="sec-title">Row Reordering &amp; Visibility</span>
+    <span class="sec-badge" id="s23-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s23-body">
+    <div class="tc-group">Reordering (Settings mode)</div>
+    <div class="tc" data-id="TC-178"><span class="tc-id">TC-178</span><span class="tc-desc">In Settings mode: rows can be dragged (mouse-down on the row body, not buttons) to change their order</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-179"><span class="tc-id">TC-179</span><span class="tc-desc">Dragging over a target row highlights it with a drag-over indicator</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-180"><span class="tc-id">TC-180</span><span class="tc-desc">Releasing the drag reorders the rows; new order is applied immediately</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-181"><span class="tc-id">TC-181</span><span class="tc-desc">Row order persists after app restart (saved to eagleview-row-order)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc-group">Visibility (eye toggle)</div>
+    <div class="tc" data-id="TC-182"><span class="tc-id">TC-182</span><span class="tc-desc">In Settings mode: each row shows an eye icon button — open eye = visible, closed eye = hidden</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-183"><span class="tc-id">TC-183</span><span class="tc-desc">Clicking the eye button toggles visibility — hidden rows appear grayed-out in Settings but remain listed</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-184"><span class="tc-id">TC-184</span><span class="tc-desc">In normal mode: hidden rows are completely absent from the row list</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-185"><span class="tc-id">TC-185</span><span class="tc-desc">Visibility choices persist after app restart (saved to eagleview-hidden-rows)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S24 ══════════════════════════════════════════ -->
+<div class="section" id="s24">
+  <div class="sec-header" onclick="toggleSection('s24')">
+    <span class="sec-num">24</span><span class="sec-title">Interval Settings</span>
+    <span class="sec-badge" id="s24-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s24-body">
+    <div class="tc" data-id="TC-186"><span class="tc-id">TC-186</span><span class="tc-desc">In Settings mode: only Mails, Jira, Azure Boards, Teams, and Slack rows show an interval stepper (‹ interval ›) replacing the count badge — World Clock shows a 12H/24H toggle; Time Sheet shows a day/weekday picker; all other rows show no stepper</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-187"><span class="tc-id">TC-187</span><span class="tc-desc">10 interval options in order: 10s · 20s · 30s · 1m · 10m · 30m · 1h · 6h · 12h · 1d</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-188"><span class="tc-id">TC-188</span><span class="tc-desc">‹ arrow is disabled at minimum (10s); › arrow is disabled at maximum (1d)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-189"><span class="tc-id">TC-189</span><span class="tc-desc">Default intervals: Mails=30s · To Do=1m · Meetings=10m · Incidents=30m · Jira=10m · Azure=10m · Teams=10m · Slack=10m · Learn4U=1h · Time Sheet=1h · Peakon=1d</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-190"><span class="tc-id">TC-190</span><span class="tc-desc">Changing an interval takes effect immediately — next scheduled refresh uses the new interval</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-191"><span class="tc-id">TC-191</span><span class="tc-desc">Interval settings persist after app restart (saved to eagleview-row-intervals)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-192"><span class="tc-id">TC-192</span><span class="tc-desc">Mails, To Do, and Meetings fetch live data at their configured intervals; Jira, Azure Boards, Teams, and Slack have individual interval steppers but currently display placeholder data; Incidents shows static dummy data with no stepper</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc-group">Teams &amp; Slack Badge Counting Method</div>
+    <div class="tc" data-id="TC-318"><span class="tc-id">TC-318</span><span class="tc-desc">Teams row badge = count of channels that have at least 1 unread message (not the sum of all messages) — with DUMMY_TEAMS (8 chats; 6 have unread &gt; 0), badge shows 6</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-319"><span class="tc-id">TC-319</span><span class="tc-desc">Slack row badge = sum of all item counts across all channels (not a channel count) — with DUMMY_SLACK (counts: 3+1+5+2+8+4+2+1), badge shows 26<span class="note">Contrasts with Teams which counts channels; Slack counts total messages</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S25 ══════════════════════════════════════════ -->
+<div class="section" id="s25">
+  <div class="sec-header" onclick="toggleSection('s25')">
+    <span class="sec-num">25</span><span class="sec-title">Themes <span class="new-badge">v1.1.3</span></span>
+    <span class="sec-badge" id="s25-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s25-body">
+    <div class="tc" data-id="TC-193"><span class="tc-id">TC-193</span><span class="tc-desc">5 themes available in the Settings footer bar: Siemens (orange/teal) · Ocean (blue/purple) · Forest (green/yellow) · Ember (red/slate) · Classic (navy/white)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-194"><span class="tc-id">TC-194</span><span class="tc-desc">Classic theme button has a "C" badge on its theme icon to distinguish it from others</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-195"><span class="tc-id">TC-195</span><span class="tc-desc">Clicking a theme applies it instantly — header gradient, toggle button, badge colours, and panel background all update</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-196"><span class="tc-id">TC-196</span><span class="tc-desc">Classic (navy) theme switches the panel to a light white background with dark text</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-197"><span class="tc-id">TC-197</span><span class="tc-desc">Active theme button has a highlighted/selected ring in the theme row</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-198"><span class="tc-id">TC-198</span><span class="tc-desc">Theme selection persists after app restart (saved to eagleview-theme)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-199"><span class="tc-id">TC-199</span><span class="tc-desc">Notification blink bar colour matches the active theme's accent colour</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc-group">Dropdown Row Color Hierarchy (per theme)</div>
+    <div class="tc" data-id="TC-200"><span class="tc-id">TC-200</span><span class="tc-desc">Mail, meeting, and training dropdown content rows have a visibly distinct background from the main row above them (slightly lighter lift on dark themes)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-201"><span class="tc-id">TC-201</span><span class="tc-desc">Summary header rows ("Today's Unread", "Yesterday's Unread") use a different (darker) background than the individual content rows below them — creating a clear 3-level visual hierarchy</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-202"><span class="tc-id">TC-202</span><span class="tc-desc"><strong>Siemens theme:</strong> dropdown content rows use <code>rgba(255,255,255,0.08)</code> lift; summary rows use <code>rgba(255,255,255,0.03)</code> — both visibly distinct from the panel background</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-203"><span class="tc-id">TC-203</span><span class="tc-desc"><strong>Ocean theme:</strong> dropdown content rows use <code>#152040</code> (blue-dark); summary rows use <code>#0E1628</code> (deeper blue) — distinct from each other and from the main row</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-204"><span class="tc-id">TC-204</span><span class="tc-desc"><strong>Forest theme:</strong> dropdown content rows use <code>#112A14</code> (forest green); summary rows use <code>#0A1F0D</code> — distinct from each other and from the main row</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-205"><span class="tc-id">TC-205</span><span class="tc-desc"><strong>Ember theme:</strong> dropdown content rows use <code>#2A1414</code> (dark red); summary rows use <code>#1C1010</code> — distinct from each other and from the main row</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-206"><span class="tc-id">TC-206</span><span class="tc-desc"><strong>Classic (light) theme:</strong> dropdown content rows use <code>#DCE6F5</code>; summary rows use <code>#EEF3FB</code> — both visibly different from the white panel background</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc-group">Quick Links Popup — Per-Theme Background</div>
+    <div class="tc" data-id="TC-207"><span class="tc-id">TC-207</span><span class="tc-desc"><strong>Siemens theme:</strong> Quick Links footer popup has a solid dark background (<code>#1a1008</code>) with an orange border — not transparent like a dropdown row</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-208"><span class="tc-id">TC-208</span><span class="tc-desc"><strong>Ocean theme:</strong> Quick Links footer popup has a solid dark-blue background (<code>#0D1020</code>) with a blue-grey border — not transparent</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-209"><span class="tc-id">TC-209</span><span class="tc-desc"><strong>Forest theme:</strong> Quick Links footer popup has a solid dark-green background (<code>#0A1A0C</code>) with a green border — not transparent</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-210"><span class="tc-id">TC-210</span><span class="tc-desc"><strong>Ember theme:</strong> Quick Links footer popup has a solid dark-red background (<code>#180C0C</code>) with a red border — not transparent</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-211"><span class="tc-id">TC-211</span><span class="tc-desc"><strong>Classic (light) theme:</strong> Quick Links footer popup has a solid white background (<code>#FFFFFF</code>) with a light-blue border — not a dark popup on the white UI</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S26 ══════════════════════════════════════════ -->
+<div class="section" id="s26">
+  <div class="sec-header" onclick="toggleSection('s26')">
+    <span class="sec-num">26</span><span class="sec-title">Footer — Normal Mode <span class="new-badge">v1.1.3</span></span>
+    <span class="sec-badge" id="s26-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s26-body">
+    <div class="tc" data-id="TC-212"><span class="tc-id">TC-212</span><span class="tc-desc">Pin / Lock button is shown on the left side of the footer</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-213"><span class="tc-id">TC-213</span><span class="tc-desc">Clicking Pin pins the panel open — lock icon changes to closed state; toggle button is hidden</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-315"><span class="tc-id">TC-315</span><span class="tc-desc">When pinned, the pin SVG renders differently per theme: fill="white" (solid) on all 4 dark themes (Siemens, Ocean, Forest, Ember); fill="none" stroke-only on the Classic/navy theme — when unpinned, fill="currentColor" and the icon is rotated 45°</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-214"><span class="tc-id">TC-214</span><span class="tc-desc">Clicking Pin again unpins — panel auto-closes on blur; toggle button reappears</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-215"><span class="tc-id">TC-215</span><span class="tc-desc">Status text: "Updated / HH:MM:SS" (two lines, no emoji) after a successful data fetch — shows "Stale / HH:MM:SS" if data is older than 3× the configured interval<span class="note">🟢 emoji does NOT appear here; 🟢 only appears in the initial "🟢 Connected" state (TC-216)</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-216"><span class="tc-id">TC-216</span><span class="tc-desc">Status text: "🟢 Connected" when authenticated but no refresh timestamp yet</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-217"><span class="tc-id">TC-217</span><span class="tc-desc">Status text: "Loading..." (plain text, no emoji, ASCII periods) while data is loading</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-218"><span class="tc-id">TC-218</span><span class="tc-desc">Status text: "Not connected" (plain text, no emoji) when auth failed or not yet started<span class="note">When status is error and a retry is counting down, the text shows "Retrying in / Ns..." instead (see TC-313)</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-313"><span class="tc-id">TC-313</span><span class="tc-desc">When status is error: the footer shows a two-line countdown ("Retrying in / Xs…") — after 30 seconds the app auto-retries the data fetch without any user action</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-219"><span class="tc-id">TC-219</span><span class="tc-desc">Coffee button (☕) in the footer triggers a manual refresh of all 7 data sources — Mails, To Do, Meetings (live) + Jira, Azure, Teams, Slack (placeholder data)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-314"><span class="tc-id">TC-314</span><span class="tc-desc">Clicking the coffee button triggers a 350ms click-feedback flash — the button and its glow override to red (#f87171) regardless of connection status, then return to the status-driven color<span class="note">coffeeFlash state is set true for 350ms on click; this is purely visual feedback, not an error state</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-220"><span class="tc-id">TC-220</span><span class="tc-desc">After manual refresh: "Updated" timestamp in footer updates to the current time</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc-group">Footer Layout</div>
+    <div class="tc" data-id="TC-226"><span class="tc-id">TC-226</span><span class="tc-desc">Footer has 2 px vertical padding — visible breathing room between the footer border and the button/icon row on all themes</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-227"><span class="tc-id">TC-227</span><span class="tc-desc">Coffee/refresh button color is driven by connection status on all 5 themes — gray (#9ca3af) = loading · green (#4ade80) = connected &amp; data fresh · yellow (#facc15) = connected but stale (elapsed &gt;3× interval) · red (#f87171) = error/disconnected<span class="note">Inline style is applied directly so it is not blocked by theme CSS</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-228"><span class="tc-id">TC-228</span><span class="tc-desc">Pin button always has a visible border on all themes — including when pinned (active) and when unpinned</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S27 ══════════════════════════════════════════ -->
+<div class="section" id="s27">
+  <div class="sec-header" onclick="toggleSection('s27')">
+    <span class="sec-num">27</span><span class="sec-title">Footer — Settings Mode <span class="new-badge">UPDATED</span></span>
+    <span class="sec-badge" id="s27-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s27-body">
+    <div class="tc" data-id="TC-229"><span class="tc-id">TC-229</span><span class="tc-desc">Settings mode footer shows an "Autostart" button on the left (fills with the theme's main color when autostart is ON) and a "Reset" button paired with a bug/log icon button on the right</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-230"><span class="tc-id">TC-230</span><span class="tc-desc">"Reset" button resets the OS window to its default size via the Tauri reset_window_size command</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-231"><span class="tc-id">TC-231</span><span class="tc-desc">Log button (bug icon) opens a styled HTML viewer of the log file in the default browser — NOT the raw log folder<span class="note">Any previous viewer files are deleted first; a new timestamped HTML file (e.g. Eagle View-viewer-1751234567.html) is generated and opened, so each click always shows a fresh, single file</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-232"><span class="tc-id">TC-232</span><span class="tc-desc">Clicking the log button a second time always shows the latest log content — browser does not serve a stale cached version<span class="note">Previous viewer HTML files are deleted before each new one is created</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-233"><span class="tc-id">TC-233</span><span class="tc-desc">Log file contains hourly heartbeat entries (<code>[app] heartbeat — running X h</code>) — a gap longer than 1 hour between log entries means the app was not running during that period</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-234"><span class="tc-id">TC-234</span><span class="tc-desc">Normal mode footer items (pin button, status text, refresh button) are not shown in Settings mode</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S28 ══════════════════════════════════════════ -->
+<div class="section" id="s28">
+  <div class="sec-header" onclick="toggleSection('s28')">
+    <span class="sec-num">28</span><span class="sec-title">New Mail Alert &amp; Badge Animations</span>
+    <span class="sec-badge" id="s28-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s28-body">
+    <div class="tc" data-id="TC-235"><span class="tc-id">TC-235</span><span class="tc-desc">When new mail arrives: "🔔 X new mail(s) received!" banner appears at the top of the row list</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-236"><span class="tc-id">TC-236</span><span class="tc-desc">New mail banner automatically disappears after 6 seconds</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-237"><span class="tc-id">TC-237</span><span class="tc-desc">Alert triggers only when BOTH conditions are true: mail count increased AND new mail IDs appeared</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-238"><span class="tc-id">TC-238</span><span class="tc-desc">Mails row has a red alert highlight (status-row-alert style) while the new mail banner is active</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-239"><span class="tc-id">TC-239</span><span class="tc-desc">When mail/meeting/to-do count changes: the affected badge vibrates briefly (~1.5 s, badge-vibrate animation)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-240"><span class="tc-id">TC-240</span><span class="tc-desc">When the panel is closed and a count changes: a thin notification bar blinks on the left edge in the active theme colour</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-241"><span class="tc-id">TC-241</span><span class="tc-desc">Notification bar blink stops when the panel is opened (isBlinking clears)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-242"><span class="tc-id">TC-242</span><span class="tc-desc">Notification bar does NOT appear when the panel is pinned open</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S29 ══════════════════════════════════════════ -->
+<div class="section" id="s29">
+  <div class="sec-header" onclick="toggleSection('s29')">
+    <span class="sec-num">29</span><span class="sec-title">Status List Scroll &amp; Fade <span class="new-badge">v1.1.3</span></span>
+    <span class="sec-badge" id="s29-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s29-body">
+    <div class="tc" data-id="TC-243"><span class="tc-id">TC-243</span><span class="tc-desc">When the row list content exceeds the visible panel height, a scroll-fade gradient overlay appears at the bottom</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-244"><span class="tc-id">TC-244</span><span class="tc-desc">Scroll fade disappears automatically when scrolled to within 8 px of the bottom</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-245"><span class="tc-id">TC-245</span><span class="tc-desc">No scrollbar is visible on the main status list (scrollbar-width: none; ::-webkit-scrollbar hidden)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc-group">Quick Links Auto-Scroll (Settings Mode)</div>
+    <div class="tc" data-id="TC-246"><span class="tc-id">TC-246</span><span class="tc-desc">When Quick Links URL slots are expanded (Settings mode), the status list automatically scrolls down smoothly to reveal them — ~370 ms after click, allowing the CSS transition to finish first</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-247"><span class="tc-id">TC-247</span><span class="tc-desc">When Quick Links URL slots are collapsed, the status list scrolls back to the top smoothly</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S30 ══════════════════════════════════════════ -->
+<div class="section" id="s30">
+  <div class="sec-header" onclick="toggleSection('s30')">
+    <span class="sec-num">30</span><span class="sec-title">Data Persistence (localStorage via Tauri IPC) <span class="new-badge">v1.1.3</span></span>
+    <span class="sec-badge" id="s30-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s30-body">
+    <div class="tc" data-id="TC-248"><span class="tc-id">TC-248</span><span class="tc-desc"><code>eagleview-theme</code> — active theme ID saved and restored on restart</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-249"><span class="tc-id">TC-249</span><span class="tc-desc"><code>eagleview-row-order</code> — drag-reorder order saved and restored</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-250"><span class="tc-id">TC-250</span><span class="tc-desc"><code>eagleview-row-intervals</code> — per-row refresh intervals saved and restored</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-251"><span class="tc-id">TC-251</span><span class="tc-desc"><code>eagleview-hidden-rows</code> — row visibility choices saved and restored</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-252"><span class="tc-id">TC-252</span><span class="tc-desc"><code>eagleview-notes</code> — notes content saved and restored (survives fresh install)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-253"><span class="tc-id">TC-253</span><span class="tc-desc"><code>eagleview-toggle-size</code> — toggle button size (sm/md/lg) saved and restored</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-254"><span class="tc-id">TC-254</span><span class="tc-desc"><code>eagleview-wc-format</code> — 12h/24h clock format saved and restored</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-255"><span class="tc-id">TC-255</span><span class="tc-desc"><code>eagleview-clock1-zone</code> and <code>eagleview-clock2-zone</code> — timezone selections saved and restored</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-256"><span class="tc-id">TC-256</span><span class="tc-desc"><code>ev-sync</code> key is RESERVED — JavaScript cannot write to it; guarded by Rust backend anti-rollback logic</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-257"><span class="tc-id">TC-257</span><span class="tc-desc"><code>quick-links</code> — array of 5 Quick Link objects (url + label) saved and restored on restart<span class="note">Key has no "eagleview-" prefix; stored via saveAppData('quick-links', links)</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-258"><span class="tc-id">TC-258</span><span class="tc-desc"><code>eagleview-ql-visible</code> — Quick Links footer button visibility (eye toggle state) saved and restored on restart</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S31 ══════════════════════════════════════════ -->
+<div class="section" id="s31">
+  <div class="sec-header" onclick="toggleSection('s31')">
+    <span class="sec-num">31</span><span class="sec-title">Window Position &amp; Size Persistence</span>
+    <span class="sec-badge" id="s31-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s31-body">
+    <div class="tc" data-id="TC-259"><span class="tc-id">TC-259</span><span class="tc-desc">Window position (x, y on screen) is saved after the user drags the window</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-260"><span class="tc-id">TC-260</span><span class="tc-desc">Window size (width, height) is saved after the user resizes the panel</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-261"><span class="tc-id">TC-261</span><span class="tc-desc">Position and size are NOT saved when the panel is in the closed (~20 px wide) state — avoids persisting collapsed dimensions</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-262"><span class="tc-id">TC-262</span><span class="tc-desc">On next launch, the window opens at the previously saved position and size</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-263"><span class="tc-id">TC-263</span><span class="tc-desc">"Reset" button in Settings footer restores the window to its default size</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S32 ══════════════════════════════════════════ -->
+<div class="section" id="s32">
+  <div class="sec-header" onclick="toggleSection('s32')">
+    <span class="sec-num">32</span><span class="sec-title">Multi-Platform Specifics <span class="new-badge">UPDATED</span></span>
+    <span class="sec-badge" id="s32-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s32-body">
+    <div class="tc-group">macOS</div>
+    <div class="tc" data-id="TC-265"><span class="tc-id">TC-265</span><span class="tc-desc">Tray icon appears in the macOS menu bar (top of screen)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-266"><span class="tc-id">TC-266</span><span class="tc-desc">Gatekeeper quarantine is expected on first install — <code>xattr -cr</code> resolves it without rebuilding</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-267"><span class="tc-id">TC-267</span><span class="tc-desc">macOS Intel DMG (Eagle.View_1.1.3_x64.dmg) runs correctly on Intel Macs; Apple Silicon DMG (Eagle.View_1.1.3_aarch64.dmg) runs correctly on ARM Macs</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-268"><span class="tc-id">TC-268</span><span class="tc-desc"><strong>macOS:</strong> Eagle View does NOT appear in the macOS Dock at any time — only the menu-bar tray icon is visible<span class="note">ActivationPolicy::Accessory hides the app from the Dock</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc-group">Windows</div>
+    <div class="tc" data-id="TC-270"><span class="tc-id">TC-270</span><span class="tc-desc">Tray icon appears in the Windows taskbar notification area</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-271"><span class="tc-id">TC-271</span><span class="tc-desc">Gmail login shows a Windows Firewall dialog warning inside Eagle View</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-272"><span class="tc-id">TC-272</span><span class="tc-desc">Accepting the Firewall dialog allows Gmail auth; blocking causes auth failure</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-273"><span class="tc-id">TC-273</span><span class="tc-desc">NSIS installer (EXE) installs and uninstalls cleanly via Windows Add / Remove Programs</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-274"><span class="tc-id">TC-274</span><span class="tc-desc"><strong>Windows:</strong> Eagle View does NOT appear as a taskbar button on the Windows Taskbar — only the system tray notification icon is present<span class="note">set_skip_taskbar(true) called at app startup on Windows</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S33 ══════════════════════════════════════════ -->
+<div class="section" id="s33">
+  <div class="sec-header" onclick="toggleSection('s33')">
+    <span class="sec-num">33</span><span class="sec-title">Quick Links <span class="new-badge">NEW</span></span>
+    <span class="sec-badge" id="s33-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s33-body">
+    <div class="tc-group">Settings Row</div>
+    <div class="tc" data-id="TC-275"><span class="tc-id">TC-275</span><span class="tc-desc">In Settings mode: Quick Links row appears at the bottom of the settings row list, below World Clock and above the Open at Login toggle</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-276"><span class="tc-id">TC-276</span><span class="tc-desc">Quick Links row has an eye toggle button — open eye: link button is visible in the footer; closed eye: link button is hidden from the footer</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-277"><span class="tc-id">TC-277</span><span class="tc-desc">Clicking the Quick Links row label (not the eye) expands 5 URL input slots below it with a smooth max-height animation (~350 ms)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-278"><span class="tc-id">TC-278</span><span class="tc-desc">Clicking the Quick Links row label again (while expanded) collapses the URL slots with the same smooth animation</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc-group">URL Slots</div>
+    <div class="tc" data-id="TC-279"><span class="tc-id">TC-279</span><span class="tc-desc">5 URL input slots are shown when expanded — each slot has a number label and a single URL input field (placeholder "Paste link here…"); there is no Label field in the UI</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-280"><span class="tc-id">TC-280</span><span class="tc-desc">Entering or editing a URL saves automatically — no save button required; data is stored immediately on change (no label field exists in the UI)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-281"><span class="tc-id">TC-281</span><span class="tc-desc">Quick Links data (all 5 URL + label pairs) persists after app restart — reloading restores every slot exactly</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc-group">Footer Popup</div>
+    <div class="tc" data-id="TC-282"><span class="tc-id">TC-282</span><span class="tc-desc">In normal mode: the chain-link icon button is only present in the footer when the Quick Links eye toggle is ON; it is completely absent when the toggle is OFF</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-283"><span class="tc-id">TC-283</span><span class="tc-desc">Clicking the chain-link icon button opens the Quick Links popup directly above the footer — popup has a solid theme-matching background (not transparent)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-284"><span class="tc-id">TC-284</span><span class="tc-desc">When no URLs are saved, the popup shows the empty state message: "No links yet — add them in Settings"</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-285"><span class="tc-id">TC-285</span><span class="tc-desc">Popup shows only favicon icons in a horizontal row — no URL text or link labels are displayed alongside the icons</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-286"><span class="tc-id">TC-286</span><span class="tc-desc">Each favicon icon button has a tooltip (title) showing the link label if one is set, or the URL when no label is configured<span class="note">title = link.label || link.url — "full address" only appears as fallback</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-287"><span class="tc-id">TC-287</span><span class="tc-desc">Clicking a favicon icon opens the URL in the default browser and closes the popup</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-288"><span class="tc-id">TC-288</span><span class="tc-desc">Clicking anywhere outside the Quick Links popup closes it</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc-group">Favicon Loading Chain</div>
+    <div class="tc" data-id="TC-289"><span class="tc-id">TC-289</span><span class="tc-desc">First attempt: tries <code>{origin}/favicon.ico</code> directly — a real HTTP 404 fires the <code>onError</code> handler and triggers the fallback</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-290"><span class="tc-id">TC-290</span><span class="tc-desc">First fallback: tries <code>https://www.google.com/s2/favicons?domain={hostname}&amp;sz=32</code> — used when the site's root server returns 404 on favicon.ico</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-291"><span class="tc-id">TC-291</span><span class="tc-desc">Final fallback: a chain-link SVG icon is displayed when both direct favicon.ico and Google service fail<span class="note">Google always returns HTTP 200 for unknown domains (blank image), triggering the second onError to show the SVG</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc-group">Classic Theme — Quick Links UI</div>
+    <div class="tc" data-id="TC-292"><span class="tc-id">TC-292</span><span class="tc-desc">Classic (light) theme: Quick Links URL and Label input text is dark and readable (navy <code>#0D2060</code>) — not white text on a white background</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-293"><span class="tc-id">TC-293</span><span class="tc-desc">Classic (light) theme: Quick Links input placeholder text is visible (semi-transparent navy) — not invisible against the white field background</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-294"><span class="tc-id">TC-294</span><span class="tc-desc">Classic (light) theme: pin button and link button icons in the footer are visible (dark navy color on white background)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+</main>
+
+<script>
+function savePDF() {
+  const tester   = document.getElementById('sel-tester').value   || 'Unknown';
+  const platform = document.getElementById('sel-platform').value || 'Unknown';
+  const prev = document.title;
+  document.title = `EagleView_QA_v1.1.3_${platform}_${tester}`.replace(/\s+/g,'_');
+  window.print();
+  document.title = prev;
+}
+
+async function savePDFDirect(btn) {
+  if (!window.html2canvas || !window.jspdf) {
+    alert('PDF library not loaded — please check your internet connection.'); return;
+  }
+  const orig = btn.textContent;
+  btn.textContent = '⏳ Generating…';
+  btn.disabled = true;
+  try {
+    const prevZoom     = document.documentElement.style.zoom || '';
+    const prevScrollY  = window.scrollY;
+    const hiddenBodies = Array.from(document.querySelectorAll('.sec-body.hidden'));
+
+    // html2canvas cannot render native <select> elements — it always clips the top.
+    // Replace each .meta-select with a plain <div> before capture, restore after.
+    const selectReplacements = [];
+
+    // Elements to fully hide during capture
+    const toHide = [
+      document.querySelector('.topbar-actions'),
+      document.querySelector('.filter-btn')?.closest('div[style]'),
+      document.getElementById('btn-floppy'),
+      document.getElementById('save-nudge'),
+      document.getElementById('presave-hint'),
+      document.getElementById('saved-hint'),
+    ].filter(Boolean);
+
+    const overrideStyle = document.createElement('style');
+    overrideStyle.id = 'pdf-cap-override';
+    overrideStyle.textContent =
+      '.tc-desc{text-align:left!important}' +
+      '#topbar{position:static!important;overflow:visible!important}' +
+      '.topbar-row1,.meta-row{overflow:visible!important}' +
+      '.tc-btn{display:none!important}' +
+      '.meta-select{background-image:none!important}';
+
+    let canvas;
+    try {
+      document.documentElement.style.zoom = '1';
+      hiddenBodies.forEach(s => s.classList.remove('hidden'));
+      window.scrollTo(0, 0);
+      toHide.forEach(el => { el.dataset.pdfHide = '1'; el.style.display = 'none'; });
+      document.head.appendChild(overrideStyle);
+
+      // Swap each native select for a div with identical class + selected text
+      document.querySelectorAll('.meta-select').forEach(sel => {
+        const div = document.createElement('div');
+        div.className = sel.className;
+        div.style.cssText = 'display:inline-flex;align-items:center;';
+        div.textContent = sel.options[sel.selectedIndex]?.text || sel.value || '';
+        sel.parentNode.replaceChild(div, sel);
+        selectReplacements.push({ div, sel });
+      });
+
+      await new Promise(r => setTimeout(r, 200));
+
+      const contentWidth = (document.querySelector('main')?.offsetWidth || 1100) + 32;
+      canvas = await html2canvas(document.body, {
+        scale: 2, useCORS: true, allowTaint: false, logging: false,
+        scrollX: 0, scrollY: 0,
+        windowWidth: contentWidth,
+        windowHeight: document.body.scrollHeight
+      });
+    } finally {
+      // Always restore — even if canvas capture throws
+      document.documentElement.style.zoom = prevZoom;
+      hiddenBodies.forEach(s => s.classList.add('hidden'));
+      window.scrollTo(0, prevScrollY);
+      document.querySelectorAll('[data-pdf-hide]').forEach(el => {
+        el.style.display = ''; delete el.dataset.pdfHide;
+      });
+      selectReplacements.forEach(({ div, sel }) => {
+        if (div.parentNode) div.parentNode.replaceChild(sel, div);
+      });
+      overrideStyle.remove();
+    }
+
+    if (!canvas) return;
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pW  = pdf.internal.pageSize.getWidth();
+    const pH  = pdf.internal.pageSize.getHeight();
+    const img = canvas.toDataURL('image/jpeg', 0.95);
+    const iH  = canvas.height * pW / canvas.width;
+    let y = 0;
+    pdf.addImage(img, 'JPEG', 0, y, pW, iH);
+    let rem = iH - pH;
+    while (rem > 0) { y -= pH; pdf.addPage(); pdf.addImage(img, 'JPEG', 0, y, pW, iH); rem -= pH; }
+
+    const tester   = (document.getElementById('sel-tester').value   || 'Tester').replace(/\s+/g,'_');
+    const platform = (document.getElementById('sel-platform').value || 'Platform').replace(/\s+/g,'_');
+    pdf.save(`EagleView_QA_v1.1.3_${platform}_${tester}.pdf`);
+  } catch(e) {
+    alert('PDF failed: ' + e.message);
+  } finally {
+    btn.textContent = orig;
+    btn.disabled = false;
+  }
+}
+
+const FILE_ID  = decodeURIComponent(window.location.pathname.split('/').pop().replace(/\.[^.]+$/, ''));
+const BASE_KEY = 'ev-qa-v8|' + FILE_ID;
+let state = {};
+
+function getStoreKey() {
+  const t = document.getElementById('sel-tester').value;
+  const p = document.getElementById('sel-platform').value;
+  const d = document.getElementById('sel-display').value;
+  if (!t || !p || !d) return null;
+  return BASE_KEY + '|' + t + '|' + p + '|' + d;
+}
+
+function load() {
+  const k = getStoreKey();
+  state = {};
+  if (!k) return;
+  try { const s = localStorage.getItem(k); if (s) state = JSON.parse(s); } catch(e){}
+}
+function save() {
+  const k = getStoreKey();
+  if (!k) return;
+  try { localStorage.setItem(k, JSON.stringify(state)); } catch(e){}
+}
+
+function applyCustomTester() {
+  const inp = document.getElementById('custom-tester');
+  if (inp.style.display === 'none') return;
+  const sel = document.getElementById('sel-tester');
+  const name = inp.value.trim();
+  inp.style.display = 'none';
+  inp.value = '';
+  sel.style.display = 'inline-block';
+  if (name) {
+    // Add as permanent option if not already present
+    const exists = Array.from(sel.options).some(o => o.value === name);
+    if (!exists) {
+      const opt = new Option(name, name);
+      sel.insertBefore(opt, sel.querySelector('option[value="__custom__"]'));
+    }
+    sel.value = name;
+  } else {
+    sel.value = '';
+  }
+  onMetaChange();
+}
+
+function saveAsTestedFile(btn) {
+  const t = document.getElementById('sel-tester').value;
+  const p = document.getElementById('sel-platform').value;
+  const d = document.getElementById('sel-display').value;
+  if (!t || !p || !d) return;
+  const baseId = FILE_ID.replace(/\s*\|\s*Master\s*$/i, '');
+  const filename = baseId + ' | ' + t + ' | ' + p + ' | ' + d + '.html';
+
+  const nudge = document.getElementById('save-nudge');
+  const nudgeCls = nudge ? nudge.className : '';
+  const nudgeTxt = nudge ? nudge.textContent : '';
+
+  // Stamp `selected` on matching options so outerHTML bakes the chosen values in
+  const pairs = [['sel-tester', t], ['sel-platform', p], ['sel-display', d]];
+  pairs.forEach(([id, val]) => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    Array.from(sel.options).forEach(o => {
+      if (o.value === val) o.setAttribute('selected', '');
+      else o.removeAttribute('selected');
+    });
+    sel.classList.add('has-value');
+  });
+
+  // Save current filter then reset to All so saved file always opens with all TCs visible.
+  // Without this, if a non-All filter (e.g. "Not Tested") was active at save time, it gets
+  // baked in; then clicking N/A/Pass/Fail on any TC immediately hides it (looks broken).
+  const activeFilterBtn = document.querySelector('.filter-btn.active');
+  const prevFilter = activeFilterBtn ? activeFilterBtn.dataset.filter : 'all';
+  if (prevFilter !== 'all') setFilter('all');
+
+  // Clean body for capture
+  document.body.classList.remove('pre-save', 'file-saved');
+  document.body.setAttribute('data-saved', '1');
+  if (nudge) { nudge.className = ''; nudge.textContent = ''; }
+
+  // Inject restore script: loads state, renders TCs, applies platform filter, resets to All
+  const restoreJs =
+    '(function(){' +
+      'if(typeof load==="function")load();' +
+      'document.querySelectorAll(".tc").forEach(function(tc){if(typeof renderTC==="function")renderTC(tc.dataset.id);});' +
+      'if(typeof applyPlatformFilter==="function")applyPlatformFilter();' +
+      'if(typeof setFilter==="function")setFilter("all");' +
+      'if(typeof updateProgress==="function")updateProgress();' +
+      'if(typeof restoreNotes==="function")restoreNotes();' +
+    '})()';
+  let html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+  // Use lastIndexOf — the replacement string itself contains '</body>' as a literal substring
+  // inside the serialised <script> block, so replace() would corrupt the wrong location.
+  const bodyIdx = html.lastIndexOf('</body>');
+  if (bodyIdx !== -1) {
+    html = html.slice(0, bodyIdx) + '<script>' + restoreJs + '\x3c/script>' + html.slice(bodyIdx);
+  }
+
+  // Restore original file state
+  document.body.removeAttribute('data-saved');
+  document.body.classList.add('pre-save', 'file-saved');
+  if (nudge) { nudge.className = nudgeCls; nudge.textContent = nudgeTxt; }
+  if (prevFilter !== 'all') setFilter(prevFilter);
+
+  // Download
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+
+  // Flash floppy green + switch nudge to green
+  btn.classList.add('saved');
+  setTimeout(() => btn.classList.remove('saved'), 1200);
+  if (nudge) {
+    nudge.classList.add('hiding');
+    setTimeout(() => {
+      nudge.textContent = 'Open the saved file in download';
+      nudge.classList.remove('hiding', 'nudge-red');
+      nudge.classList.add('visible', 'nudge-green');
+    }, 280);
+  }
+}
+
+function onMetaChange() {
+  const sel = document.getElementById('sel-tester');
+  if (sel.value === '__custom__') {
+    sel.style.display = 'none';
+    const inp = document.getElementById('custom-tester');
+    inp.style.display = 'inline-block';
+    inp.focus();
+    return;
+  }
+  // Update glow: mark filled selects so glow stops
+  ['sel-tester','sel-platform','sel-display'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.toggle('has-value', !!el.value && el.value !== '__custom__');
+  });
+  const t = sel.value;
+  const p = document.getElementById('sel-platform').value;
+  const d = document.getElementById('sel-display').value;
+  const wrap = document.getElementById('meta-badge-wrap');
+  const floppy = document.getElementById('btn-floppy');
+  const nudge = document.getElementById('save-nudge');
+  if (t && p && d) {
+    if (wrap) wrap.innerHTML = '<span class="meta-badge">&#10003; ' + t + ' &nbsp;·&nbsp; ' + p + ' &nbsp;·&nbsp; ' + d + '</span>';
+    floppy.disabled = false;
+    floppy.classList.add('ready');
+    floppy.title = 'Save as: ' + FILE_ID + ' | ' + t + ' | ' + p + ' | ' + d + '.html';
+    if (nudge) {
+      nudge.textContent = 'Click the save button';
+      nudge.classList.remove('hiding','nudge-green');
+      nudge.classList.add('visible','nudge-red');
+    }
+  } else {
+    if (wrap) wrap.innerHTML = '';
+    floppy.disabled = true;
+    floppy.classList.remove('ready','saved');
+    floppy.title = 'Select Tester, Platform & Display first';
+    if (nudge) { nudge.classList.remove('visible','hiding','nudge-red','nudge-green'); nudge.textContent = ''; }
+  }
+  // Clear rendered state then reload for this combo
+  document.querySelectorAll('.tc').forEach(tc => {
+    tc.classList.remove('tc-pass','tc-fail','tc-skip');
+    tc.querySelectorAll('.tc-btn').forEach(b => { b.className = 'tc-btn ' + b.dataset.val; });
+  });
+  load();
+  document.querySelectorAll('.tc').forEach(tc => renderTC(tc.dataset.id));
+  applyPlatformFilter();
+  updateProgress();
+  restoreNotes();
+}
+
+// ── Platform-aware filtering ──
+// Auto-tags each TC from its nearest preceding tc-group label.
+// Groups whose text contains "macos"/"mac" → 'mac'
+// Groups whose text contains "windows"/"win" → 'win'
+// All other groups / no group → 'all'
+function tagTCsByPlatform() {
+  document.querySelectorAll('.sec-body').forEach(body => {
+    let cur = 'all';
+    Array.from(body.children).forEach(el => {
+      if (el.classList.contains('tc-group')) {
+        const t = el.textContent.trim().toLowerCase();
+        if (t.includes('windows') || t.includes('win')) cur = 'win';
+        else if (t.includes('macos') || t.includes('mac')) cur = 'mac';
+        else cur = 'all';
+        el.dataset.platformGroup = cur;
+      } else if (el.classList.contains('tc')) {
+        el.dataset.platformGroup = cur;
+      }
+    });
+  });
+}
+
+function applyPlatformFilter() {
+  const platform = document.getElementById('sel-platform').value;
+  tagTCsByPlatform();
+  document.querySelectorAll('.tc').forEach(tc => {
+    const pg = tc.dataset.platformGroup || 'all';
+    let hide = false;
+    if ((platform === 'Mac Intel' || platform === 'Mac Silicon') && pg === 'win') hide = true;
+    if ((platform === 'Windows 10' || platform === 'Windows 11') && pg === 'mac') hide = true;
+    tc.classList.toggle('platform-hidden', hide);
+  });
+  document.querySelectorAll('.tc-group').forEach(grp => {
+    const pg = grp.dataset.platformGroup || 'all';
+    let hide = false;
+    if ((platform === 'Mac Intel' || platform === 'Mac Silicon') && pg === 'win') hide = true;
+    if ((platform === 'Windows 10' || platform === 'Windows 11') && pg === 'mac') hide = true;
+    grp.classList.toggle('platform-hidden', hide);
+  });
+}
+
+function setResult(id, val) {
+  if (!getStoreKey()) {
+    alert('Please select Tester, Platform, and Display before marking results.');
+    return;
+  }
+  if (state[id] === val) { delete state[id]; }
+  else { state[id] = val; }
+  save();
+  renderTC(id);
+  updateProgress();
+  // Re-apply active filter
+  const active = document.querySelector('.filter-btn.active');
+  if (active) setFilter(active.dataset.filter);
+}
+
+function renderTC(id) {
+  const el = document.querySelector(`.tc[data-id="${id}"]`);
+  if (!el) return;
+  el.classList.remove('tc-pass','tc-fail','tc-skip');
+  const v = state[id];
+  if (v) el.classList.add('tc-'+v);
+  el.querySelectorAll('.tc-btn').forEach(b => {
+    const t = b.dataset.val;
+    b.className = `tc-btn ${t}${v===t?' active-'+t:''}`;
+  });
+}
+
+
+function toggleNote(id) {
+  const el = document.querySelector(`.tc[data-id="${id}"]`);
+  if (!el) return;
+  let wrap = el.querySelector('.tc-note-wrap');
+  if (!wrap) {
+    wrap = document.createElement('div');
+    wrap.className = 'tc-note-wrap';
+    wrap.appendChild(makeNoteTextarea(id));
+    el.appendChild(wrap);
+  }
+  const isOpen = wrap.classList.toggle('open');
+  if (isOpen) wrap.querySelector('textarea').focus();
+}
+
+function makeNoteTextarea(id) {
+  const ta = document.createElement('textarea');
+  ta.className = 'tc-note-input';
+  ta.placeholder = 'Add a note…';
+  ta.value = state[id + '_note'] || '';
+  let debounce;
+  ta.addEventListener('input', () => {
+    clearTimeout(debounce);
+    debounce = setTimeout(() => {
+      const txt = ta.value.trim();
+      if (txt) state[id + '_note'] = txt;
+      else delete state[id + '_note'];
+      save();
+    }, 400);
+  });
+  return ta;
+}
+
+function restoreNotes() {
+  document.querySelectorAll('.tc').forEach(el => {
+    const id = el.dataset.id;
+    let wrap = el.querySelector('.tc-note-wrap');
+    if (wrap) { wrap.remove(); }
+    if (state[id + '_note']) {
+      wrap = document.createElement('div');
+      wrap.className = 'tc-note-wrap open';
+      wrap.appendChild(makeNoteTextarea(id));
+      el.appendChild(wrap);
+    }
+  });
+}
+
+function initNotes() {
+  document.querySelectorAll('.tc-id').forEach(span => {
+    const id = span.closest('.tc').dataset.id;
+    span.title = 'Click to add a note';
+    span.addEventListener('click', () => toggleNote(id));
+  });
+}
+
+function visibleTCs() {
+  return Array.from(document.querySelectorAll('.tc')).filter(tc => !tc.classList.contains('platform-hidden'));
+}
+
+function updateProgress() {
+  const tcs   = visibleTCs();
+  const total  = tcs.length;
+  let pass=0, fail=0, skip=0;
+  tcs.forEach(tc => {
+    const v = state[tc.dataset.id];
+    if (v==='pass') pass++;
+    else if (v==='fail') fail++;
+    else if (v==='skip') skip++;
+  });
+  const done = pass+fail+skip;
+  document.getElementById('prog-pass').textContent = pass;
+  document.getElementById('prog-fail').textContent = fail;
+  document.getElementById('prog-skip').textContent = skip;
+  document.getElementById('prog-total').textContent = `${done}/${total}`;
+  const pct = total>0 ? Math.round(done/total*100) : 0;
+  document.getElementById('prog-bar-fill').style.width = pct+'%';
+  document.getElementById('prog-pct').textContent = pct+'%';
+  updateSectionBadges();
+}
+
+function updateSectionBadges() {
+  document.querySelectorAll('.section').forEach(sec => {
+    const badge = document.getElementById(sec.id+'-badge');
+    if (!badge) return;
+    const tcs = Array.from(sec.querySelectorAll('.tc')).filter(tc => !tc.classList.contains('platform-hidden'));
+    let pass=0, fail=0, total=tcs.length;
+    tcs.forEach(tc => {
+      const v = state[tc.dataset.id];
+      if (v==='pass') pass++;
+      if (v==='fail') fail++;
+    });
+    badge.innerHTML = total===0 ? '' : fail>0
+      ? `<span class="b-fail">${fail} fail</span> · ${pass}/${total}`
+      : pass>0
+        ? `<span class="b-pass">${pass}/${total}</span>`
+        : `${total} cases`;
+  });
+}
+
+function toggleSection(id) {
+  const body = document.getElementById(id+'-body');
+  const hdr  = document.querySelector(`#${id} .sec-header`);
+  if (!body) return;
+  const collapsed = body.classList.toggle('hidden');
+  hdr.classList.toggle('collapsed', collapsed);
+}
+
+function expandAll() {
+  document.querySelectorAll('.sec-body').forEach(b=>b.classList.remove('hidden'));
+  document.querySelectorAll('.sec-header').forEach(h=>h.classList.remove('collapsed'));
+}
+function collapseAll() {
+  document.querySelectorAll('.sec-body').forEach(b=>b.classList.add('hidden'));
+  document.querySelectorAll('.sec-header').forEach(h=>h.classList.add('collapsed'));
+}
+function setFilter(filter) {
+  // Update active button
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.filter === filter);
+  });
+  // Show/hide test case rows (never un-hide platform-hidden ones)
+  document.querySelectorAll('.tc').forEach(tc => {
+    if (tc.classList.contains('platform-hidden')) { tc.classList.remove('filter-hidden'); return; }
+    const result = state[tc.dataset.id] || 'untested';
+    let show;
+    if (filter === 'all')           show = true;
+    else if (filter === 'untested') show = !state[tc.dataset.id];
+    else                            show = result === filter;
+    tc.classList.toggle('filter-hidden', !show);
+  });
+}
+
+function toggleAllSections() {
+  const btn = document.getElementById('btn-toggle-sections');
+  const anyExpanded = document.querySelector('.sec-body:not(.hidden)');
+  if (anyExpanded) {
+    collapseAll();
+    btn.textContent = 'Expand All';
+  } else {
+    expandAll();
+    btn.textContent = 'Collapse All';
+  }
+}
+
+function clearAll() {
+  if (!getStoreKey()) { alert('Select Tester, Platform, and Display first.'); return; }
+  const t = document.getElementById('sel-tester').value;
+  const p = document.getElementById('sel-platform').value;
+  const d = document.getElementById('sel-display').value;
+  if (!confirm('Clear all results for ' + t + ' / ' + p + ' / ' + d + '? This cannot be undone.')) return;
+  state = {};
+  save();
+  document.querySelectorAll('.tc').forEach(tc => {
+    tc.classList.remove('tc-pass','tc-fail','tc-skip');
+    tc.querySelectorAll('.tc-btn').forEach(b => {
+      b.className = `tc-btn ${b.dataset.val}`;
+    });
+  });
+  updateProgress();
+  restoreNotes();
+  setFilter('all');
+}
+
+function toggleTheme() {
+  const root = document.documentElement;
+  const current = root.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme:light)').matches ? 'light' : 'dark');
+  root.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
+}
+
+// ── Zoom ──
+const ZOOM_KEY = 'ev-qa-zoom';
+const ZOOM_STEP = 10;
+const ZOOM_MIN  = 50;
+const ZOOM_MAX  = 200;
+let zoomLevel = parseInt(localStorage.getItem(ZOOM_KEY) || '100', 10);
+
+function applyZoom() {
+  document.documentElement.style.zoom = zoomLevel + '%';
+  document.getElementById('zoom-label').textContent = zoomLevel + '%';
+  localStorage.setItem(ZOOM_KEY, zoomLevel);
+}
+function zoomIn()  { if (zoomLevel < ZOOM_MAX) { zoomLevel += ZOOM_STEP; applyZoom(); } }
+function zoomOut() { if (zoomLevel > ZOOM_MIN) { zoomLevel -= ZOOM_STEP; applyZoom(); } }
+
+function exportCSV() {
+  const tester   = document.getElementById('sel-tester').value   || 'Unknown';
+  const platform = document.getElementById('sel-platform').value || 'Unknown';
+  const display  = document.getElementById('sel-display').value  || 'Unknown';
+  const meta = [
+    ['Tester', tester],
+    ['Platform', platform],
+    ['Display', display],
+    ['Date', new Date().toISOString().slice(0,10)],
+    [],
+    ['ID','Description','Result']
+  ];
+  const rows = [...meta];
+  document.querySelectorAll('.tc').forEach(tc => {
+    const id   = tc.dataset.id;
+    const desc = (tc.querySelector('.tc-desc')?.innerText||'').replace(/\n/g,' ').trim();
+    const res  = state[id]||'not tested';
+    rows.push([id, '"'+desc.replace(/"/g,'""')+'"', res]);
+  });
+  const csv  = rows.map(r=>r.join(',')).join('\n');
+  const blob = new Blob([csv],{type:'text/csv'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  const safeName = tester.replace(/\s+/g,'_');
+  const safePlat = platform.replace(/\s+/g,'_');
+  a.href=url; a.download=`EagleView_QA_v1.1.3_${new Date().toISOString().slice(0,10)}_${safeName}_${safePlat}.csv`;
+  a.click(); URL.revokeObjectURL(url);
+}
+
+function unlockTesting() {
+  document.body.classList.remove('pre-save','file-saved');
+  const tag = document.getElementById('testing-mode-tag');
+  if (tag) { tag.textContent = '— Manoj Kumar M on testing mode'; tag.classList.add('visible'); }
+}
+
+// ── Init ──
+if (!document.body.dataset.saved) document.body.classList.add('pre-save');
+applyZoom();
+tagTCsByPlatform();
+// State is loaded only after tester/platform/display are selected.
+// Nothing pre-loads on page open — user must pick all three dropdowns first.
+document.addEventListener('click', function(e) {
+  var btn = e.target.closest ? e.target.closest('.tc-btn') : null;
+  if (!btn) return;
+  var tc = btn.closest('.tc');
+  if (!tc) return;
+  setResult(tc.dataset.id, btn.dataset.val);
+});
+updateProgress();
+initNotes();
+</script>
+</body>
+</html>
