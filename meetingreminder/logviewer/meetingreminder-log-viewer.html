@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Meeting Reminder — Log Viewer</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;-webkit-font-smoothing:antialiased;}
+body{background:#0B1714;color:#D8EFED;font-family:-apple-system,'Segoe UI',system-ui,sans-serif;font-size:14px;}
+
+/* ═══════════════════════════════════
+   UPLOAD ZONE
+═══════════════════════════════════ */
+#upload-zone{
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;padding:24px;
+}
+.drop-box{
+  border:2px dashed #1C3832;border-radius:16px;
+  padding:56px 80px;text-align:center;
+  background:#0D1E1B;max-width:500px;width:100%;
+  transition:border-color .2s,background .2s;cursor:pointer;
+}
+.drop-box.over,.drop-box:hover{border-color:#00C8B8;background:#0F2320;}
+.drop-icon{font-size:52px;margin-bottom:20px;line-height:1;}
+.drop-title{font-size:21px;font-weight:700;color:#00C8B8;margin-bottom:10px;letter-spacing:.3px;}
+.drop-sub{font-size:13px;color:#4E837F;line-height:1.7;margin-bottom:28px;}
+.drop-sub strong{color:#7ABBB7;}
+.drop-btn{
+  padding:9px 28px;border-radius:8px;
+  border:1.5px solid #00C8B8;background:transparent;
+  color:#00C8B8;font-size:13px;font-weight:700;
+  cursor:pointer;transition:.15s;letter-spacing:.3px;
+}
+.drop-btn:hover{background:rgba(0,200,184,.12);}
+#file-input{display:none;}
+
+/* ═══════════════════════════════════
+   VIEWER
+═══════════════════════════════════ */
+#viewer{display:none;min-height:100vh;}
+
+/* ── Fixed bar ── */
+#bar{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  background:#0D1E1B;
+  border-bottom:2px solid #1C3832;
+  box-shadow:0 2px 24px rgba(0,0,0,.55);
+}
+
+/* Header row */
+.hdr{
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  padding:10px 18px;
+  background:linear-gradient(135deg,#091F1B 0%,#0D3530 100%);
+  border-bottom:1px solid #1C3832;
+}
+.htitle{
+  font-size:17px;font-weight:800;color:#00C8B8;
+  letter-spacing:.3px;white-space:nowrap;
+}
+.hsub{font-size:11px;color:#4E837F;margin-top:2px;white-space:nowrap;}
+.hstretch{flex:1;}
+.pills{display:flex;gap:7px;align-items:center;flex-wrap:wrap;}
+.pill{
+  padding:3px 11px;border-radius:20px;font-size:11.5px;
+  font-weight:700;border:1px solid;white-space:nowrap;
+  font-variant-numeric:tabular-nums;cursor:default;
+}
+.p-t {color:#00C8B8;border-color:rgba(0,200,184,.30);background:rgba(0,200,184,.09);}
+.p-m {color:#FF9933;border-color:rgba(255,153,51,.30);background:rgba(255,153,51,.08);}
+.p-s {color:#6AB4E8;border-color:rgba(106,180,232,.25);background:rgba(106,180,232,.07);}
+.p-y {color:#A78BFA;border-color:rgba(167,139,250,.25);background:rgba(167,139,250,.07);}
+.p-e {color:#EF4444;border-color:rgba(239,68,68,.30);background:rgba(239,68,68,.08);}
+
+/* File info strip */
+.file-strip{
+  padding:4px 18px;background:#091F1B;
+  border-bottom:1px solid #162820;
+  font-size:11px;color:#3A6460;
+  display:flex;gap:8px;align-items:center;
+}
+.fname{color:#5A8A86;font-weight:600;font-family:'SF Mono',Menlo,monospace;}
+
+/* Toolbar */
+.tbar{
+  display:flex;align-items:center;gap:5px;flex-wrap:wrap;
+  padding:7px 18px;
+}
+.sep{width:1px;height:20px;background:#1C3832;margin:0 2px;flex-shrink:0;}
+.fbtn{
+  padding:4px 12px;border-radius:5px;
+  border:1px solid #1C3832;background:transparent;
+  color:#4E837F;font-size:12px;font-weight:600;
+  cursor:pointer;transition:border-color .12s,color .12s,background .12s;
+  white-space:nowrap;
+}
+.fbtn:hover{background:#172820;color:#9ED8D4;}
+.fbtn.on{background:rgba(0,200,184,.11);border-color:#00C8B8;color:#00C8B8;}
+/* Special on-states for meeting / error quick filters */
+#btn-lm.on{background:rgba(255,153,51,.10);border-color:#FF9933;color:#FF9933;}
+#btn-le.on{background:rgba(239,68,68,.10);border-color:#EF4444;color:#EF4444;}
+.sel{
+  padding:4px 8px;border-radius:5px;
+  border:1px solid #1C3832;background:#111E1B;
+  color:#9ED8D4;font-size:12px;cursor:pointer;outline:none;
+}
+.sel:focus{border-color:#00C8B8;}
+.srch{
+  flex:1;min-width:130px;max-width:240px;
+  padding:4px 12px;border-radius:5px;
+  border:1px solid #1C3832;background:#111E1B;
+  color:#D8EFED;font-size:13px;outline:none;
+}
+.srch:focus{border-color:#00C8B8;}
+.srch::placeholder{color:#2A4C48;}
+.cnt{
+  font-size:11px;color:#3A6460;white-space:nowrap;
+  min-width:64px;text-align:right;
+  font-variant-numeric:tabular-nums;
+}
+.abtn{
+  padding:4px 10px;border-radius:5px;
+  border:1px solid #1C3832;background:transparent;
+  color:#4E837F;font-size:12px;cursor:pointer;transition:.12s;white-space:nowrap;
+}
+.abtn:hover{background:#172820;color:#9ED8D4;}
+.abtn.act{color:#00C8B8;}
+.newfile{
+  padding:4px 10px;border-radius:5px;
+  border:1px solid rgba(0,200,184,.28);background:transparent;
+  color:#00C8B8;font-size:12px;cursor:pointer;transition:.12s;white-space:nowrap;
+}
+.newfile:hover{background:rgba(0,200,184,.09);}
+
+/* ── Table ── */
+#content{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;table-layout:auto;}
+thead th{
+  position:sticky;top:0;
+  padding:8px 14px;text-align:left;
+  font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  color:#3A6460;background:#0D1E1B;
+  border-bottom:1px solid #1C3832;white-space:nowrap;z-index:10;
+}
+tr.r{border-bottom:1px solid #0F1A18;transition:background .1s;}
+tr.r:hover{background:#111E1B!important;}
+tr.r.cat-meeting{background:rgba(255,153,51,.025);}
+tr.r.cat-error  {background:rgba(239,68,68,.04);}
+td{padding:7px 14px;vertical-align:top;}
+.ts{
+  font-family:'SF Mono',Menlo,monospace;font-size:11.5px;
+  color:#3A6460;white-space:nowrap;
+}
+.ts .date{color:#2E5550;}
+.badge{
+  display:inline-block;
+  padding:2px 8px;border-radius:4px;
+  font-size:11px;font-weight:700;letter-spacing:.05em;white-space:nowrap;
+}
+.badge.Meeting  {background:rgba(255,153,51,.15);color:#FF9933;}
+.badge.Settings {background:rgba(106,180,232,.12);color:#6AB4E8;}
+.badge.Startup  {background:rgba(34,197,94,.12);color:#22C55E;}
+.badge.Shutdown {background:rgba(167,139,250,.12);color:#A78BFA;}
+.badge.Error    {background:rgba(239,68,68,.15);color:#EF4444;}
+.badge.Unknown  {background:rgba(90,138,134,.12);color:#5A8A86;}
+.msg{
+  font-family:'SF Mono',Menlo,monospace;font-size:12px;
+  word-break:break-all;line-height:1.55;
+}
+.cat-meeting .msg{color:#FFBA72;}
+.cat-error   .msg{color:#FCA5A5;}
+.cat-startup .msg{color:#86EFAC;}
+.cat-shutdown .msg{color:#C4B5FD;}
+.cat-settings .msg{color:#93C5E8;}
+
+.hidden{display:none!important;}
+.empty-row td{
+  text-align:center;padding:56px 20px;
+  color:#3A6460;font-style:italic;font-size:13px;
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ UPLOAD ZONE ═══ -->
+<div id="upload-zone">
+  <div class="drop-box" id="drop-box">
+    <div class="drop-icon">📋</div>
+    <div class="drop-title">Meeting Reminder — Log Viewer</div>
+    <div class="drop-sub">
+      Drop your <strong>log.txt</strong> file here<br>
+      or click the button below to browse
+    </div>
+    <button class="drop-btn" id="browse-btn">Choose Log File</button>
+    <input type="file" id="file-input" accept=".txt,.log">
+  </div>
+</div>
+
+<!-- ═══ VIEWER ═══ -->
+<div id="viewer">
+  <div id="bar">
+    <!-- Header row -->
+    <div class="hdr">
+      <div>
+        <div class="htitle">Meeting Reminder</div>
+        <div class="hsub" id="hsub">Log Viewer</div>
+      </div>
+      <div class="hstretch"></div>
+      <div class="pills">
+        <span class="pill p-t" id="pill-t">0 total</span>
+        <span class="pill p-m" id="pill-m">0 Meeting</span>
+        <span class="pill p-s" id="pill-s">0 Settings</span>
+        <span class="pill p-y" id="pill-y">0 System</span>
+        <span class="pill p-e" id="pill-e">0 Error</span>
+      </div>
+    </div>
+    <!-- File info strip -->
+    <div class="file-strip">
+      <span>File:</span>
+      <span class="fname" id="fname">—</span>
+    </div>
+    <!-- Filter toolbar -->
+    <div class="tbar">
+      <!-- Level quick filters -->
+      <button class="fbtn on" id="btn-la" onclick="setLv('ALL')">All</button>
+      <button class="fbtn" id="btn-lm" onclick="setLv('MEETING')">Meeting</button>
+      <button class="fbtn" id="btn-le" onclick="setLv('ERROR')">Error</button>
+      <div class="sep"></div>
+      <!-- Category fine filter -->
+      <select class="sel" id="cat-sel" onchange="apply()">
+        <option value="">All Categories</option>
+      </select>
+      <div class="sep"></div>
+      <!-- Day filter -->
+      <button class="fbtn on" id="btn-da" onclick="setDt('all')">All Days</button>
+      <button class="fbtn" id="btn-dt" onclick="setDt('today')">Today</button>
+      <button class="fbtn" id="btn-dy" onclick="setDt('yesterday')">Yesterday</button>
+      <div class="sep"></div>
+      <!-- Search + count -->
+      <input class="srch" id="srch" placeholder="Search messages…" oninput="apply()">
+      <span class="cnt" id="cnt">0 / 0</span>
+      <div class="sep"></div>
+      <!-- Action buttons -->
+      <button class="abtn" onclick="scrollToTop()">↑ Top</button>
+      <button class="abtn" onclick="scrollToBottom()">↓ Bottom</button>
+      <button class="abtn" id="cp-btn" onclick="copyVis()">⎘ Copy</button>
+      <button class="abtn" onclick="jumpErr()">⚡ Error</button>
+      <button class="newfile" onclick="loadNewFile()">⊕ New File</button>
+    </div>
+  </div>
+  <!-- Table -->
+  <div id="content">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:175px">Timestamp</th>
+          <th style="width:95px">Category</th>
+          <th>Message</th>
+        </tr>
+      </thead>
+      <tbody id="tb"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+// ── State ──
+var lv = 'ALL', dt = 'all';
+var errIdx = -1, errTmr = null;
+
+// ── Helpers ──
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function dateKey(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function pad(n){ return String(n).padStart(2,'0'); }
+
+// ── Upload handling ──
+var dropBox  = document.getElementById('drop-box');
+var fileInput= document.getElementById('file-input');
+var browseBtn= document.getElementById('browse-btn');
+
+// Drag-over entire page
+document.addEventListener('dragover',  function(e){ e.preventDefault(); });
+document.addEventListener('drop',      function(e){ e.preventDefault(); var f=e.dataTransfer.files[0]; if(f) readFile(f); });
+
+// Drop box visual
+dropBox.addEventListener('dragover',   function(e){ e.preventDefault(); dropBox.classList.add('over'); });
+dropBox.addEventListener('dragleave',  function(){ dropBox.classList.remove('over'); });
+dropBox.addEventListener('drop',       function(e){ e.preventDefault(); dropBox.classList.remove('over'); var f=e.dataTransfer.files[0]; if(f) readFile(f); });
+
+// Click to browse
+browseBtn.addEventListener('click', function(e){ e.stopPropagation(); fileInput.click(); });
+dropBox.addEventListener('click',   function(){ fileInput.click(); });
+fileInput.addEventListener('change',function(){ if(fileInput.files[0]) readFile(fileInput.files[0]); });
+
+function loadNewFile(){
+  fileInput.value='';
+  lv='ALL'; dt='all'; errIdx=-1;
+  document.getElementById('srch').value='';
+  document.getElementById('tb').innerHTML='';
+  document.getElementById('viewer').style.display='none';
+  document.getElementById('upload-zone').style.display='flex';
+}
+
+function readFile(f){
+  var r = new FileReader();
+  r.onload = function(e){ parseLog(e.target.result, f.name); };
+  r.readAsText(f);
+}
+
+// ── Parser ──
+function parseLog(text, name){
+  var now  = new Date();
+  var todayS = dateKey(now);
+  var yest   = new Date(now); yest.setDate(yest.getDate()-1);
+  var yesterS= dateKey(yest);
+
+  var rows = [];
+  var cats = new Set();
+  var counts = {meeting:0, settings:0, system:0, error:0};
+
+  text.split(/\r?\n/).forEach(function(line){
+    line = line.trimEnd();
+    if(!line) return;
+    // Skip header / separator lines
+    if(!line.startsWith('[')) return;
+    // Parse: [YYYY-MM-DD HH:MM:SS.mmm] [Category] Message
+    var m = line.match(/^\[(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2}\.\d+)\] \[([^\]]+)\] (.+)$/);
+    if(!m) return;
+    var dateS=m[1], timeS=m[2], cat=m[3], msg=m[4];
+    var day = dateS===todayS ? 'today' : dateS===yesterS ? 'yesterday' : 'older';
+    var catL = cat.toLowerCase();
+    var lvCode = catL==='error' ? 'ERROR' : catL==='meeting' ? 'MEETING' : 'OTHER';
+    cats.add(cat);
+    if(catL==='meeting')                      counts.meeting++;
+    else if(catL==='settings')                counts.settings++;
+    else if(catL==='startup'||catL==='shutdown') counts.system++;
+    else if(catL==='error')                   counts.error++;
+    rows.push({dateS:dateS,timeS:timeS,cat:cat,msg:msg,day:day,lv:lvCode,
+               search:(cat+' '+msg).toLowerCase()});
+  });
+
+  buildTable(rows);
+
+  // Pills
+  document.getElementById('pill-t').textContent = rows.length+' total';
+  document.getElementById('pill-m').textContent = counts.meeting+' Meeting';
+  document.getElementById('pill-s').textContent = counts.settings+' Settings';
+  document.getElementById('pill-y').textContent = counts.system+' System';
+  document.getElementById('pill-e').textContent = counts.error+' Error';
+
+  // File strip + subtitle
+  document.getElementById('fname').textContent = name;
+  var range = getRange(rows);
+  document.getElementById('hsub').textContent =
+    'Log Viewer · '+rows.length+' entries'+(range?' · '+range:'');
+
+  // Category dropdown (dynamic from file)
+  var sel = document.getElementById('cat-sel');
+  sel.innerHTML = '<option value="">All Categories</option>';
+  Array.from(cats).sort().forEach(function(c){
+    var o=document.createElement('option'); o.value=c; o.textContent=c; sel.appendChild(o);
+  });
+
+  // Show viewer
+  document.getElementById('upload-zone').style.display='none';
+  document.getElementById('viewer').style.display='block';
+
+  // Reset filter state (in case this is a second load)
+  lv='ALL'; dt='all'; errIdx=-1;
+  ['btn-la','btn-lm','btn-le'].forEach(function(id){ document.getElementById(id).classList.remove('on'); });
+  ['btn-da','btn-dt','btn-dy'].forEach(function(id){ document.getElementById(id).classList.remove('on'); });
+  document.getElementById('btn-la').classList.add('on');
+  document.getElementById('btn-da').classList.add('on');
+  document.getElementById('srch').value='';
+
+  fixPad();
+  apply();
+  // Scroll to bottom (most recent entries are at bottom)
+  requestAnimationFrame(function(){ window.scrollTo(0,document.body.scrollHeight); });
+}
+
+function getRange(rows){
+  if(!rows.length) return '';
+  var f=rows[0].dateS, l=rows[rows.length-1].dateS;
+  return f===l ? f : f+' → '+l;
+}
+
+function badgeCls(cat){
+  var c={Meeting:'Meeting',Settings:'Settings',Startup:'Startup',Shutdown:'Shutdown',Error:'Error'};
+  return c[cat]||'Unknown';
+}
+
+function buildTable(rows){
+  if(!rows.length){
+    document.getElementById('tb').innerHTML='<tr class="empty-row"><td colspan="3">No log entries found in this file.</td></tr>';
+    return;
+  }
+  var html='';
+  rows.forEach(function(r){
+    var bc=badgeCls(r.cat);
+    var rc='r cat-'+r.cat.toLowerCase();
+    html+='<tr class="'+rc+'"'+
+      ' data-l="'+r.lv+'"'+
+      ' data-cat="'+esc(r.cat.toLowerCase())+'"'+
+      ' data-d="'+r.day+'"'+
+      ' data-m="'+esc(r.search)+'"'+
+      '>'+
+      '<td class="ts"><span class="date">'+esc(r.dateS)+'</span> '+esc(r.timeS)+'</td>'+
+      '<td><span class="badge '+bc+'">'+esc(r.cat)+'</span></td>'+
+      '<td class="msg">'+esc(r.msg)+'</td>'+
+      '</tr>';
+  });
+  document.getElementById('tb').innerHTML=html;
+}
+
+// ── Filters ──
+function setLv(v){
+  lv=v;
+  [['btn-la','ALL'],['btn-lm','MEETING'],['btn-le','ERROR']].forEach(function(x){
+    document.getElementById(x[0]).classList.toggle('on',x[1]===v);
+  });
+  apply();
+}
+function setDt(v){
+  dt=v;
+  [['btn-da','all'],['btn-dt','today'],['btn-dy','yesterday']].forEach(function(x){
+    document.getElementById(x[0]).classList.toggle('on',x[1]===v);
+  });
+  apply();
+}
+function apply(){
+  var q  = document.getElementById('srch').value.toLowerCase();
+  var cat= document.getElementById('cat-sel').value.toLowerCase();
+  var vis=0, tot=0;
+  document.querySelectorAll('#tb tr.r').forEach(function(row){
+    tot++;
+    var ok =
+      (lv==='ALL' || row.dataset.l===lv) &&
+      (!cat || row.dataset.cat===cat) &&
+      (dt==='all' || row.dataset.d===dt) &&
+      (!q || row.dataset.m.includes(q));
+    row.classList.toggle('hidden',!ok);
+    if(ok) vis++;
+  });
+  document.getElementById('cnt').textContent=vis+' / '+tot;
+  errIdx=-1;
+}
+
+// ── Action buttons ──
+function scrollToTop(){   window.scrollTo({top:0,           behavior:'smooth'}); }
+function scrollToBottom(){ window.scrollTo({top:document.body.scrollHeight, behavior:'smooth'}); }
+
+function jumpErr(){
+  var vis=Array.from(document.querySelectorAll('#tb tr.r:not(.hidden)'));
+  var errs=vis.filter(function(r){ return r.dataset.l==='ERROR'; });
+  if(!errs.length) return;
+  errIdx=(errIdx+1)%errs.length;
+  var el=errs[errIdx];
+  el.scrollIntoView({behavior:'smooth',block:'center'});
+  el.style.outline='2px solid #EF4444';
+  clearTimeout(errTmr);
+  errTmr=setTimeout(function(){ el.style.outline=''; },1400);
+}
+
+function copyVis(){
+  var lines=[];
+  document.querySelectorAll('#tb tr.r:not(.hidden)').forEach(function(row){
+    var ts =(row.cells[0]&&row.cells[0].textContent||'').trim().replace(/\s+/,' ');
+    var cat=(row.cells[1]&&row.cells[1].textContent||'').trim();
+    var msg=(row.cells[2]&&row.cells[2].textContent||'').trim();
+    lines.push('['+ts+'] ['+cat+'] '+msg);
+  });
+  if(!lines.length) return;
+  navigator.clipboard.writeText(lines.join('\n')).then(function(){
+    var b=document.getElementById('cp-btn');
+    var old=b.textContent;
+    b.textContent='✓ Copied!'; b.classList.add('act');
+    setTimeout(function(){ b.textContent=old; b.classList.remove('act'); },1600);
+  }).catch(function(){});
+}
+
+// ── Layout helpers ──
+function fixPad(){
+  var bar=document.getElementById('bar');
+  if(bar) document.getElementById('content').style.paddingTop=(bar.offsetHeight+2)+'px';
+}
+window.addEventListener('resize', fixPad);
+
+// Keyboard shortcut: Cmd/Ctrl+F → focus search
+document.addEventListener('keydown',function(e){
+  if((e.ctrlKey||e.metaKey)&&e.key==='f'){
+    var v=document.getElementById('viewer');
+    if(v&&v.style.display!=='none'){
+      e.preventDefault();
+      document.getElementById('srch').focus();
+    }
+  }
+});
+</script>
+</body>
+</html>
