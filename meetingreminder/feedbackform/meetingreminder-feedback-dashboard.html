@@ -99,8 +99,19 @@ main{max-width:1200px;margin:0 auto;padding:24px 16px 60px}
 .spinner{display:block;width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 14px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .empty-msg{padding:40px;text-align:center;color:var(--text2);font-size:13px}
+
+/* ── PDF timestamp ── */
+#pdf-timestamp{display:none;font-size:11px;color:var(--text2);text-align:center;padding:6px 16px;margin:0 0 8px}
+@media print{
+  #header{display:none!important}
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  body{background:white!important}
+  #pdf-timestamp{display:block!important}
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
@@ -108,11 +119,14 @@ main{max-width:1200px;margin:0 auto;padding:24px 16px 60px}
   <div id="header-inner">
     <div class="dash-title">Meeting Reminder — Feedback Dashboard</div>
     <div class="dash-meta" id="dash-meta">Loading…</div>
+    <button class="hdr-btn" onclick="savePDF()">⬇ Save as PDF</button>
+    <button class="hdr-btn" onclick="savePDFDirect(this)">⬇ Direct PDF</button>
     <button class="hdr-btn" onclick="toggleTheme()">☀ / ☾</button>
     <button class="hdr-btn" onclick="loadData()">↻ Refresh</button>
   </div>
 </div>
 
+<div id="pdf-timestamp"></div>
 <main>
   <div id="loading"><span class="spinner"></span>Loading feedback data…</div>
   <div id="tester-panel">
@@ -384,6 +398,69 @@ function esc(s) {
 function toggleTheme() {
   const el = document.documentElement;
   el.setAttribute('data-theme', el.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+}
+
+function pdfTimestampText() {
+  const when = new Date().toLocaleString('en-GB', {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  return `Generated: ${when}`;
+}
+function savePDF() {
+  const ts = document.getElementById('pdf-timestamp');
+  if (ts) ts.textContent = pdfTimestampText();
+  const prev = document.title;
+  document.title = `MeetingReminder_Feedback_Dashboard_${new Date().toISOString().slice(0,10)}`;
+  window.print();
+  document.title = prev;
+  if (ts) ts.textContent = '';
+}
+async function savePDFDirect(btn) {
+  if (!window.html2canvas || !window.jspdf) {
+    alert('PDF library not loaded — please check your internet connection.'); return;
+  }
+  const orig = btn.textContent;
+  btn.textContent = '⏳ Generating…';
+  btn.disabled = true;
+  try {
+    const prevScrollY = window.scrollY;
+    const tsEl = document.getElementById('pdf-timestamp');
+    const overrideStyle = document.createElement('style');
+    overrideStyle.id = 'pdf-cap-override';
+    overrideStyle.textContent = '#header{display:none!important}';
+    let canvas;
+    try {
+      if (tsEl) { tsEl.textContent = pdfTimestampText(); tsEl.style.display = 'block'; }
+      window.scrollTo(0, 0);
+      document.head.appendChild(overrideStyle);
+      await new Promise(r => setTimeout(r, 200));
+      canvas = await html2canvas(document.body, {
+        scale: 2, useCORS: true, allowTaint: false, logging: false,
+        scrollX: 0, scrollY: 0,
+        windowWidth: document.body.offsetWidth,
+        windowHeight: document.body.scrollHeight
+      });
+    } finally {
+      if (tsEl) { tsEl.textContent = ''; tsEl.style.display = ''; }
+      window.scrollTo(0, prevScrollY);
+      overrideStyle.remove();
+    }
+    if (!canvas) return;
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pW = pdf.internal.pageSize.getWidth();
+    const pH = pdf.internal.pageSize.getHeight();
+    const img = canvas.toDataURL('image/jpeg', 0.95);
+    const iH  = canvas.height * pW / canvas.width;
+    let y = 0;
+    pdf.addImage(img, 'JPEG', 0, y, pW, iH);
+    let rem = iH - pH;
+    while (rem > 0) { y -= pH; pdf.addPage(); pdf.addImage(img, 'JPEG', 0, y, pW, iH); rem -= pH; }
+    pdf.save(`MeetingReminder_Feedback_Dashboard_${new Date().toISOString().slice(0,10)}.pdf`);
+  } catch(e) {
+    alert('PDF failed: ' + e.message);
+  } finally {
+    btn.textContent = orig;
+    btn.disabled = false;
+  }
 }
 
 loadData();
