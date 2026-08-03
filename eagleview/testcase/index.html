@@ -46,7 +46,7 @@
 .app-logo{display:flex;align-items:center;gap:8px}
 .app-logo img{width:28px;height:28px;flex-shrink:0}
 .app-logo-text{font-size:17px;font-weight:800;color:var(--accent);letter-spacing:-0.3px}
-#testing-mode-tag{display:none;font-size:11px;font-weight:700;color:var(--text2);letter-spacing:0;white-space:nowrap}
+#testing-mode-tag{display:none;font-size:11px;font-weight:700;color:var(--text2);letter-spacing:0;white-space:nowrap;cursor:pointer}
 #testing-mode-tag.visible{display:inline}
 /* Filter row */
 .filter-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:4px;padding-top:4px;border-top:1px solid var(--border)}
@@ -313,7 +313,7 @@ body[data-submitted] #submit-banner{display:none!important}
       <div class="app-logo">
         <img src="data:image/png;base64,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" alt="Eagle View">
         <div>
-          <div class="app-logo-text" ondblclick="unlockTesting()">Eagle View — QA Checklist <span id="testing-mode-tag"></span></div>
+          <div class="app-logo-text" ondblclick="unlockTesting()">Eagle View — QA Checklist <span id="testing-mode-tag" ondblclick="autoFillRandom(event)" title="Double-click to auto-fill all TCs randomly"></span></div>
           <div class="app-sub">v1.1.3 · Tauri v2 · React · macOS &amp; Windows · Updated 2026-07-29</div>
         </div>
       </div>
@@ -1597,6 +1597,23 @@ function unlockTesting() {
   document.body.classList.remove('pre-save','file-saved');
   const tag = document.getElementById('testing-mode-tag');
   if (tag) { tag.textContent = '— Manoj Kumar M on testing mode'; tag.classList.add('visible'); }
+}
+
+function autoFillRandom(e) {
+  if (e) e.stopPropagation();
+  if (!getStoreKey()) {
+    alert('Please select Tester, Platform, and Display first.');
+    return;
+  }
+  const tcs = visibleTCs();
+  if (tcs.length < 2) return;
+  const vals = ['pass', 'fail', 'skip'];
+  tcs.slice(0, -1).forEach(tc => {
+    state[tc.dataset.id] = vals[Math.floor(Math.random() * vals.length)];
+    renderTC(tc.dataset.id);
+  });
+  save();
+  updateProgress();
 }
 
 // ── Init ──
