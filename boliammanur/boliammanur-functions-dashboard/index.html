@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Boliammanur Functions Dashboard</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div id="gate">
+  <div class="card">
+    <h2>Boliammanur Functions Dashboard</h2>
+    <p style="color:var(--muted); margin-top:-6px;">Enter the shared password to view the dashboard.</p>
+    <form id="gate-form">
+      <label>Password
+        <input type="password" id="gate-password" required autofocus />
+      </label>
+      <button type="submit">Unlock</button>
+      <p class="status error" id="gate-status"></p>
+    </form>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+  <header>
+    <h1>Boliammanur Functions Dashboard</h1>
+    <p>Cumulative Asal / Santha / Vatti / Thogai collections and material usage across years and functions.</p>
+  </header>
+
+  <div class="layout">
+
+  <aside class="sidebar">
+    <section class="card">
+      <h2>Filters</h2>
+      <div class="filters">
+        <label>Year
+          <select id="filter-year">
+            <option value="">All years</option>
+          </select>
+        </label>
+        <label>Function
+          <select id="filter-function">
+            <option value="">All functions</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Add Function</h2>
+      <form id="function-form">
+        <label>Function name
+          <input type="text" id="function-name" required placeholder="e.g. Annual Function" />
+        </label>
+        <label>Year
+          <input type="number" id="function-year" required min="2000" max="2100" />
+        </label>
+        <button type="submit">Add Function</button>
+        <p class="status" id="function-status"></p>
+      </form>
+      <div class="table-wrap">
+      <table>
+        <thead><tr><th>Function</th><th>Year</th></tr></thead>
+        <tbody id="functions-list"></tbody>
+      </table>
+      </div>
+    </section>
+  </aside>
+
+  <main>
+
+    <section class="tiles">
+      <div class="tile">
+        <div class="label">Total Asal</div>
+        <div class="value" id="tile-asal">0</div>
+      </div>
+      <div class="tile">
+        <div class="label">Total Santha</div>
+        <div class="value" id="tile-santha">0</div>
+      </div>
+      <div class="tile">
+        <div class="label">Total Vatti</div>
+        <div class="value" id="tile-vatti">0</div>
+      </div>
+      <div class="tile">
+        <div class="label">Total Thogai</div>
+        <div class="value" id="tile-thogai">0</div>
+      </div>
+      <div class="tile credit">
+        <div class="label">Total Collected</div>
+        <div class="value" id="tile-total">0</div>
+      </div>
+      <div class="tile">
+        <div class="label">Material Cost</div>
+        <div class="value" id="tile-material">0</div>
+      </div>
+      <div class="tile credit">
+        <div class="label">Paid</div>
+        <div class="value" id="tile-paid">0</div>
+      </div>
+      <div class="tile expense">
+        <div class="label">Unpaid</div>
+        <div class="value" id="tile-unpaid">0</div>
+      </div>
+    </section>
+
+    <section class="card two-col">
+      <div>
+        <h2>Santha / Vatti / Thogai by Year</h2>
+        <div class="chart-wrap"><canvas id="chart-year"></canvas></div>
+      </div>
+      <div>
+        <h2>Cumulative Total Collected</h2>
+        <div class="chart-wrap"><canvas id="chart-cumulative"></canvas></div>
+      </div>
+    </section>
+
+    <section class="card two-col">
+      <div>
+        <h2>Top Contributors</h2>
+        <div class="chart-wrap"><canvas id="chart-people"></canvas></div>
+      </div>
+      <div>
+        <h2>Material Cost by Item</h2>
+        <div class="chart-wrap"><canvas id="chart-materials"></canvas></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Per-Person Ledger (selected filter)</h2>
+      <div class="table-wrap">
+      <table class="people-ledger">
+        <thead><tr><th>S.No.</th><th>Name</th><th>Asal</th><th>Santha</th><th>Vatti</th><th>Thogai</th><th>Total</th><th>Paid</th></tr></thead>
+        <tbody id="people-table"></tbody>
+      </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Material Usage (selected filter)</h2>
+      <div class="table-wrap">
+      <table>
+        <thead><tr><th>Function</th><th>Item</th><th>Qty</th><th>Cost</th></tr></thead>
+        <tbody id="materials-table"></tbody>
+      </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Change Shared Password</h2>
+      <form id="password-form">
+        <label>Current password
+          <input type="password" id="old-password" required />
+        </label>
+        <label>New password
+          <input type="password" id="new-password" required minlength="4" />
+        </label>
+        <button type="submit">Update Password</button>
+        <p class="status" id="password-status"></p>
+      </form>
+    </section>
+
+  </main>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script src="supabase-config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

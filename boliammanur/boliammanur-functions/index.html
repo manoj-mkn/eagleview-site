@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>போளியம்மனூர் திருவிழா</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div id="gate">
+  <div class="card">
+    <h2>போளியம்மனூர் திருவிழா</h2>
+    <p style="color:var(--muted); margin-top:-6px;">Enter the shared password to add data.</p>
+    <form id="gate-form">
+      <label>Password
+        <input type="password" id="gate-password" required autofocus />
+      </label>
+      <button type="submit">Unlock</button>
+      <p class="status error" id="gate-status"></p>
+    </form>
+  </div>
+</div>
+
+<div id="app" class="hidden">
+  <header>
+    <h1>போளியம்மனூர் திருவிழா</h1>
+  </header>
+
+  <main>
+
+    <section class="card compact">
+      <h2>Sheet (function / year)</h2>
+      <div id="year-pills" class="pill-row"></div>
+      <div id="function-pills" class="pill-row"></div>
+      <p class="hint">Functions/years are added from the Dashboard site.</p>
+      <p class="status" id="sheet-status"></p>
+    </section>
+
+    <section class="card">
+      <h2 id="sheet-title">Ledger Sheet</h2>
+      <div class="table-wrap sheet-wrap">
+      <table class="sheet wide">
+        <thead>
+          <tr><th>S.No.</th><th>Name</th><th>அசல்</th><th>சந்தா</th><th>வட்டி</th><th>தொகை</th><th>மொத்தம்</th><th>Paid</th></tr>
+        </thead>
+        <tbody id="sheet-body"></tbody>
+        <tfoot>
+          <tr id="sheet-new-row">
+            <td><input type="number" id="new-member-no" min="1" placeholder="No." /></td>
+            <td><input type="text" id="new-name" placeholder="Type a new name..." /></td>
+            <td><input type="number" id="new-asal" step="0.01" min="0" placeholder="0" /></td>
+            <td><input type="number" id="new-santha" step="0.01" min="0" placeholder="0" /></td>
+            <td><input type="number" id="new-vatti" step="0.01" min="0" placeholder="0" /></td>
+            <td><input type="number" id="new-thogai" step="0.01" min="0" placeholder="0" /></td>
+            <td class="total-cell">0</td>
+            <td style="text-align:center;"><input type="checkbox" id="new-paid" style="width:auto; min-height:auto;" /></td>
+          </tr>
+        </tfoot>
+      </table>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
