@@ -24,37 +24,64 @@
 
 <div id="app" class="hidden">
   <header>
-    <h1>போளியம்மனூர் திருவிழா</h1>
+    <a href="members.html" class="header-link-btn">போளியம்மனூர் உறுப்பினர்கள்</a>
+    <h1><img src="logo.png" alt="" class="header-logo" />போளியம்மனூர் திருவிழா</h1>
   </header>
 
   <main>
 
     <section class="card compact">
-      <h2>Sheet (function / year)</h2>
-      <div id="year-pills" class="pill-row"></div>
-      <div id="function-pills" class="pill-row"></div>
-      <p class="hint">Functions/years are added from the Dashboard site.</p>
+      <div class="pills-inline">
+        <div class="pill-line">
+          <span class="pill-label">வருடம்:</span>
+          <div id="year-pills" class="pill-row"></div>
+        </div>
+        <span class="pill-divider"></span>
+        <div class="pill-line">
+          <span class="pill-label">விழா:</span>
+          <div id="function-pills" class="pill-row"></div>
+        </div>
+      </div>
       <p class="status" id="sheet-status"></p>
     </section>
 
     <section class="card">
       <h2 id="sheet-title">Ledger Sheet</h2>
-      <div class="table-wrap sheet-wrap">
+      <div class="table-wrap sheet-wrap" id="sheet-table-wrap">
       <table class="sheet wide">
         <thead>
-          <tr><th>S.No.</th><th>Name</th><th>அசல்</th><th>சந்தா</th><th>வட்டி</th><th>தொகை</th><th>மொத்தம்</th><th>Paid</th></tr>
+          <tr><th>S.No.</th><th>பெயர்</th><th>Name</th><th>Mobile Number</th><th>சந்தா</th><th>அசல்</th><th>வட்டி</th><th>தொகை</th><th>மொத்தம்</th><th>குறிப்பு</th></tr>
+          <tr class="filter-row">
+            <td><input type="text" id="filter-sno" class="filter-input" placeholder="Filter" /></td>
+            <td><input type="text" id="filter-name" class="filter-input" placeholder="Filter" /></td>
+            <td><input type="text" id="filter-name-en" class="filter-input" placeholder="Filter" /></td>
+            <td><input type="text" id="filter-mobile" class="filter-input" placeholder="Filter" /></td>
+            <td><input type="text" id="filter-santha" class="filter-input" placeholder="Filter" /></td>
+            <td><input type="text" id="filter-asal" class="filter-input" placeholder="Filter" /></td>
+            <td><input type="text" id="filter-vatti" class="filter-input" placeholder="Filter" /></td>
+            <td><input type="text" id="filter-thogai" class="filter-input" placeholder="Filter" /></td>
+            <td><input type="text" id="filter-total" class="filter-input" placeholder="Filter" /></td>
+            <td><input type="text" id="filter-paid" class="filter-input" placeholder="Filter" /></td>
+          </tr>
         </thead>
         <tbody id="sheet-body"></tbody>
         <tfoot>
           <tr id="sheet-new-row">
-            <td><input type="number" id="new-member-no" min="1" placeholder="No." /></td>
-            <td><input type="text" id="new-name" placeholder="Type a new name..." /></td>
-            <td><input type="number" id="new-asal" step="0.01" min="0" placeholder="0" /></td>
-            <td><input type="number" id="new-santha" step="0.01" min="0" placeholder="0" /></td>
-            <td><input type="number" id="new-vatti" step="0.01" min="0" placeholder="0" /></td>
-            <td><input type="number" id="new-thogai" step="0.01" min="0" placeholder="0" /></td>
+            <td><input type="number" id="new-member-no" min="1" placeholder="No." disabled /></td>
+            <td><input type="text" id="new-name" placeholder="புதிய பெயரை உள்ளிடவும்..." /></td>
+            <td><input type="text" id="new-name-en" placeholder="Name" /></td>
+            <td><input type="text" id="new-mobile" placeholder="Mobile" inputmode="numeric" pattern="[0-9]*" disabled /></td>
+            <td>
+              <div class="santha-cell">
+                <input type="checkbox" id="new-santha-check" disabled />
+                <span class="santha-amount" id="new-santha-amount">0</span>
+              </div>
+            </td>
+            <td><input type="text" id="new-asal" placeholder="0" inputmode="numeric" pattern="[0-9]*" disabled /></td>
+            <td><input type="text" id="new-vatti" placeholder="0" inputmode="numeric" pattern="[0-9]*" disabled /></td>
+            <td><input type="text" id="new-thogai" placeholder="0" inputmode="numeric" pattern="[0-9]*" disabled /></td>
             <td class="total-cell">0</td>
-            <td style="text-align:center;"><input type="checkbox" id="new-paid" style="width:auto; min-height:auto;" /></td>
+            <td><input type="text" id="new-paid" placeholder="குறிப்பு" disabled /></td>
           </tr>
         </tfoot>
       </table>
@@ -62,6 +89,17 @@
     </section>
 
   </main>
+
+  <div class="totals-banner" id="totals-banner">
+    <div class="totals-track" id="totals-track">
+      <div class="totals-col" data-col="5"><span class="totals-value" id="totals-santha">0</span></div>
+      <div class="totals-col" data-col="6"><span class="totals-value" id="totals-asal">0</span></div>
+      <div class="totals-col" data-col="7"><span class="totals-value" id="totals-vatti">0</span></div>
+      <div class="totals-col" data-col="8"><span class="totals-value" id="totals-thogai">0</span></div>
+      <div class="totals-col" data-col="9"><span class="totals-value totals-grand" id="totals-total">0</span></div>
+      <div class="totals-col totals-col-auto" data-col="10"><span class="totals-value totals-grand totals-shine">Grand Total = <span id="totals-grand">0</span></span></div>
+    </div>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

@@ -24,7 +24,7 @@
 
 <div id="app" class="hidden">
   <header>
-    <h1>Boliammanur Functions Dashboard</h1>
+    <h1><img src="logo.png" alt="" class="header-logo" />Boliammanur Functions Dashboard</h1>
     <p>Cumulative Asal / Santha / Vatti / Thogai collections and material usage across years and functions.</p>
   </header>
 
@@ -56,12 +56,22 @@
         <label>Year
           <input type="number" id="function-year" required min="2000" max="2100" />
         </label>
+        <label>People Type
+          <select id="function-allowed-type" required>
+            <option value="All">All (everyone)</option>
+            <option value="24Manai">24Manai only</option>
+            <option value="Others">Others only</option>
+          </select>
+        </label>
+        <label>சந்தா Amount (fixed price)
+          <input type="number" id="function-santha-amount" required min="0" step="1" value="1000" />
+        </label>
         <button type="submit">Add Function</button>
         <p class="status" id="function-status"></p>
       </form>
       <div class="table-wrap">
       <table>
-        <thead><tr><th>Function</th><th>Year</th></tr></thead>
+        <thead><tr><th>Function</th><th>Year</th><th>Type</th><th>சந்தா Amount</th></tr></thead>
         <tbody id="functions-list"></tbody>
       </table>
       </div>
@@ -95,14 +105,6 @@
         <div class="label">Material Cost</div>
         <div class="value" id="tile-material">0</div>
       </div>
-      <div class="tile credit">
-        <div class="label">Paid</div>
-        <div class="value" id="tile-paid">0</div>
-      </div>
-      <div class="tile expense">
-        <div class="label">Unpaid</div>
-        <div class="value" id="tile-unpaid">0</div>
-      </div>
     </section>
 
     <section class="card two-col">
@@ -131,7 +133,19 @@
       <h2>Per-Person Ledger (selected filter)</h2>
       <div class="table-wrap">
       <table class="people-ledger">
-        <thead><tr><th>S.No.</th><th>Name</th><th>Asal</th><th>Santha</th><th>Vatti</th><th>Thogai</th><th>Total</th><th>Paid</th></tr></thead>
+        <thead>
+          <tr><th>S.No.</th><th>Name</th><th>Asal</th><th>Santha</th><th>Vatti</th><th>Thogai</th><th>Total</th><th>குறிப்பு</th></tr>
+          <tr class="filter-row">
+            <td><input type="text" id="filter-people-sno" class="filter-input" placeholder="Filter" /></td>
+            <td><input type="text" id="filter-people-name" class="filter-input" placeholder="Filter" /></td>
+            <td><input type="text" id="filter-people-asal" class="filter-input" placeholder="Filter" /></td>
+            <td><input type="text" id="filter-people-santha" class="filter-input" placeholder="Filter" /></td>
+            <td><input type="text" id="filter-people-vatti" class="filter-input" placeholder="Filter" /></td>
+            <td><input type="text" id="filter-people-thogai" class="filter-input" placeholder="Filter" /></td>
+            <td><input type="text" id="filter-people-total" class="filter-input" placeholder="Filter" /></td>
+            <td><input type="text" id="filter-people-paid" class="filter-input" placeholder="Filter" /></td>
+          </tr>
+        </thead>
         <tbody id="people-table"></tbody>
       </table>
       </div>
@@ -141,7 +155,15 @@
       <h2>Material Usage (selected filter)</h2>
       <div class="table-wrap">
       <table>
-        <thead><tr><th>Function</th><th>Item</th><th>Qty</th><th>Cost</th></tr></thead>
+        <thead>
+          <tr><th>Function</th><th>Item</th><th>Qty</th><th>Cost</th></tr>
+          <tr class="filter-row">
+            <td><input type="text" id="filter-mat-function" class="filter-input" placeholder="Filter" /></td>
+            <td><input type="text" id="filter-mat-item" class="filter-input" placeholder="Filter" /></td>
+            <td><input type="text" id="filter-mat-qty" class="filter-input" placeholder="Filter" /></td>
+            <td><input type="text" id="filter-mat-cost" class="filter-input" placeholder="Filter" /></td>
+          </tr>
+        </thead>
         <tbody id="materials-table"></tbody>
       </table>
       </div>

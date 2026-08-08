@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>போளியம்மனூர் உறுப்பினர்கள் — போளியம்மனூர் திருவிழா</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="header-link-btn">← Back</a>
+  <h1>போளியம்மனூர் உறுப்பினர்கள்</h1>
+</header>
+
+<main>
+  <section class="card compact">
+    <div class="pill-row" id="type-filter-pills">
+      <button type="button" class="pill" data-filter="all">மொத்த உறுப்பினர்கள்</button>
+      <button type="button" class="pill active" data-filter="24manai">24 Manai</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="table-wrap sheet-wrap">
+      <table class="sheet wide">
+        <thead>
+          <tr><th>S.No.</th><th>பெயர்</th><th>Name</th><th>Mobile Number</th><th>Type</th></tr>
+          <tr class="filter-row">
+            <td><input type="text" id="filter-sno" class="filter-input" placeholder="Filter" /></td>
+            <td><input type="text" id="filter-name" class="filter-input" placeholder="Filter" /></td>
+            <td><input type="text" id="filter-name-en" class="filter-input" placeholder="Filter" /></td>
+            <td><input type="text" id="filter-mobile" class="filter-input" placeholder="Filter" /></td>
+            <td>
+              <select id="filter-type" class="filter-input">
+                <option value="">All</option>
+                <option value="24Manai">24Manai</option>
+                <option value="Others">Others</option>
+              </select>
+            </td>
+          </tr>
+        </thead>
+        <tbody id="members-body"></tbody>
+      </table>
+    </div>
+    <p class="status" id="members-status"></p>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="members.js"></script>
+</body>
+</html>
