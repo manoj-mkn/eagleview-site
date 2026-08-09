@@ -45,7 +45,16 @@ header {
   border-bottom: 1px solid var(--border);
   background: linear-gradient(120deg, #fb923c, #ea580c 55%, #b91c1c);
   box-shadow: 0 6px 20px -8px rgba(234, 88, 12, 0.55);
+  transition: padding 0.2s ease;
 }
+
+/* members.html only — members.js toggles this once the page is scrolled a
+   bit, shrinking the pinned header/pills stack so more of the sheet is
+   visible while browsing. --header-height/--members-thead-top (already
+   measured live for sticky offsets) get recalculated right after, so
+   nothing needs to be hardcoded to match. */
+body.is-scrolled header { padding: 10px 16px; }
+body.is-scrolled header h1 { font-size: 1.3rem; margin-bottom: 0; }
 
 header h1 {
   margin: 0 0 4px;
@@ -54,6 +63,7 @@ header h1 {
   color: #fff;
   letter-spacing: -0.01em;
   text-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  transition: font-size 0.2s ease, margin 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -497,7 +507,7 @@ table.sheet tfoot td input:disabled { background: transparent; color: var(--mute
   color: var(--text);
   cursor: pointer;
   white-space: nowrap;
-  transition: border-color 0.15s ease, transform 0.1s ease;
+  transition: border-color 0.15s ease, transform 0.1s ease, padding 0.2s ease, min-height 0.2s ease, font-size 0.2s ease;
 }
 
 .pill:hover { border-color: var(--accent); transform: translateY(-1px); }
@@ -559,6 +569,7 @@ table.sheet thead tr.filter-row td {
   background: var(--surface);
   border-bottom: 2px solid var(--border);
   padding: 2px 6px;
+  transition: padding 0.2s ease;
 }
 
 .filter-input {
@@ -570,6 +581,7 @@ table.sheet thead tr.filter-row td {
   text-transform: none;
   letter-spacing: normal;
   color: var(--text);
+  transition: padding 0.2s ease, min-height 0.2s ease, font-size 0.2s ease;
 }
 
 /* ---------- Members page table widths — HEART LOGIC, do not change without asking ----------
@@ -634,7 +646,11 @@ table.members-table { width: 1010px; margin-top: 0; }
   position: sticky;
   top: var(--header-height, 96px);
   z-index: 15;
+  transition: padding 0.2s ease;
 }
+
+body.is-scrolled .members-filter-card { padding: 8px 20px; }
+body.is-scrolled .members-filter-card .pill { padding: 4px 12px; min-height: 24px; font-size: 0.75rem; }
 table.members-table th:nth-child(1), table.members-table td:nth-child(1) { width: 70px; }
 table.members-table th:nth-child(2), table.members-table td:nth-child(2) { width: 70px; }
 table.members-table th:nth-child(3), table.members-table td:nth-child(3) { width: 230px; }
@@ -693,4 +709,24 @@ table.members-table thead th:nth-child(6) {
   font-size: 1.05rem;
 }
 
-table.members-table thead th { padding: 10px; }
+table.members-table thead th { padding: 10px; transition: padding 0.2s ease, font-size 0.2s ease; }
+
+/* Scroll-compact state (see body.is-scrolled header/.members-filter-card
+   above) — shrinks the column-title row and the Filter inputs row too, once
+   the user is actually scrolling. Doesn't touch their resting-state sizes
+   (the 1.05rem heart logic above), only what applies while scrolled. */
+body.is-scrolled table.members-table thead th { padding: 3px 6px; }
+body.is-scrolled table.members-table thead th:nth-child(1),
+body.is-scrolled table.members-table thead th:nth-child(2),
+body.is-scrolled table.members-table thead th:nth-child(3),
+body.is-scrolled table.members-table thead th:nth-child(4),
+body.is-scrolled table.members-table thead th:nth-child(5),
+body.is-scrolled table.members-table thead th:nth-child(6),
+body.is-scrolled table.members-table thead th:nth-child(7) {
+  font-size: 0.8rem;
+}
+body.is-scrolled table.sheet thead tr.filter-row th,
+body.is-scrolled table.sheet thead tr.filter-row td {
+  padding: 1px 6px;
+}
+body.is-scrolled .filter-input { min-height: 14px; padding: 1px 6px; font-size: 0.72rem; }

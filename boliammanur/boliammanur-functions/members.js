@@ -32,6 +32,34 @@ $("members-tbody-wrap").addEventListener("scroll", () => {
   $("members-thead-wrap").scrollLeft = $("members-tbody-wrap").scrollLeft;
 });
 
+// Once the user is actually scrolling to browse the sheet, the header and
+// pills bar shrink (see body.is-scrolled rules in style.css) to give more
+// of the screen to the table. syncHeaderHeight/syncMembersStickyOffsets
+// already measure these elements live for sticky positioning, so calling
+// them again right after the class toggle keeps the table header/filter
+// row correctly pinned right below the now-smaller stack — no hardcoded
+// heights to keep in sync by hand.
+let scrollTicking = false;
+function updateScrollCompactState() {
+  document.body.classList.toggle("is-scrolled", window.scrollY > 10);
+  syncHeaderHeight();
+  syncMembersStickyOffsets();
+  scrollTicking = false;
+}
+window.addEventListener(
+  "scroll",
+  () => {
+    if (scrollTicking) return;
+    scrollTicking = true;
+    requestAnimationFrame(updateScrollCompactState);
+  },
+  { passive: true }
+);
+// One more sync once the shrink/expand transition itself finishes, in case
+// a fast scroll-then-stop left the offset measured mid-transition.
+document.querySelector("header").addEventListener("transitionend", syncMembersStickyOffsets);
+updateScrollCompactState();
+
 function setStatus(message, isError) {
   const el = $("members-status");
   el.textContent = message || "";
