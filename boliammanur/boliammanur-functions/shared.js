@@ -24,6 +24,12 @@ function filterMobileInput(el) {
   if (cleaned !== el.value) el.value = cleaned;
 }
 
+// Number-only fields (S.No, Roll No, etc.) only accept digits as the user types.
+function filterDigitsInput(el) {
+  const cleaned = el.value.replace(/[^\d]/g, "");
+  if (cleaned !== el.value) el.value = cleaned;
+}
+
 function syncHeaderHeight() {
   const header = document.querySelector("header");
   document.documentElement.style.setProperty("--header-height", header.offsetHeight + "px");

@@ -9,16 +9,15 @@
 <body>
 
 <header>
-  <a href="index.html" class="header-link-btn">← Back</a>
   <h1>போளியம்மனூர் உறுப்பினர்கள்</h1>
 </header>
 
 <main>
   <section class="card compact members-filter-card">
     <div class="pill-row" id="type-filter-pills">
-      <button type="button" class="pill" data-filter="all">மொத்த உறுப்பினர்கள்</button>
-      <button type="button" class="pill active" data-filter="24manai">24 Manai</button>
-      <button type="button" class="pill" data-filter="others">Others</button>
+      <button type="button" class="pill active" data-filter="all" data-label="மொத்த உறுப்பினர்கள்">மொத்த உறுப்பினர்கள்</button>
+      <button type="button" class="pill" data-filter="24manai" data-label="24 Manai">24 Manai</button>
+      <button type="button" class="pill" data-filter="others" data-label="Others">Others</button>
     </div>
   </section>
 
@@ -28,11 +27,11 @@
         <thead>
           <tr><th>S.No</th><th>Roll No.</th><th>பெயர்</th><th>Name</th><th>Mobile Number</th><th>Type</th><th>Avoid</th></tr>
           <tr class="filter-row">
-            <td><label for="filter-sno" class="sr-only">Filter by S.No</label><input type="text" id="filter-sno" class="filter-input" placeholder="Filter" /></td>
-            <td><label for="filter-roll" class="sr-only">Filter by Roll No.</label><input type="text" id="filter-roll" class="filter-input" placeholder="Filter" /></td>
+            <td><label for="filter-sno" class="sr-only">Filter by S.No</label><input type="text" id="filter-sno" class="filter-input" placeholder="Filter" inputmode="numeric" pattern="[0-9]*" /></td>
+            <td><label for="filter-roll" class="sr-only">Filter by Roll No.</label><input type="text" id="filter-roll" class="filter-input" placeholder="Filter" inputmode="numeric" pattern="[0-9]*" /></td>
             <td><label for="filter-name" class="sr-only">Filter by பெயர்</label><input type="text" id="filter-name" class="filter-input" placeholder="Filter" /></td>
             <td><label for="filter-name-en" class="sr-only">Filter by Name</label><input type="text" id="filter-name-en" class="filter-input" placeholder="Filter" /></td>
-            <td><label for="filter-mobile" class="sr-only">Filter by Mobile Number</label><input type="text" id="filter-mobile" class="filter-input" placeholder="Filter" /></td>
+            <td><label for="filter-mobile" class="sr-only">Filter by Mobile Number</label><input type="text" id="filter-mobile" class="filter-input" placeholder="Filter" inputmode="numeric" /></td>
             <td>
               <label for="filter-type" class="sr-only">Filter by Type</label>
               <select id="filter-type" class="filter-input">
@@ -72,6 +71,10 @@
     <p class="status" id="members-status" role="status" aria-live="polite"></p>
   </section>
 </main>
+
+<div class="totals-banner">
+  <a href="index.html" class="header-link-btn">← Back</a>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>

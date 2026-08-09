@@ -6,7 +6,7 @@ if (sessionStorage.getItem("boliammanur_unlocked") !== "1") {
 }
 
 let allPeople = [];
-let currentFilter = "24manai";
+let currentFilter = "all";
 
 // escapeHtml, formatMobile, syncHeaderHeight live in shared.js (loaded
 // before this file) — kept as one copy with app.js.
@@ -62,10 +62,27 @@ function avoidCell(checked) {
   return `<td><input type="checkbox" class="avoid-check" ${checked ? "checked" : ""} /></td>`;
 }
 
+// Counts reflect the full roster (not the currently active filter/search),
+// so switching pills always shows where you're headed, not a shrinking number.
+function updatePillCounts() {
+  const counts = {
+    all: allPeople.length,
+    "24manai": allPeople.filter((p) => p.type === "24Manai").length,
+    others: allPeople.filter((p) => p.type === "Others").length,
+  };
+  $("type-filter-pills")
+    .querySelectorAll("button[data-filter]")
+    .forEach((btn) => {
+      const count = counts[btn.dataset.filter] ?? 0;
+      btn.textContent = `${btn.dataset.label} - ${count}`;
+    });
+}
+
 // HEART LOGIC — roll_number is each person's permanent town-registry ID
 // (see nextRollNumber() in app.js). It belongs only on this members page,
 // never on a function's Ledger Sheet — do not change that without asking.
 function renderRows() {
+  updatePillCounts();
   const pillFiltered =
     currentFilter === "24manai"
       ? allPeople.filter((p) => p.type === "24Manai")
@@ -256,6 +273,15 @@ async function requestRenderRows() {
   renderRows();
 }
 const debouncedRequestRenderRows = debounce(requestRenderRows, 150);
+
+// S.No/Roll No./Mobile hold numbers, so their filter boxes only accept the
+// kind of input those columns can actually contain — matches how the
+// corresponding table cells themselves are already restricted (e.g. new-m-mobile).
+// Registered before the render-triggering listeners below so the value is
+// already sanitized by the time renderRows() reads it.
+$("filter-sno").addEventListener("input", () => filterDigitsInput($("filter-sno")));
+$("filter-roll").addEventListener("input", () => filterDigitsInput($("filter-roll")));
+$("filter-mobile").addEventListener("input", () => filterMobileInput($("filter-mobile")));
 
 ["filter-sno", "filter-roll", "filter-name", "filter-name-en", "filter-mobile"].forEach((id) => {
   $(id).addEventListener("input", debouncedRequestRenderRows);
