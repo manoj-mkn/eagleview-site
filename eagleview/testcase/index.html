@@ -417,28 +417,9 @@ body[data-submitted] #submit-banner{display:none!important}
 </div>
 
 <!-- S2 ═══════════════════════════════════════════ -->
-<div class="section" id="s2">
-  <div class="sec-header" onclick="toggleSection('s2')">
-    <span class="sec-num">02</span><span class="sec-title">License &amp; Expiry</span>
-    <span class="sec-badge" id="s2-badge"></span><span class="sec-chevron">▾</span>
-  </div>
-  <div class="sec-body" id="s2-body">
-    <div class="tc" data-id="TC-007"><span class="tc-id">TC-007</span><span class="tc-desc">App functions normally before the license expiry date (2026-10-14)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-008"><span class="tc-id">TC-008</span><span class="tc-desc">License is checked at app startup via the Rust <code>check_license</code> command</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-009"><span class="tc-id">TC-009</span><span class="tc-desc">License is re-checked every 8 hours while the app is running (hourly Rust heartbeat loop; license check fires on every 8th tick)<span class="note">Previously every 60 s — reduced to prevent unnecessary checks</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-010"><span class="tc-id">TC-010</span><span class="tc-desc">On license expiry: a full-screen blurred overlay appears — entire UI is blocked, no interaction possible</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-011"><span class="tc-id">TC-011</span><span class="tc-desc">License expired overlay header shows Eagle View icon + orange gradient banner</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-012"><span class="tc-id">TC-012</span><span class="tc-desc">Overlay body shows 🔒 icon, "License Expired" heading, and "Contact the developer to renew." message</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-013"><span class="tc-id">TC-013</span><span class="tc-desc">Clicking the "Close" button inside the overlay quits the app</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-014"><span class="tc-id">TC-014</span><span class="tc-desc">Keyboard shortcut (Cmd+E / Ctrl+E) does NOT open or toggle the panel when license has expired</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-015"><span class="tc-id">TC-015</span><span class="tc-desc">Widget blur (clicking away) does NOT open or close the panel when license has expired</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-  </div>
-</div>
-
-<!-- S3 ═══════════════════════════════════════════ -->
 <div class="section" id="s3">
   <div class="sec-header" onclick="toggleSection('s3')">
-    <span class="sec-num">03</span><span class="sec-title">Authentication — Outlook (Device Code Flow)</span>
+    <span class="sec-num">02</span><span class="sec-title">Authentication — Outlook (Device Code Flow)</span>
     <span class="sec-badge" id="s3-badge"></span><span class="sec-chevron">▾</span>
   </div>
   <div class="sec-body" id="s3-body">
@@ -460,7 +441,7 @@ body[data-submitted] #submit-banner{display:none!important}
 <!-- S4 ═══════════════════════════════════════════ -->
 <div class="section" id="s4">
   <div class="sec-header" onclick="toggleSection('s4')">
-    <span class="sec-num">04</span><span class="sec-title">Authentication — Gmail (Browser OAuth)</span>
+    <span class="sec-num">03</span><span class="sec-title">Authentication — Gmail (Browser OAuth)</span>
     <span class="sec-badge" id="s4-badge"></span><span class="sec-chevron">▾</span>
   </div>
   <div class="sec-body" id="s4-body">
@@ -477,7 +458,7 @@ body[data-submitted] #submit-banner{display:none!important}
 <!-- S5 ═══════════════════════════════════════════ -->
 <div class="section" id="s5">
   <div class="sec-header" onclick="toggleSection('s5')">
-    <span class="sec-num">05</span><span class="sec-title">Account Switching</span>
+    <span class="sec-num">04</span><span class="sec-title">Account Switching</span>
     <span class="sec-badge" id="s5-badge"></span><span class="sec-chevron">▾</span>
   </div>
   <div class="sec-body" id="s5-body">
@@ -497,7 +478,7 @@ body[data-submitted] #submit-banner{display:none!important}
 <!-- S6 ═══════════════════════════════════════════ -->
 <div class="section" id="s6">
   <div class="sec-header" onclick="toggleSection('s6')">
-    <span class="sec-num">06</span><span class="sec-title">Widget Toggle Button (Arrow Tab)</span>
+    <span class="sec-num">05</span><span class="sec-title">Widget Toggle Button (Arrow Tab)</span>
     <span class="sec-badge" id="s6-badge"></span><span class="sec-chevron">▾</span>
   </div>
   <div class="sec-body" id="s6-body">
@@ -518,7 +499,7 @@ body[data-submitted] #submit-banner{display:none!important}
 <!-- S7 ═══════════════════════════════════════════ -->
 <div class="section" id="s7">
   <div class="sec-header" onclick="toggleSection('s7')">
-    <span class="sec-num">07</span><span class="sec-title">Panel Open / Close &amp; Resize</span>
+    <span class="sec-num">06</span><span class="sec-title">Panel Open / Close &amp; Resize</span>
     <span class="sec-badge" id="s7-badge"></span><span class="sec-chevron">▾</span>
   </div>
   <div class="sec-body" id="s7-body">
@@ -545,7 +526,7 @@ body[data-submitted] #submit-banner{display:none!important}
 <!-- S8 ═══════════════════════════════════════════ -->
 <div class="section" id="s8">
   <div class="sec-header" onclick="toggleSection('s8')">
-    <span class="sec-num">08</span><span class="sec-title">Keyboard Shortcuts <span class="new-badge">UPDATED</span></span>
+    <span class="sec-num">07</span><span class="sec-title">Keyboard Shortcuts <span class="new-badge">UPDATED</span></span>
     <span class="sec-badge" id="s8-badge"></span><span class="sec-chevron">▾</span>
   </div>
   <div class="sec-body" id="s8-body">
@@ -560,7 +541,7 @@ body[data-submitted] #submit-banner{display:none!important}
 <!-- S9 ═══════════════════════════════════════════ -->
 <div class="section" id="s9">
   <div class="sec-header" onclick="toggleSection('s9')">
-    <span class="sec-num">09</span><span class="sec-title">System Tray</span>
+    <span class="sec-num">08</span><span class="sec-title">System Tray</span>
     <span class="sec-badge" id="s9-badge"></span><span class="sec-chevron">▾</span>
   </div>
   <div class="sec-body" id="s9-body">
@@ -575,7 +556,7 @@ body[data-submitted] #submit-banner{display:none!important}
 <!-- S10 ══════════════════════════════════════════ -->
 <div class="section" id="s10">
   <div class="sec-header" onclick="toggleSection('s10')">
-    <span class="sec-num">10</span><span class="sec-title">Open at Login</span>
+    <span class="sec-num">09</span><span class="sec-title">Open at Login</span>
     <span class="sec-badge" id="s10-badge"></span><span class="sec-chevron">▾</span>
   </div>
   <div class="sec-body" id="s10-body">
@@ -588,6 +569,21 @@ body[data-submitted] #submit-banner{display:none!important}
 </div>
 
 <!-- S11 ══════════════════════════════════════════ -->
+<div class="section" id="s31">
+  <div class="sec-header" onclick="toggleSection('s31')">
+    <span class="sec-num">10</span><span class="sec-title">Window Position &amp; Size Persistence</span>
+    <span class="sec-badge" id="s31-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s31-body">
+    <div class="tc" data-id="TC-259"><span class="tc-id">TC-259</span><span class="tc-desc">Window position (x, y on screen) is saved after the user drags the window</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-260"><span class="tc-id">TC-260</span><span class="tc-desc">Window size (width, height) is saved after the user resizes the panel</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-261"><span class="tc-id">TC-261</span><span class="tc-desc">Position and size are NOT saved when the panel is in the closed (~20 px wide) state — avoids persisting collapsed dimensions</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-262"><span class="tc-id">TC-262</span><span class="tc-desc">On next launch, the window opens at the previously saved position and size</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-263"><span class="tc-id">TC-263</span><span class="tc-desc">"Reset" button in Settings footer restores the window to its default size</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S32 ══════════════════════════════════════════ -->
 <div class="section" id="s11">
   <div class="sec-header" onclick="toggleSection('s11')">
     <span class="sec-num">11</span><span class="sec-title">Header &amp; Settings Mode <span class="new-badge">UPDATED</span></span>
@@ -667,104 +663,83 @@ body[data-submitted] #submit-banner{display:none!important}
 </div>
 
 <!-- S15 ══════════════════════════════════════════ -->
-<div class="section" id="s15">
-  <div class="sec-header" onclick="toggleSection('s15')">
-    <span class="sec-num">15</span><span class="sec-title">Incidents Row (Dummy Data)</span>
-    <span class="sec-badge" id="s15-badge"></span><span class="sec-chevron">▾</span>
+<div class="section" id="s28">
+  <div class="sec-header" onclick="toggleSection('s28')">
+    <span class="sec-num">15</span><span class="sec-title">New Mail Alert &amp; Badge Animations</span>
+    <span class="sec-badge" id="s28-badge"></span><span class="sec-chevron">▾</span>
   </div>
-  <div class="sec-body" id="s15-body">
-    <div class="tc" data-id="TC-113"><span class="tc-id">TC-113</span><span class="tc-desc">Incidents row badge shows count of 5</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-114"><span class="tc-id">TC-114</span><span class="tc-desc">Clicking Incidents row expands a dropdown table with "Incident No." and "Priority" column headers</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-115"><span class="tc-id">TC-115</span><span class="tc-desc">5 dummy incidents listed: INC0023451 High · INC0018734 Medium · INC0031256 Low · INC0027893 High · INC0019042 Medium</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-116"><span class="tc-id">TC-116</span><span class="tc-desc">Priority badges are colour-coded: High = red, Medium = orange, Low = green</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-117"><span class="tc-id">TC-117</span><span class="tc-desc">No live API call — data is static dummy content</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-  </div>
-</div>
-
-<!-- S16 ══════════════════════════════════════════ -->
-<div class="section" id="s16">
-  <div class="sec-header" onclick="toggleSection('s16')">
-    <span class="sec-num">16</span><span class="sec-title">Jira Row (Dummy Data)</span>
-    <span class="sec-badge" id="s16-badge"></span><span class="sec-chevron">▾</span>
-  </div>
-  <div class="sec-body" id="s16-body">
-    <div class="tc" data-id="TC-118"><span class="tc-id">TC-118</span><span class="tc-desc">Jira row badge shows count of 3 (the first project alphabetically is APP, which has 3 issues)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-119"><span class="tc-id">TC-119</span><span class="tc-desc">Clicking Jira row expands the dropdown showing issues with key, summary, and status</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-120"><span class="tc-id">TC-120</span><span class="tc-desc">7 dummy issues across 3 projects (APP, OPS, WEB) — first project APP shows: APP-12 "Fix login page redirect loop" In Progress · APP-9 "Add dark mode toggle to settings" To Do · APP-7 "Update API rate limit handling" To Do (overdue)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-121"><span class="tc-id">TC-121</span><span class="tc-desc">Overdue item (APP-7 "Update API rate limit handling", due 2026-07-10) is visually highlighted with a red/distinct overdue style (jira-overdue class)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-122"><span class="tc-id">TC-122</span><span class="tc-desc">Status abbreviations used: PROG, TO DO, IN REV, DONE, BLOCK</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-123"><span class="tc-id">TC-123</span><span class="tc-desc">No live API call — data is static dummy content</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-320"><span class="tc-id">TC-320</span><span class="tc-desc">Within the selected project, Jira issues are sorted by priority descending (highest → high → medium → low → lowest) using PRIORITY_ORDER mapping</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  <div class="sec-body" id="s28-body">
+    <div class="tc" data-id="TC-235"><span class="tc-id">TC-235</span><span class="tc-desc">When new mail arrives: "🔔 X new mail(s) received!" banner appears at the top of the row list</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-236"><span class="tc-id">TC-236</span><span class="tc-desc">New mail banner automatically disappears after 6 seconds</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-237"><span class="tc-id">TC-237</span><span class="tc-desc">Alert triggers only when BOTH conditions are true: mail count increased AND new mail IDs appeared</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-238"><span class="tc-id">TC-238</span><span class="tc-desc">Mails row has a red alert highlight (status-row-alert style) while the new mail banner is active</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-239"><span class="tc-id">TC-239</span><span class="tc-desc">When mail/meeting/to-do count changes: the affected badge vibrates briefly (~1.5 s, badge-vibrate animation)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-240"><span class="tc-id">TC-240</span><span class="tc-desc">When the panel is closed and a count changes: a thin notification bar blinks on the left edge in the active theme colour</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-241"><span class="tc-id">TC-241</span><span class="tc-desc">Notification bar blink stops when the panel is opened (isBlinking clears)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-242"><span class="tc-id">TC-242</span><span class="tc-desc">Notification bar does NOT appear when the panel is pinned open</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
   </div>
 </div>
 
-<!-- S17 ══════════════════════════════════════════ -->
-<div class="section" id="s17">
-  <div class="sec-header" onclick="toggleSection('s17')">
-    <span class="sec-num">17</span><span class="sec-title">Azure Boards Row (Dummy Data) <span class="new-badge">NEW</span></span>
-    <span class="sec-badge" id="s17-badge"></span><span class="sec-chevron">▾</span>
+<!-- S29 ══════════════════════════════════════════ -->
+<div class="section" id="s29">
+  <div class="sec-header" onclick="toggleSection('s29')">
+    <span class="sec-num">16</span><span class="sec-title">Status List Scroll &amp; Fade <span class="new-badge">v1.1.3</span></span>
+    <span class="sec-badge" id="s29-badge"></span><span class="sec-chevron">▾</span>
   </div>
-  <div class="sec-body" id="s17-body">
-    <div class="tc" data-id="TC-124"><span class="tc-id">TC-124</span><span class="tc-desc">Azure Boards row is present in the main row list</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-125"><span class="tc-id">TC-125</span><span class="tc-desc">Azure icon: blue (#0078D4) rounded square with a white lightning bolt path inside</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-126"><span class="tc-id">TC-126</span><span class="tc-desc">Azure badge shows count of 3 (the first project alphabetically is EagleTest, which has 3 items)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-127"><span class="tc-id">TC-127</span><span class="tc-desc">Clicking Azure row expands the dropdown showing work items with ID, summary, and status</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-128"><span class="tc-id">TC-128</span><span class="tc-desc">8 dummy work items across 3 projects (EagleTest, OpsAutomation, RemindClock) — first project EagleTest shows: #3842 "Implement user authentication flow" Active · #3817 "Fix dashboard loading performance" New · #3801 "API timeout handling for slow networks" Active (overdue)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-129"><span class="tc-id">TC-129</span><span class="tc-desc">Overdue item (#3801) has a distinct overdue highlight (azure-overdue class)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-130"><span class="tc-id">TC-130</span><span class="tc-desc">Status badge colours: Active = blue · New = muted grey · Closed = very faint grey · To Do = light grey · Resolved = green (class exists but no dummy item uses "Resolved")</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-131"><span class="tc-id">TC-131</span><span class="tc-desc">No live API call — data is static dummy content</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  <div class="sec-body" id="s29-body">
+    <div class="tc" data-id="TC-243"><span class="tc-id">TC-243</span><span class="tc-desc">When the row list content exceeds the visible panel height, a scroll-fade gradient overlay appears at the bottom</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-244"><span class="tc-id">TC-244</span><span class="tc-desc">Scroll fade disappears automatically when scrolled to within 8 px of the bottom</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-245"><span class="tc-id">TC-245</span><span class="tc-desc">No scrollbar is visible on the main status list (scrollbar-width: none; ::-webkit-scrollbar hidden)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc-group">Quick Links Auto-Scroll (Settings Mode)</div>
+    <div class="tc" data-id="TC-246"><span class="tc-id">TC-246</span><span class="tc-desc">When Quick Links URL slots are expanded (Settings mode), the status list automatically scrolls down smoothly to reveal them — ~370 ms after click, allowing the CSS transition to finish first</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-247"><span class="tc-id">TC-247</span><span class="tc-desc">When Quick Links URL slots are collapsed, the status list scrolls back to the top smoothly</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
   </div>
 </div>
 
-<!-- S18 ══════════════════════════════════════════ -->
-<div class="section" id="s18">
-  <div class="sec-header" onclick="toggleSection('s18')">
-    <span class="sec-num">18</span><span class="sec-title">Learn4U Row (Dummy Data)</span>
-    <span class="sec-badge" id="s18-badge"></span><span class="sec-chevron">▾</span>
+<!-- S30 ══════════════════════════════════════════ -->
+<div class="section" id="s24">
+  <div class="sec-header" onclick="toggleSection('s24')">
+    <span class="sec-num">17</span><span class="sec-title">Interval Settings</span>
+    <span class="sec-badge" id="s24-badge"></span><span class="sec-chevron">▾</span>
   </div>
-  <div class="sec-body" id="s18-body">
-    <div class="tc" data-id="TC-132"><span class="tc-id">TC-132</span><span class="tc-desc">Learn4U row badge shows count of 3</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-133"><span class="tc-id">TC-133</span><span class="tc-desc">Clicking Learn4U row expands the dropdown with 3 training items</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-134"><span class="tc-id">TC-134</span><span class="tc-desc">3 items: "Cybersecurity Awareness" Due Jul 15 (urgent) · "Data Privacy &amp; GDPR" Due Aug 30 · "Workplace Safety Essentials" Due Sep 12</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-135"><span class="tc-id">TC-135</span><span class="tc-desc">"Cybersecurity Awareness" has an urgent due-date style (red / highlighted)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-136"><span class="tc-id">TC-136</span><span class="tc-desc">No live API call — data is static dummy content</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-  </div>
-</div>
-
-<!-- S19 ══════════════════════════════════════════ -->
-<div class="section" id="s19">
-  <div class="sec-header" onclick="toggleSection('s19')">
-    <span class="sec-num">19</span><span class="sec-title">Time Sheet Row</span>
-    <span class="sec-badge" id="s19-badge"></span><span class="sec-chevron">▾</span>
-  </div>
-  <div class="sec-body" id="s19-body">
-    <div class="tc" data-id="TC-137"><span class="tc-id">TC-137</span><span class="tc-desc">Time Sheet row badge shows "2d" (number with day suffix, not a plain count)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-138"><span class="tc-id">TC-138</span><span class="tc-desc">Clicking Time Sheet row in normal mode opens a dropdown with two actions: "Link" (opens the configured timesheet URL in browser) and "Done" (marks timesheet as complete)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-<div class="tc" data-id="TC-139"><span class="tc-id">TC-139</span><span class="tc-desc">In Settings mode: a day/weekday picker is shown — select a day of month (1–28) or a weekday (Mon–Fri only) to set the timesheet reminder</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-311"><span class="tc-id">TC-311</span><span class="tc-desc">Clicking "Done" in the Time Sheet dropdown plays a slide-out animation (~380 ms) then hides the row completely for the rest of the session; the row reappears on the next app launch</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-312"><span class="tc-id">TC-312</span><span class="tc-desc">If no timesheet URL is configured in Settings, clicking "Link" opens the default fallback URL (https://track.toggl.com) in the browser</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  <div class="sec-body" id="s24-body">
+    <div class="tc" data-id="TC-186"><span class="tc-id">TC-186</span><span class="tc-desc">In Settings mode: only Mails, Jira, Azure Boards, Teams, and Slack rows show an interval stepper (‹ interval ›) replacing the count badge — World Clock shows a 12H/24H toggle; Time Sheet shows a day/weekday picker; all other rows show no stepper</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-187"><span class="tc-id">TC-187</span><span class="tc-desc">10 interval options in order: 10s · 20s · 30s · 1m · 10m · 30m · 1h · 6h · 12h · 1d</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-188"><span class="tc-id">TC-188</span><span class="tc-desc">‹ arrow is disabled at minimum (10s); › arrow is disabled at maximum (1d)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-189"><span class="tc-id">TC-189</span><span class="tc-desc">Default intervals: Mails=30s · To Do=1m · Meetings=10m · Incidents=30m · Jira=10m · Azure=10m · Teams=10m · Slack=10m · Learn4U=1h · Time Sheet=1h · Peakon=1d</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-190"><span class="tc-id">TC-190</span><span class="tc-desc">Changing an interval takes effect immediately — next scheduled refresh uses the new interval</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-191"><span class="tc-id">TC-191</span><span class="tc-desc">Interval settings persist after app restart (saved to eagleview-row-intervals)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-192"><span class="tc-id">TC-192</span><span class="tc-desc">Mails, To Do, and Meetings fetch live data at their configured intervals; Jira, Azure Boards, Teams, and Slack have individual interval steppers but currently display placeholder data; Incidents shows static dummy data with no stepper</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc-group">Teams &amp; Slack Badge Counting Method</div>
+    <div class="tc" data-id="TC-318"><span class="tc-id">TC-318</span><span class="tc-desc">Teams row badge = count of channels that have at least 1 unread message (not the sum of all messages) — with DUMMY_TEAMS (8 chats; 6 have unread &gt; 0), badge shows 6</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-319"><span class="tc-id">TC-319</span><span class="tc-desc">Slack row badge = sum of all item counts across all channels (not a channel count) — with DUMMY_SLACK (counts: 3+1+5+2+8+4+2+1), badge shows 26<span class="note">Contrasts with Teams which counts channels; Slack counts total messages</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
   </div>
 </div>
 
-<!-- S20 ══════════════════════════════════════════ -->
-<div class="section" id="s20">
-  <div class="sec-header" onclick="toggleSection('s20')">
-    <span class="sec-num">20</span><span class="sec-title">Peakon Survey Row</span>
-    <span class="sec-badge" id="s20-badge"></span><span class="sec-chevron">▾</span>
+<!-- S25 ══════════════════════════════════════════ -->
+<div class="section" id="s23">
+  <div class="sec-header" onclick="toggleSection('s23')">
+    <span class="sec-num">18</span><span class="sec-title">Row Reordering &amp; Visibility</span>
+    <span class="sec-badge" id="s23-badge"></span><span class="sec-chevron">▾</span>
   </div>
-  <div class="sec-body" id="s20-body">
-    <div class="tc" data-id="TC-140"><span class="tc-id">TC-140</span><span class="tc-desc">Peakon row shows an ImportantBadge (yellow/orange warning triangle icon) in normal mode — not a number</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-141"><span class="tc-id">TC-141</span><span class="tc-desc">Clicking the Peakon row in normal mode does NOT expand a dropdown</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-142"><span class="tc-id">TC-142</span><span class="tc-desc">Peakon row appears when a survey mail is received (shows exclamation badge); badge turns to a thumbs-up when a completion mail is received; clicking the thumbs-up dismisses the row</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-305"><span class="tc-id">TC-305</span><span class="tc-desc">When Peakon status is "pending", clicking the ImportantBadge (warning triangle) opens the Peakon survey link in the default browser</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-306"><span class="tc-id">TC-306</span><span class="tc-desc">When Peakon status is "expired" or "none", the Peakon row is completely absent from the normal mode row list</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  <div class="sec-body" id="s23-body">
+    <div class="tc-group">Reordering (Settings mode)</div>
+    <div class="tc" data-id="TC-178"><span class="tc-id">TC-178</span><span class="tc-desc">In Settings mode: rows can be dragged (mouse-down on the row body, not buttons) to change their order</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-179"><span class="tc-id">TC-179</span><span class="tc-desc">Dragging over a target row highlights it with a drag-over indicator</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-180"><span class="tc-id">TC-180</span><span class="tc-desc">Releasing the drag reorders the rows; new order is applied immediately</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-181"><span class="tc-id">TC-181</span><span class="tc-desc">Row order persists after app restart (saved to eagleview-row-order)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc-group">Visibility (eye toggle)</div>
+    <div class="tc" data-id="TC-182"><span class="tc-id">TC-182</span><span class="tc-desc">In Settings mode: each row shows an eye icon button — open eye = visible, closed eye = hidden</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-183"><span class="tc-id">TC-183</span><span class="tc-desc">Clicking the eye button toggles visibility — hidden rows appear grayed-out in Settings but remain listed</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-184"><span class="tc-id">TC-184</span><span class="tc-desc">In normal mode: hidden rows are completely absent from the row list</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-185"><span class="tc-id">TC-185</span><span class="tc-desc">Visibility choices persist after app restart (saved to eagleview-hidden-rows)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
   </div>
 </div>
 
-<!-- S21 ══════════════════════════════════════════ -->
+<!-- S24 ══════════════════════════════════════════ -->
 <div class="section" id="s21">
   <div class="sec-header" onclick="toggleSection('s21')">
-    <span class="sec-num">21</span><span class="sec-title">Notes Feature</span>
+    <span class="sec-num">19</span><span class="sec-title">Notes Feature</span>
     <span class="sec-badge" id="s21-badge"></span><span class="sec-chevron">▾</span>
   </div>
   <div class="sec-body" id="s21-body">
@@ -805,7 +780,7 @@ body[data-submitted] #submit-banner{display:none!important}
 <!-- S22 ══════════════════════════════════════════ -->
 <div class="section" id="s22">
   <div class="sec-header" onclick="toggleSection('s22')">
-    <span class="sec-num">22</span><span class="sec-title">World Clock</span>
+    <span class="sec-num">20</span><span class="sec-title">World Clock</span>
     <span class="sec-badge" id="s22-badge"></span><span class="sec-chevron">▾</span>
   </div>
   <div class="sec-body" id="s22-body">
@@ -829,213 +804,9 @@ body[data-submitted] #submit-banner{display:none!important}
 </div>
 
 <!-- S23 ══════════════════════════════════════════ -->
-<div class="section" id="s23">
-  <div class="sec-header" onclick="toggleSection('s23')">
-    <span class="sec-num">23</span><span class="sec-title">Row Reordering &amp; Visibility</span>
-    <span class="sec-badge" id="s23-badge"></span><span class="sec-chevron">▾</span>
-  </div>
-  <div class="sec-body" id="s23-body">
-    <div class="tc-group">Reordering (Settings mode)</div>
-    <div class="tc" data-id="TC-178"><span class="tc-id">TC-178</span><span class="tc-desc">In Settings mode: rows can be dragged (mouse-down on the row body, not buttons) to change their order</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-179"><span class="tc-id">TC-179</span><span class="tc-desc">Dragging over a target row highlights it with a drag-over indicator</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-180"><span class="tc-id">TC-180</span><span class="tc-desc">Releasing the drag reorders the rows; new order is applied immediately</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-181"><span class="tc-id">TC-181</span><span class="tc-desc">Row order persists after app restart (saved to eagleview-row-order)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc-group">Visibility (eye toggle)</div>
-    <div class="tc" data-id="TC-182"><span class="tc-id">TC-182</span><span class="tc-desc">In Settings mode: each row shows an eye icon button — open eye = visible, closed eye = hidden</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-183"><span class="tc-id">TC-183</span><span class="tc-desc">Clicking the eye button toggles visibility — hidden rows appear grayed-out in Settings but remain listed</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-184"><span class="tc-id">TC-184</span><span class="tc-desc">In normal mode: hidden rows are completely absent from the row list</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-185"><span class="tc-id">TC-185</span><span class="tc-desc">Visibility choices persist after app restart (saved to eagleview-hidden-rows)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-  </div>
-</div>
-
-<!-- S24 ══════════════════════════════════════════ -->
-<div class="section" id="s24">
-  <div class="sec-header" onclick="toggleSection('s24')">
-    <span class="sec-num">24</span><span class="sec-title">Interval Settings</span>
-    <span class="sec-badge" id="s24-badge"></span><span class="sec-chevron">▾</span>
-  </div>
-  <div class="sec-body" id="s24-body">
-    <div class="tc" data-id="TC-186"><span class="tc-id">TC-186</span><span class="tc-desc">In Settings mode: only Mails, Jira, Azure Boards, Teams, and Slack rows show an interval stepper (‹ interval ›) replacing the count badge — World Clock shows a 12H/24H toggle; Time Sheet shows a day/weekday picker; all other rows show no stepper</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-187"><span class="tc-id">TC-187</span><span class="tc-desc">10 interval options in order: 10s · 20s · 30s · 1m · 10m · 30m · 1h · 6h · 12h · 1d</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-188"><span class="tc-id">TC-188</span><span class="tc-desc">‹ arrow is disabled at minimum (10s); › arrow is disabled at maximum (1d)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-189"><span class="tc-id">TC-189</span><span class="tc-desc">Default intervals: Mails=30s · To Do=1m · Meetings=10m · Incidents=30m · Jira=10m · Azure=10m · Teams=10m · Slack=10m · Learn4U=1h · Time Sheet=1h · Peakon=1d</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-190"><span class="tc-id">TC-190</span><span class="tc-desc">Changing an interval takes effect immediately — next scheduled refresh uses the new interval</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-191"><span class="tc-id">TC-191</span><span class="tc-desc">Interval settings persist after app restart (saved to eagleview-row-intervals)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-192"><span class="tc-id">TC-192</span><span class="tc-desc">Mails, To Do, and Meetings fetch live data at their configured intervals; Jira, Azure Boards, Teams, and Slack have individual interval steppers but currently display placeholder data; Incidents shows static dummy data with no stepper</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc-group">Teams &amp; Slack Badge Counting Method</div>
-    <div class="tc" data-id="TC-318"><span class="tc-id">TC-318</span><span class="tc-desc">Teams row badge = count of channels that have at least 1 unread message (not the sum of all messages) — with DUMMY_TEAMS (8 chats; 6 have unread &gt; 0), badge shows 6</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-319"><span class="tc-id">TC-319</span><span class="tc-desc">Slack row badge = sum of all item counts across all channels (not a channel count) — with DUMMY_SLACK (counts: 3+1+5+2+8+4+2+1), badge shows 26<span class="note">Contrasts with Teams which counts channels; Slack counts total messages</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-  </div>
-</div>
-
-<!-- S25 ══════════════════════════════════════════ -->
-<div class="section" id="s25">
-  <div class="sec-header" onclick="toggleSection('s25')">
-    <span class="sec-num">25</span><span class="sec-title">Themes <span class="new-badge">v1.1.3</span></span>
-    <span class="sec-badge" id="s25-badge"></span><span class="sec-chevron">▾</span>
-  </div>
-  <div class="sec-body" id="s25-body">
-    <div class="tc" data-id="TC-193"><span class="tc-id">TC-193</span><span class="tc-desc">5 themes available in the Settings footer bar: Siemens (orange/teal) · Ocean (blue/purple) · Forest (green/yellow) · Ember (red/slate) · Classic (navy/white)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-194"><span class="tc-id">TC-194</span><span class="tc-desc">Classic theme button has a "C" badge on its theme icon to distinguish it from others</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-195"><span class="tc-id">TC-195</span><span class="tc-desc">Clicking a theme applies it instantly — header gradient, toggle button, badge colours, and panel background all update</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-196"><span class="tc-id">TC-196</span><span class="tc-desc">Classic (navy) theme switches the panel to a light white background with dark text</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-197"><span class="tc-id">TC-197</span><span class="tc-desc">Active theme button has a highlighted/selected ring in the theme row</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-198"><span class="tc-id">TC-198</span><span class="tc-desc">Theme selection persists after app restart (saved to eagleview-theme)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-199"><span class="tc-id">TC-199</span><span class="tc-desc">Notification blink bar colour matches the active theme's accent colour</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc-group">Dropdown Row Color Hierarchy (per theme)</div>
-    <div class="tc" data-id="TC-200"><span class="tc-id">TC-200</span><span class="tc-desc">Mail, meeting, and training dropdown content rows have a visibly distinct background from the main row above them (slightly lighter lift on dark themes)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-201"><span class="tc-id">TC-201</span><span class="tc-desc">Summary header rows ("Today's Unread", "Yesterday's Unread") use a different (darker) background than the individual content rows below them — creating a clear 3-level visual hierarchy</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-202"><span class="tc-id">TC-202</span><span class="tc-desc"><strong>Siemens theme:</strong> dropdown content rows use <code>rgba(255,255,255,0.08)</code> lift; summary rows use <code>rgba(255,255,255,0.03)</code> — both visibly distinct from the panel background</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-203"><span class="tc-id">TC-203</span><span class="tc-desc"><strong>Ocean theme:</strong> dropdown content rows use <code>#152040</code> (blue-dark); summary rows use <code>#0E1628</code> (deeper blue) — distinct from each other and from the main row</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-204"><span class="tc-id">TC-204</span><span class="tc-desc"><strong>Forest theme:</strong> dropdown content rows use <code>#112A14</code> (forest green); summary rows use <code>#0A1F0D</code> — distinct from each other and from the main row</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-205"><span class="tc-id">TC-205</span><span class="tc-desc"><strong>Ember theme:</strong> dropdown content rows use <code>#2A1414</code> (dark red); summary rows use <code>#1C1010</code> — distinct from each other and from the main row</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-206"><span class="tc-id">TC-206</span><span class="tc-desc"><strong>Classic (light) theme:</strong> dropdown content rows use <code>#DCE6F5</code>; summary rows use <code>#EEF3FB</code> — both visibly different from the white panel background</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc-group">Quick Links Popup — Per-Theme Background</div>
-    <div class="tc" data-id="TC-207"><span class="tc-id">TC-207</span><span class="tc-desc"><strong>Siemens theme:</strong> Quick Links footer popup has a solid dark background (<code>#1a1008</code>) with an orange border — not transparent like a dropdown row</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-208"><span class="tc-id">TC-208</span><span class="tc-desc"><strong>Ocean theme:</strong> Quick Links footer popup has a solid dark-blue background (<code>#0D1020</code>) with a blue-grey border — not transparent</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-209"><span class="tc-id">TC-209</span><span class="tc-desc"><strong>Forest theme:</strong> Quick Links footer popup has a solid dark-green background (<code>#0A1A0C</code>) with a green border — not transparent</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-210"><span class="tc-id">TC-210</span><span class="tc-desc"><strong>Ember theme:</strong> Quick Links footer popup has a solid dark-red background (<code>#180C0C</code>) with a red border — not transparent</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-211"><span class="tc-id">TC-211</span><span class="tc-desc"><strong>Classic (light) theme:</strong> Quick Links footer popup has a solid white background (<code>#FFFFFF</code>) with a light-blue border — not a dark popup on the white UI</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-  </div>
-</div>
-
-<!-- S26 ══════════════════════════════════════════ -->
-<div class="section" id="s26">
-  <div class="sec-header" onclick="toggleSection('s26')">
-    <span class="sec-num">26</span><span class="sec-title">Footer — Normal Mode <span class="new-badge">v1.1.3</span></span>
-    <span class="sec-badge" id="s26-badge"></span><span class="sec-chevron">▾</span>
-  </div>
-  <div class="sec-body" id="s26-body">
-    <div class="tc" data-id="TC-212"><span class="tc-id">TC-212</span><span class="tc-desc">Pin / Lock button is shown on the left side of the footer</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-213"><span class="tc-id">TC-213</span><span class="tc-desc">Clicking Pin pins the panel open — lock icon changes to closed state; toggle button is hidden</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-315"><span class="tc-id">TC-315</span><span class="tc-desc">When pinned, the pin SVG renders differently per theme: fill="white" (solid) on all 4 dark themes (Siemens, Ocean, Forest, Ember); fill="none" stroke-only on the Classic/navy theme — when unpinned, fill="currentColor" and the icon is rotated 45°</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-214"><span class="tc-id">TC-214</span><span class="tc-desc">Clicking Pin again unpins — panel auto-closes on blur; toggle button reappears</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-215"><span class="tc-id">TC-215</span><span class="tc-desc">Status text: "Updated / HH:MM:SS" (two lines, no emoji) after a successful data fetch — shows "Stale / HH:MM:SS" if data is older than 3× the configured interval<span class="note">🟢 emoji does NOT appear here; 🟢 only appears in the initial "🟢 Connected" state (TC-216)</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-216"><span class="tc-id">TC-216</span><span class="tc-desc">Status text: "🟢 Connected" when authenticated but no refresh timestamp yet</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-217"><span class="tc-id">TC-217</span><span class="tc-desc">Status text: "Loading..." (plain text, no emoji, ASCII periods) while data is loading</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-218"><span class="tc-id">TC-218</span><span class="tc-desc">Status text: "Not connected" (plain text, no emoji) when auth failed or not yet started<span class="note">When status is error and a retry is counting down, the text shows "Retrying in / Ns..." instead (see TC-313)</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-313"><span class="tc-id">TC-313</span><span class="tc-desc">When status is error: the footer shows a two-line countdown ("Retrying in / Xs…") — after 30 seconds the app auto-retries the data fetch without any user action</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-219"><span class="tc-id">TC-219</span><span class="tc-desc">Coffee button (☕) in the footer triggers a manual refresh of all 7 data sources — Mails, To Do, Meetings (live) + Jira, Azure, Teams, Slack (placeholder data)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-314"><span class="tc-id">TC-314</span><span class="tc-desc">Clicking the coffee button triggers a 350ms click-feedback flash — the button and its glow override to red (#f87171) regardless of connection status, then return to the status-driven color<span class="note">coffeeFlash state is set true for 350ms on click; this is purely visual feedback, not an error state</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-220"><span class="tc-id">TC-220</span><span class="tc-desc">After manual refresh: "Updated" timestamp in footer updates to the current time</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc-group">Footer Layout</div>
-    <div class="tc" data-id="TC-226"><span class="tc-id">TC-226</span><span class="tc-desc">Footer has 2 px vertical padding — visible breathing room between the footer border and the button/icon row on all themes</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-227"><span class="tc-id">TC-227</span><span class="tc-desc">Coffee/refresh button color is driven by connection status on all 5 themes — gray (#9ca3af) = loading · green (#4ade80) = connected &amp; data fresh · yellow (#facc15) = connected but stale (elapsed &gt;3× interval) · red (#f87171) = error/disconnected<span class="note">Inline style is applied directly so it is not blocked by theme CSS</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-228"><span class="tc-id">TC-228</span><span class="tc-desc">Pin button always has a visible border on all themes — including when pinned (active) and when unpinned</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-  </div>
-</div>
-
-<!-- S27 ══════════════════════════════════════════ -->
-<div class="section" id="s27">
-  <div class="sec-header" onclick="toggleSection('s27')">
-    <span class="sec-num">27</span><span class="sec-title">Footer — Settings Mode <span class="new-badge">UPDATED</span></span>
-    <span class="sec-badge" id="s27-badge"></span><span class="sec-chevron">▾</span>
-  </div>
-  <div class="sec-body" id="s27-body">
-    <div class="tc" data-id="TC-229"><span class="tc-id">TC-229</span><span class="tc-desc">Settings mode footer shows an "Autostart" button on the left (fills with the theme's main color when autostart is ON) and a "Reset" button paired with a bug/log icon button on the right</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-230"><span class="tc-id">TC-230</span><span class="tc-desc">"Reset" button resets the OS window to its default size via the Tauri reset_window_size command</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-231"><span class="tc-id">TC-231</span><span class="tc-desc">Log button (bug icon) opens a styled HTML viewer of the log file in the default browser — NOT the raw log folder<span class="note">Any previous viewer files are deleted first; a new timestamped HTML file (e.g. Eagle View-viewer-1751234567.html) is generated and opened, so each click always shows a fresh, single file</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-232"><span class="tc-id">TC-232</span><span class="tc-desc">Clicking the log button a second time always shows the latest log content — browser does not serve a stale cached version<span class="note">Previous viewer HTML files are deleted before each new one is created</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-233"><span class="tc-id">TC-233</span><span class="tc-desc">Log file contains hourly heartbeat entries (<code>[app] heartbeat — running X h</code>) — a gap longer than 1 hour between log entries means the app was not running during that period</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-234"><span class="tc-id">TC-234</span><span class="tc-desc">Normal mode footer items (pin button, status text, refresh button) are not shown in Settings mode</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-  </div>
-</div>
-
-<!-- S28 ══════════════════════════════════════════ -->
-<div class="section" id="s28">
-  <div class="sec-header" onclick="toggleSection('s28')">
-    <span class="sec-num">28</span><span class="sec-title">New Mail Alert &amp; Badge Animations</span>
-    <span class="sec-badge" id="s28-badge"></span><span class="sec-chevron">▾</span>
-  </div>
-  <div class="sec-body" id="s28-body">
-    <div class="tc" data-id="TC-235"><span class="tc-id">TC-235</span><span class="tc-desc">When new mail arrives: "🔔 X new mail(s) received!" banner appears at the top of the row list</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-236"><span class="tc-id">TC-236</span><span class="tc-desc">New mail banner automatically disappears after 6 seconds</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-237"><span class="tc-id">TC-237</span><span class="tc-desc">Alert triggers only when BOTH conditions are true: mail count increased AND new mail IDs appeared</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-238"><span class="tc-id">TC-238</span><span class="tc-desc">Mails row has a red alert highlight (status-row-alert style) while the new mail banner is active</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-239"><span class="tc-id">TC-239</span><span class="tc-desc">When mail/meeting/to-do count changes: the affected badge vibrates briefly (~1.5 s, badge-vibrate animation)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-240"><span class="tc-id">TC-240</span><span class="tc-desc">When the panel is closed and a count changes: a thin notification bar blinks on the left edge in the active theme colour</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-241"><span class="tc-id">TC-241</span><span class="tc-desc">Notification bar blink stops when the panel is opened (isBlinking clears)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-242"><span class="tc-id">TC-242</span><span class="tc-desc">Notification bar does NOT appear when the panel is pinned open</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-  </div>
-</div>
-
-<!-- S29 ══════════════════════════════════════════ -->
-<div class="section" id="s29">
-  <div class="sec-header" onclick="toggleSection('s29')">
-    <span class="sec-num">29</span><span class="sec-title">Status List Scroll &amp; Fade <span class="new-badge">v1.1.3</span></span>
-    <span class="sec-badge" id="s29-badge"></span><span class="sec-chevron">▾</span>
-  </div>
-  <div class="sec-body" id="s29-body">
-    <div class="tc" data-id="TC-243"><span class="tc-id">TC-243</span><span class="tc-desc">When the row list content exceeds the visible panel height, a scroll-fade gradient overlay appears at the bottom</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-244"><span class="tc-id">TC-244</span><span class="tc-desc">Scroll fade disappears automatically when scrolled to within 8 px of the bottom</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-245"><span class="tc-id">TC-245</span><span class="tc-desc">No scrollbar is visible on the main status list (scrollbar-width: none; ::-webkit-scrollbar hidden)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc-group">Quick Links Auto-Scroll (Settings Mode)</div>
-    <div class="tc" data-id="TC-246"><span class="tc-id">TC-246</span><span class="tc-desc">When Quick Links URL slots are expanded (Settings mode), the status list automatically scrolls down smoothly to reveal them — ~370 ms after click, allowing the CSS transition to finish first</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-247"><span class="tc-id">TC-247</span><span class="tc-desc">When Quick Links URL slots are collapsed, the status list scrolls back to the top smoothly</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-  </div>
-</div>
-
-<!-- S30 ══════════════════════════════════════════ -->
-<div class="section" id="s30">
-  <div class="sec-header" onclick="toggleSection('s30')">
-    <span class="sec-num">30</span><span class="sec-title">Data Persistence (localStorage via Tauri IPC) <span class="new-badge">v1.1.3</span></span>
-    <span class="sec-badge" id="s30-badge"></span><span class="sec-chevron">▾</span>
-  </div>
-  <div class="sec-body" id="s30-body">
-    <div class="tc" data-id="TC-248"><span class="tc-id">TC-248</span><span class="tc-desc"><code>eagleview-theme</code> — active theme ID saved and restored on restart</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-249"><span class="tc-id">TC-249</span><span class="tc-desc"><code>eagleview-row-order</code> — drag-reorder order saved and restored</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-250"><span class="tc-id">TC-250</span><span class="tc-desc"><code>eagleview-row-intervals</code> — per-row refresh intervals saved and restored</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-251"><span class="tc-id">TC-251</span><span class="tc-desc"><code>eagleview-hidden-rows</code> — row visibility choices saved and restored</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-252"><span class="tc-id">TC-252</span><span class="tc-desc"><code>eagleview-notes</code> — notes content saved and restored (survives fresh install)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-253"><span class="tc-id">TC-253</span><span class="tc-desc"><code>eagleview-toggle-size</code> — toggle button size (sm/md/lg) saved and restored</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-254"><span class="tc-id">TC-254</span><span class="tc-desc"><code>eagleview-wc-format</code> — 12h/24h clock format saved and restored</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-255"><span class="tc-id">TC-255</span><span class="tc-desc"><code>eagleview-clock1-zone</code> and <code>eagleview-clock2-zone</code> — timezone selections saved and restored</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-256"><span class="tc-id">TC-256</span><span class="tc-desc"><code>ev-sync</code> key is RESERVED — JavaScript cannot write to it; guarded by Rust backend anti-rollback logic</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-257"><span class="tc-id">TC-257</span><span class="tc-desc"><code>quick-links</code> — array of 5 Quick Link objects (url + label) saved and restored on restart<span class="note">Key has no "eagleview-" prefix; stored via saveAppData('quick-links', links)</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-258"><span class="tc-id">TC-258</span><span class="tc-desc"><code>eagleview-ql-visible</code> — Quick Links footer button visibility (eye toggle state) saved and restored on restart</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-  </div>
-</div>
-
-<!-- S31 ══════════════════════════════════════════ -->
-<div class="section" id="s31">
-  <div class="sec-header" onclick="toggleSection('s31')">
-    <span class="sec-num">31</span><span class="sec-title">Window Position &amp; Size Persistence</span>
-    <span class="sec-badge" id="s31-badge"></span><span class="sec-chevron">▾</span>
-  </div>
-  <div class="sec-body" id="s31-body">
-    <div class="tc" data-id="TC-259"><span class="tc-id">TC-259</span><span class="tc-desc">Window position (x, y on screen) is saved after the user drags the window</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-260"><span class="tc-id">TC-260</span><span class="tc-desc">Window size (width, height) is saved after the user resizes the panel</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-261"><span class="tc-id">TC-261</span><span class="tc-desc">Position and size are NOT saved when the panel is in the closed (~20 px wide) state — avoids persisting collapsed dimensions</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-262"><span class="tc-id">TC-262</span><span class="tc-desc">On next launch, the window opens at the previously saved position and size</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-263"><span class="tc-id">TC-263</span><span class="tc-desc">"Reset" button in Settings footer restores the window to its default size</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-  </div>
-</div>
-
-<!-- S32 ══════════════════════════════════════════ -->
-<div class="section" id="s32">
-  <div class="sec-header" onclick="toggleSection('s32')">
-    <span class="sec-num">32</span><span class="sec-title">Multi-Platform Specifics <span class="new-badge">UPDATED</span></span>
-    <span class="sec-badge" id="s32-badge"></span><span class="sec-chevron">▾</span>
-  </div>
-  <div class="sec-body" id="s32-body">
-    <div class="tc-group">macOS</div>
-    <div class="tc" data-id="TC-265"><span class="tc-id">TC-265</span><span class="tc-desc">Tray icon appears in the macOS menu bar (top of screen)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-266"><span class="tc-id">TC-266</span><span class="tc-desc">Gatekeeper quarantine is expected on first install — <code>xattr -cr</code> resolves it without rebuilding</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-267"><span class="tc-id">TC-267</span><span class="tc-desc">macOS Intel DMG (Eagle.View_1.1.3_x64.dmg) runs correctly on Intel Macs; Apple Silicon DMG (Eagle.View_1.1.3_aarch64.dmg) runs correctly on ARM Macs</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-268"><span class="tc-id">TC-268</span><span class="tc-desc"><strong>macOS:</strong> Eagle View does NOT appear in the macOS Dock at any time — only the menu-bar tray icon is visible<span class="note">ActivationPolicy::Accessory hides the app from the Dock</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc-group">Windows</div>
-    <div class="tc" data-id="TC-270"><span class="tc-id">TC-270</span><span class="tc-desc">Tray icon appears in the Windows taskbar notification area</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-271"><span class="tc-id">TC-271</span><span class="tc-desc">Gmail login shows a Windows Firewall dialog warning inside Eagle View</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-272"><span class="tc-id">TC-272</span><span class="tc-desc">Accepting the Firewall dialog allows Gmail auth; blocking causes auth failure</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-273"><span class="tc-id">TC-273</span><span class="tc-desc">NSIS installer (EXE) installs and uninstalls cleanly via Windows Add / Remove Programs</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-274"><span class="tc-id">TC-274</span><span class="tc-desc"><strong>Windows:</strong> Eagle View does NOT appear as a taskbar button on the Windows Taskbar — only the system tray notification icon is present<span class="note">set_skip_taskbar(true) called at app startup on Windows</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-  </div>
-</div>
-
-<!-- S33 ══════════════════════════════════════════ -->
 <div class="section" id="s33">
   <div class="sec-header" onclick="toggleSection('s33')">
-    <span class="sec-num">33</span><span class="sec-title">Quick Links <span class="new-badge">NEW</span></span>
+    <span class="sec-num">21</span><span class="sec-title">Quick Links <span class="new-badge">NEW</span></span>
     <span class="sec-badge" id="s33-badge"></span><span class="sec-chevron">▾</span>
   </div>
   <div class="sec-body" id="s33-body">
@@ -1067,6 +838,235 @@ body[data-submitted] #submit-banner{display:none!important}
   </div>
 </div>
 
+<div class="section" id="s25">
+  <div class="sec-header" onclick="toggleSection('s25')">
+    <span class="sec-num">22</span><span class="sec-title">Themes <span class="new-badge">v1.1.3</span></span>
+    <span class="sec-badge" id="s25-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s25-body">
+    <div class="tc" data-id="TC-193"><span class="tc-id">TC-193</span><span class="tc-desc">5 themes available in the Settings footer bar: Siemens (orange/teal) · Ocean (blue/purple) · Forest (green/yellow) · Ember (red/slate) · Classic (navy/white)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-194"><span class="tc-id">TC-194</span><span class="tc-desc">Classic theme button has a "C" badge on its theme icon to distinguish it from others</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-195"><span class="tc-id">TC-195</span><span class="tc-desc">Clicking a theme applies it instantly — header gradient, toggle button, badge colours, and panel background all update</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-196"><span class="tc-id">TC-196</span><span class="tc-desc">Classic (navy) theme switches the panel to a light white background with dark text</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-197"><span class="tc-id">TC-197</span><span class="tc-desc">Active theme button has a highlighted/selected ring in the theme row</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-198"><span class="tc-id">TC-198</span><span class="tc-desc">Theme selection persists after app restart (saved to eagleview-theme)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-199"><span class="tc-id">TC-199</span><span class="tc-desc">Notification blink bar colour matches the active theme's accent colour</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc-group">Dropdown Row Color Hierarchy (per theme)</div>
+    <div class="tc" data-id="TC-200"><span class="tc-id">TC-200</span><span class="tc-desc">Mail, meeting, and training dropdown content rows have a visibly distinct background from the main row above them (slightly lighter lift on dark themes)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-201"><span class="tc-id">TC-201</span><span class="tc-desc">Summary header rows ("Today's Unread", "Yesterday's Unread") use a different (darker) background than the individual content rows below them — creating a clear 3-level visual hierarchy</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-202"><span class="tc-id">TC-202</span><span class="tc-desc"><strong>Siemens theme:</strong> dropdown content rows use <code>rgba(255,255,255,0.08)</code> lift; summary rows use <code>rgba(255,255,255,0.03)</code> — both visibly distinct from the panel background</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-203"><span class="tc-id">TC-203</span><span class="tc-desc"><strong>Ocean theme:</strong> dropdown content rows use <code>#152040</code> (blue-dark); summary rows use <code>#0E1628</code> (deeper blue) — distinct from each other and from the main row</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-204"><span class="tc-id">TC-204</span><span class="tc-desc"><strong>Forest theme:</strong> dropdown content rows use <code>#112A14</code> (forest green); summary rows use <code>#0A1F0D</code> — distinct from each other and from the main row</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-205"><span class="tc-id">TC-205</span><span class="tc-desc"><strong>Ember theme:</strong> dropdown content rows use <code>#2A1414</code> (dark red); summary rows use <code>#1C1010</code> — distinct from each other and from the main row</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-206"><span class="tc-id">TC-206</span><span class="tc-desc"><strong>Classic (light) theme:</strong> dropdown content rows use <code>#DCE6F5</code>; summary rows use <code>#EEF3FB</code> — both visibly different from the white panel background</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc-group">Quick Links Popup — Per-Theme Background</div>
+    <div class="tc" data-id="TC-207"><span class="tc-id">TC-207</span><span class="tc-desc"><strong>Siemens theme:</strong> Quick Links footer popup has a solid dark background (<code>#1a1008</code>) with an orange border — not transparent like a dropdown row</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-208"><span class="tc-id">TC-208</span><span class="tc-desc"><strong>Ocean theme:</strong> Quick Links footer popup has a solid dark-blue background (<code>#0D1020</code>) with a blue-grey border — not transparent</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-209"><span class="tc-id">TC-209</span><span class="tc-desc"><strong>Forest theme:</strong> Quick Links footer popup has a solid dark-green background (<code>#0A1A0C</code>) with a green border — not transparent</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-210"><span class="tc-id">TC-210</span><span class="tc-desc"><strong>Ember theme:</strong> Quick Links footer popup has a solid dark-red background (<code>#180C0C</code>) with a red border — not transparent</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-211"><span class="tc-id">TC-211</span><span class="tc-desc"><strong>Classic (light) theme:</strong> Quick Links footer popup has a solid white background (<code>#FFFFFF</code>) with a light-blue border — not a dark popup on the white UI</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S26 ══════════════════════════════════════════ -->
+<div class="section" id="s26">
+  <div class="sec-header" onclick="toggleSection('s26')">
+    <span class="sec-num">23</span><span class="sec-title">Footer — Normal Mode <span class="new-badge">v1.1.3</span></span>
+    <span class="sec-badge" id="s26-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s26-body">
+    <div class="tc" data-id="TC-212"><span class="tc-id">TC-212</span><span class="tc-desc">Pin / Lock button is shown on the left side of the footer</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-213"><span class="tc-id">TC-213</span><span class="tc-desc">Clicking Pin pins the panel open — lock icon changes to closed state; toggle button is hidden</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-315"><span class="tc-id">TC-315</span><span class="tc-desc">When pinned, the pin SVG renders differently per theme: fill="white" (solid) on all 4 dark themes (Siemens, Ocean, Forest, Ember); fill="none" stroke-only on the Classic/navy theme — when unpinned, fill="currentColor" and the icon is rotated 45°</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-214"><span class="tc-id">TC-214</span><span class="tc-desc">Clicking Pin again unpins — panel auto-closes on blur; toggle button reappears</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-215"><span class="tc-id">TC-215</span><span class="tc-desc">Status text: "Updated / HH:MM:SS" (two lines, no emoji) after a successful data fetch — shows "Stale / HH:MM:SS" if data is older than 3× the configured interval<span class="note">🟢 emoji does NOT appear here; 🟢 only appears in the initial "🟢 Connected" state (TC-216)</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-216"><span class="tc-id">TC-216</span><span class="tc-desc">Status text: "🟢 Connected" when authenticated but no refresh timestamp yet</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-217"><span class="tc-id">TC-217</span><span class="tc-desc">Status text: "Loading..." (plain text, no emoji, ASCII periods) while data is loading</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-218"><span class="tc-id">TC-218</span><span class="tc-desc">Status text: "Not connected" (plain text, no emoji) when auth failed or not yet started<span class="note">When status is error and a retry is counting down, the text shows "Retrying in / Ns..." instead (see TC-313)</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-313"><span class="tc-id">TC-313</span><span class="tc-desc">When status is error: the footer shows a two-line countdown ("Retrying in / Xs…") — after 30 seconds the app auto-retries the data fetch without any user action</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-219"><span class="tc-id">TC-219</span><span class="tc-desc">Coffee button (☕) in the footer triggers a manual refresh of all 7 data sources — Mails, To Do, Meetings (live) + Jira, Azure, Teams, Slack (placeholder data)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-314"><span class="tc-id">TC-314</span><span class="tc-desc">Clicking the coffee button triggers a 350ms click-feedback flash — the button and its glow override to red (#f87171) regardless of connection status, then return to the status-driven color<span class="note">coffeeFlash state is set true for 350ms on click; this is purely visual feedback, not an error state</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-220"><span class="tc-id">TC-220</span><span class="tc-desc">After manual refresh: "Updated" timestamp in footer updates to the current time</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc-group">Footer Layout</div>
+    <div class="tc" data-id="TC-226"><span class="tc-id">TC-226</span><span class="tc-desc">Footer has 2 px vertical padding — visible breathing room between the footer border and the button/icon row on all themes</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-227"><span class="tc-id">TC-227</span><span class="tc-desc">Coffee/refresh button color is driven by connection status on all 5 themes — gray (#9ca3af) = loading · green (#4ade80) = connected &amp; data fresh · yellow (#facc15) = connected but stale (elapsed &gt;3× interval) · red (#f87171) = error/disconnected<span class="note">Inline style is applied directly so it is not blocked by theme CSS</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-228"><span class="tc-id">TC-228</span><span class="tc-desc">Pin button always has a visible border on all themes — including when pinned (active) and when unpinned</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S27 ══════════════════════════════════════════ -->
+<div class="section" id="s27">
+  <div class="sec-header" onclick="toggleSection('s27')">
+    <span class="sec-num">24</span><span class="sec-title">Footer — Settings Mode <span class="new-badge">UPDATED</span></span>
+    <span class="sec-badge" id="s27-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s27-body">
+    <div class="tc" data-id="TC-229"><span class="tc-id">TC-229</span><span class="tc-desc">Settings mode footer shows an "Autostart" button on the left (fills with the theme's main color when autostart is ON) and a "Reset" button paired with a bug/log icon button on the right</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-230"><span class="tc-id">TC-230</span><span class="tc-desc">"Reset" button resets the OS window to its default size via the Tauri reset_window_size command</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-231"><span class="tc-id">TC-231</span><span class="tc-desc">Log button (bug icon) opens a styled HTML viewer of the log file in the default browser — NOT the raw log folder<span class="note">Any previous viewer files are deleted first; a new timestamped HTML file (e.g. Eagle View-viewer-1751234567.html) is generated and opened, so each click always shows a fresh, single file</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-232"><span class="tc-id">TC-232</span><span class="tc-desc">Clicking the log button a second time always shows the latest log content — browser does not serve a stale cached version<span class="note">Previous viewer HTML files are deleted before each new one is created</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-233"><span class="tc-id">TC-233</span><span class="tc-desc">Log file contains hourly heartbeat entries (<code>[app] heartbeat — running X h</code>) — a gap longer than 1 hour between log entries means the app was not running during that period</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-234"><span class="tc-id">TC-234</span><span class="tc-desc">Normal mode footer items (pin button, status text, refresh button) are not shown in Settings mode</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S28 ══════════════════════════════════════════ -->
+<div class="section" id="s30">
+  <div class="sec-header" onclick="toggleSection('s30')">
+    <span class="sec-num">25</span><span class="sec-title">Data Persistence (localStorage via Tauri IPC) <span class="new-badge">v1.1.3</span></span>
+    <span class="sec-badge" id="s30-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s30-body">
+    <div class="tc" data-id="TC-248"><span class="tc-id">TC-248</span><span class="tc-desc"><code>eagleview-theme</code> — active theme ID saved and restored on restart</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-249"><span class="tc-id">TC-249</span><span class="tc-desc"><code>eagleview-row-order</code> — drag-reorder order saved and restored</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-250"><span class="tc-id">TC-250</span><span class="tc-desc"><code>eagleview-row-intervals</code> — per-row refresh intervals saved and restored</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-251"><span class="tc-id">TC-251</span><span class="tc-desc"><code>eagleview-hidden-rows</code> — row visibility choices saved and restored</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-252"><span class="tc-id">TC-252</span><span class="tc-desc"><code>eagleview-notes</code> — notes content saved and restored (survives fresh install)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-253"><span class="tc-id">TC-253</span><span class="tc-desc"><code>eagleview-toggle-size</code> — toggle button size (sm/md/lg) saved and restored</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-254"><span class="tc-id">TC-254</span><span class="tc-desc"><code>eagleview-wc-format</code> — 12h/24h clock format saved and restored</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-255"><span class="tc-id">TC-255</span><span class="tc-desc"><code>eagleview-clock1-zone</code> and <code>eagleview-clock2-zone</code> — timezone selections saved and restored</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-256"><span class="tc-id">TC-256</span><span class="tc-desc"><code>ev-sync</code> key is RESERVED — JavaScript cannot write to it; guarded by Rust backend anti-rollback logic</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-257"><span class="tc-id">TC-257</span><span class="tc-desc"><code>quick-links</code> — array of 5 Quick Link objects (url + label) saved and restored on restart<span class="note">Key has no "eagleview-" prefix; stored via saveAppData('quick-links', links)</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-258"><span class="tc-id">TC-258</span><span class="tc-desc"><code>eagleview-ql-visible</code> — Quick Links footer button visibility (eye toggle state) saved and restored on restart</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S31 ══════════════════════════════════════════ -->
+<div class="section" id="s15">
+  <div class="sec-header" onclick="toggleSection('s15')">
+    <span class="sec-num">26</span><span class="sec-title">Incidents Row (Dummy Data)</span>
+    <span class="sec-badge" id="s15-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s15-body">
+    <div class="tc" data-id="TC-113"><span class="tc-id">TC-113</span><span class="tc-desc">Incidents row badge shows count of 5</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-114"><span class="tc-id">TC-114</span><span class="tc-desc">Clicking Incidents row expands a dropdown table with "Incident No." and "Priority" column headers</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-115"><span class="tc-id">TC-115</span><span class="tc-desc">5 dummy incidents listed: INC0023451 High · INC0018734 Medium · INC0031256 Low · INC0027893 High · INC0019042 Medium</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-116"><span class="tc-id">TC-116</span><span class="tc-desc">Priority badges are colour-coded: High = red, Medium = orange, Low = green</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-117"><span class="tc-id">TC-117</span><span class="tc-desc">No live API call — data is static dummy content</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S16 ══════════════════════════════════════════ -->
+<div class="section" id="s16">
+  <div class="sec-header" onclick="toggleSection('s16')">
+    <span class="sec-num">27</span><span class="sec-title">Jira Row (Dummy Data)</span>
+    <span class="sec-badge" id="s16-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s16-body">
+    <div class="tc" data-id="TC-118"><span class="tc-id">TC-118</span><span class="tc-desc">Jira row badge shows count of 3 (the first project alphabetically is APP, which has 3 issues)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-119"><span class="tc-id">TC-119</span><span class="tc-desc">Clicking Jira row expands the dropdown showing issues with key, summary, and status</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-120"><span class="tc-id">TC-120</span><span class="tc-desc">7 dummy issues across 3 projects (APP, OPS, WEB) — first project APP shows: APP-12 "Fix login page redirect loop" In Progress · APP-9 "Add dark mode toggle to settings" To Do · APP-7 "Update API rate limit handling" To Do (overdue)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-121"><span class="tc-id">TC-121</span><span class="tc-desc">Overdue item (APP-7 "Update API rate limit handling", due 2026-07-10) is visually highlighted with a red/distinct overdue style (jira-overdue class)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-122"><span class="tc-id">TC-122</span><span class="tc-desc">Status abbreviations used: PROG, TO DO, IN REV, DONE, BLOCK</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-123"><span class="tc-id">TC-123</span><span class="tc-desc">No live API call — data is static dummy content</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-320"><span class="tc-id">TC-320</span><span class="tc-desc">Within the selected project, Jira issues are sorted by priority descending (highest → high → medium → low → lowest) using PRIORITY_ORDER mapping</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S17 ══════════════════════════════════════════ -->
+<div class="section" id="s17">
+  <div class="sec-header" onclick="toggleSection('s17')">
+    <span class="sec-num">28</span><span class="sec-title">Azure Boards Row (Dummy Data) <span class="new-badge">NEW</span></span>
+    <span class="sec-badge" id="s17-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s17-body">
+    <div class="tc" data-id="TC-124"><span class="tc-id">TC-124</span><span class="tc-desc">Azure Boards row is present in the main row list</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-125"><span class="tc-id">TC-125</span><span class="tc-desc">Azure icon: blue (#0078D4) rounded square with a white lightning bolt path inside</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-126"><span class="tc-id">TC-126</span><span class="tc-desc">Azure badge shows count of 3 (the first project alphabetically is EagleTest, which has 3 items)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-127"><span class="tc-id">TC-127</span><span class="tc-desc">Clicking Azure row expands the dropdown showing work items with ID, summary, and status</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-128"><span class="tc-id">TC-128</span><span class="tc-desc">8 dummy work items across 3 projects (EagleTest, OpsAutomation, RemindClock) — first project EagleTest shows: #3842 "Implement user authentication flow" Active · #3817 "Fix dashboard loading performance" New · #3801 "API timeout handling for slow networks" Active (overdue)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-129"><span class="tc-id">TC-129</span><span class="tc-desc">Overdue item (#3801) has a distinct overdue highlight (azure-overdue class)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-130"><span class="tc-id">TC-130</span><span class="tc-desc">Status badge colours: Active = blue · New = muted grey · Closed = very faint grey · To Do = light grey · Resolved = green (class exists but no dummy item uses "Resolved")</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-131"><span class="tc-id">TC-131</span><span class="tc-desc">No live API call — data is static dummy content</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S18 ══════════════════════════════════════════ -->
+<div class="section" id="s18">
+  <div class="sec-header" onclick="toggleSection('s18')">
+    <span class="sec-num">29</span><span class="sec-title">Learn4U Row (Dummy Data)</span>
+    <span class="sec-badge" id="s18-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s18-body">
+    <div class="tc" data-id="TC-132"><span class="tc-id">TC-132</span><span class="tc-desc">Learn4U row badge shows count of 3</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-133"><span class="tc-id">TC-133</span><span class="tc-desc">Clicking Learn4U row expands the dropdown with 3 training items</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-134"><span class="tc-id">TC-134</span><span class="tc-desc">3 items: "Cybersecurity Awareness" Due Jul 15 (urgent) · "Data Privacy &amp; GDPR" Due Aug 30 · "Workplace Safety Essentials" Due Sep 12</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-135"><span class="tc-id">TC-135</span><span class="tc-desc">"Cybersecurity Awareness" has an urgent due-date style (red / highlighted)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-136"><span class="tc-id">TC-136</span><span class="tc-desc">No live API call — data is static dummy content</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S19 ══════════════════════════════════════════ -->
+<div class="section" id="s19">
+  <div class="sec-header" onclick="toggleSection('s19')">
+    <span class="sec-num">30</span><span class="sec-title">Time Sheet Row</span>
+    <span class="sec-badge" id="s19-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s19-body">
+    <div class="tc" data-id="TC-137"><span class="tc-id">TC-137</span><span class="tc-desc">Time Sheet row badge shows "2d" (number with day suffix, not a plain count)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-138"><span class="tc-id">TC-138</span><span class="tc-desc">Clicking Time Sheet row in normal mode opens a dropdown with two actions: "Link" (opens the configured timesheet URL in browser) and "Done" (marks timesheet as complete)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+<div class="tc" data-id="TC-139"><span class="tc-id">TC-139</span><span class="tc-desc">In Settings mode: a day/weekday picker is shown — select a day of month (1–28) or a weekday (Mon–Fri only) to set the timesheet reminder</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-311"><span class="tc-id">TC-311</span><span class="tc-desc">Clicking "Done" in the Time Sheet dropdown plays a slide-out animation (~380 ms) then hides the row completely for the rest of the session; the row reappears on the next app launch</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-312"><span class="tc-id">TC-312</span><span class="tc-desc">If no timesheet URL is configured in Settings, clicking "Link" opens the default fallback URL (https://track.toggl.com) in the browser</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S20 ══════════════════════════════════════════ -->
+<div class="section" id="s20">
+  <div class="sec-header" onclick="toggleSection('s20')">
+    <span class="sec-num">31</span><span class="sec-title">Peakon Survey Row</span>
+    <span class="sec-badge" id="s20-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s20-body">
+    <div class="tc" data-id="TC-140"><span class="tc-id">TC-140</span><span class="tc-desc">Peakon row shows an ImportantBadge (yellow/orange warning triangle icon) in normal mode — not a number</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-141"><span class="tc-id">TC-141</span><span class="tc-desc">Clicking the Peakon row in normal mode does NOT expand a dropdown</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-142"><span class="tc-id">TC-142</span><span class="tc-desc">Peakon row appears when a survey mail is received (shows exclamation badge); badge turns to a thumbs-up when a completion mail is received; clicking the thumbs-up dismisses the row</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-305"><span class="tc-id">TC-305</span><span class="tc-desc">When Peakon status is "pending", clicking the ImportantBadge (warning triangle) opens the Peakon survey link in the default browser</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-306"><span class="tc-id">TC-306</span><span class="tc-desc">When Peakon status is "expired" or "none", the Peakon row is completely absent from the normal mode row list</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S21 ══════════════════════════════════════════ -->
+<div class="section" id="s32">
+  <div class="sec-header" onclick="toggleSection('s32')">
+    <span class="sec-num">32</span><span class="sec-title">Multi-Platform Specifics <span class="new-badge">UPDATED</span></span>
+    <span class="sec-badge" id="s32-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s32-body">
+    <div class="tc-group">macOS</div>
+    <div class="tc" data-id="TC-265"><span class="tc-id">TC-265</span><span class="tc-desc">Tray icon appears in the macOS menu bar (top of screen)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-266"><span class="tc-id">TC-266</span><span class="tc-desc">Gatekeeper quarantine is expected on first install — <code>xattr -cr</code> resolves it without rebuilding</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-267"><span class="tc-id">TC-267</span><span class="tc-desc">macOS Intel DMG (Eagle.View_1.1.3_x64.dmg) runs correctly on Intel Macs; Apple Silicon DMG (Eagle.View_1.1.3_aarch64.dmg) runs correctly on ARM Macs</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-268"><span class="tc-id">TC-268</span><span class="tc-desc"><strong>macOS:</strong> Eagle View does NOT appear in the macOS Dock at any time — only the menu-bar tray icon is visible<span class="note">ActivationPolicy::Accessory hides the app from the Dock</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc-group">Windows</div>
+    <div class="tc" data-id="TC-270"><span class="tc-id">TC-270</span><span class="tc-desc">Tray icon appears in the Windows taskbar notification area</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-271"><span class="tc-id">TC-271</span><span class="tc-desc">Gmail login shows a Windows Firewall dialog warning inside Eagle View</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-272"><span class="tc-id">TC-272</span><span class="tc-desc">Accepting the Firewall dialog allows Gmail auth; blocking causes auth failure</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-273"><span class="tc-id">TC-273</span><span class="tc-desc">NSIS installer (EXE) installs and uninstalls cleanly via Windows Add / Remove Programs</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-274"><span class="tc-id">TC-274</span><span class="tc-desc"><strong>Windows:</strong> Eagle View does NOT appear as a taskbar button on the Windows Taskbar — only the system tray notification icon is present<span class="note">set_skip_taskbar(true) called at app startup on Windows</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S33 ══════════════════════════════════════════ -->
+<div class="section" id="s2">
+  <div class="sec-header" onclick="toggleSection('s2')">
+    <span class="sec-num">33</span><span class="sec-title">License &amp; Expiry</span>
+    <span class="sec-badge" id="s2-badge"></span><span class="sec-chevron">▾</span>
+  </div>
+  <div class="sec-body" id="s2-body">
+    <div class="tc" data-id="TC-007"><span class="tc-id">TC-007</span><span class="tc-desc">App functions normally before the license expiry date (2026-10-14)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-008"><span class="tc-id">TC-008</span><span class="tc-desc">License is checked at app startup via the Rust <code>check_license</code> command</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-009"><span class="tc-id">TC-009</span><span class="tc-desc">License is re-checked every 8 hours while the app is running (hourly Rust heartbeat loop; license check fires on every 8th tick)<span class="note">Previously every 60 s — reduced to prevent unnecessary checks</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-010"><span class="tc-id">TC-010</span><span class="tc-desc">On license expiry: a full-screen blurred overlay appears — entire UI is blocked, no interaction possible</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-011"><span class="tc-id">TC-011</span><span class="tc-desc">License expired overlay header shows Eagle View icon + orange gradient banner</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-012"><span class="tc-id">TC-012</span><span class="tc-desc">Overlay body shows 🔒 icon, "License Expired" heading, and "Contact the developer to renew." message</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-013"><span class="tc-id">TC-013</span><span class="tc-desc">Clicking the "Close" button inside the overlay quits the app</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-014"><span class="tc-id">TC-014</span><span class="tc-desc">Keyboard shortcut (Cmd+E / Ctrl+E) does NOT open or toggle the panel when license has expired</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-015"><span class="tc-id">TC-015</span><span class="tc-desc">Widget blur (clicking away) does NOT open or close the panel when license has expired</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+  </div>
+</div>
+
+<!-- S3 ═══════════════════════════════════════════ -->
 </main>
 
 <script>
