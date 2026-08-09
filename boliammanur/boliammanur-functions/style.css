@@ -71,7 +71,22 @@ header {
    measured live for sticky offsets) get recalculated right after, so
    nothing needs to be hardcoded to match. */
 body.is-scrolled header { padding: 10px 16px; }
-body.is-scrolled header h1 { font-size: 1.3rem; margin-bottom: 0; }
+/* Deliberately NOT font-size here — shrinking font-size continuously changes
+   how many words fit per line, and the exact moment the title's text
+   re-wraps from 2 lines to 1 is a discrete layout event (not a continuous
+   one), so it can't be smoothed by a transition — it snaps, no matter how
+   short the duration. Measured this directly: frame-by-frame height deltas
+   were a steady ~5-10px/frame until one single frame dropped ~59px, then
+   resumed smooth. transform:scale() shrinks the already-laid-out text
+   visually instead (its font-size, and therefore its line-wrapping, never
+   changes) — pure compositor work, so it's smooth by construction — and
+   --header-h1-margin-collapse (set in members.js from a one-time real
+   measurement of the title's rendered height) pulls the freed-up space
+   closed to actually shrink the header, not just the text inside it. */
+body.is-scrolled header h1 {
+  transform: scale(0.6);
+  margin-bottom: var(--header-h1-margin-collapse, 0px);
+}
 
 header h1 {
   margin: 0 0 4px;
@@ -80,7 +95,8 @@ header h1 {
   color: #fff;
   letter-spacing: -0.01em;
   text-shadow: 0 2px 10px rgba(0,0,0,0.15);
-  transition: font-size 0.2s ease, margin 0.2s ease;
+  transform-origin: top center;
+  transition: transform 0.2s ease, margin-bottom 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;

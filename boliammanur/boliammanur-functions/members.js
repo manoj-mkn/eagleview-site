@@ -43,6 +43,27 @@ function resyncStickyOffsets() {
   syncMembersStickyOffsets();
 }
 
+// The compact header title uses transform:scale() rather than a smaller
+// font-size (see the body.is-scrolled header h1 comment in style.css for
+// why — font-size changes how the title wraps mid-transition, which can't
+// be smoothed). Scaling alone doesn't shrink the space the title reserves
+// in the page (transform is purely visual, not layout), so a negative
+// margin pulls that freed space closed — computed from the title's actual
+// rendered height (h1.offsetHeight, which transform doesn't affect) rather
+// than guessed, since the Tamil text's wrap/height varies by screen width.
+// SCALE here must match the `scale(0.6)` in body.is-scrolled header h1.
+const HEADER_TITLE_COMPACT_SCALE = 0.6;
+function syncHeaderTitleCollapse() {
+  const h1 = document.querySelector("header h1");
+  if (!h1) return;
+  const collapse = -(h1.offsetHeight * (1 - HEADER_TITLE_COMPACT_SCALE));
+  document.documentElement.style.setProperty("--header-h1-margin-collapse", collapse + "px");
+}
+window.addEventListener("resize", syncHeaderTitleCollapse);
+window.addEventListener("load", syncHeaderTitleCollapse);
+if (document.fonts) document.fonts.ready.then(syncHeaderTitleCollapse);
+syncHeaderTitleCollapse();
+
 // A single scroll gesture only fires a couple of "scroll" events, but the
 // CSS shrink/expand transition runs for 200ms after — and reading
 // offsetHeight mid-transition returns whatever size is currently painted,
