@@ -285,7 +285,16 @@ button.secondary { background: transparent; border: 1px solid var(--border); col
 .status.error { color: var(--expense); }
 .status.ok { color: var(--credit); }
 
-.table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+/* contain:layout stops this element's (possibly much wider, horizontally
+   scrolling) content from counting toward ancestors' scrollWidth — without
+   it, overflow-x:auto visually clips fine but <html>'s true content width
+   still leaks through, which real mobile browsers use to decide the whole
+   page needs auto-zooming out to fit. That silently breaks every
+   position:sticky/fixed element's visual pinning on phones (not
+   reproducible in desktop devtools/emulation, which don't have that
+   auto-zoom heuristic) even though nothing was actually scrollable. Applies
+   to both the main Ledger Sheet and the members table. */
+.table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; contain: layout; }
 
 table { width: 100%; border-collapse: collapse; font-size: 0.88rem; margin-top: 4px; }
 table.wide { min-width: 480px; }
@@ -582,11 +591,23 @@ table.members-table { width: 1010px; margin-top: 0; }
    header out from under that ancestor avoids the trap entirely. Its
    horizontal scroll position is mirrored from the body by members.js so
    columns still track left/right drags on narrow screens. */
+/* contain:layout on both wrappers (found by measuring, not guessing — see
+   commit notes) closes a real gap: overflow-x alone visually clips the
+   1010px-wide table fine, but doesn't stop its true width from still
+   counting toward the document root's scrollWidth. On real mobile browsers
+   (not reproducible in desktop devtools/emulation) that phantom width made
+   <html> report ~833px wide on a 390px phone, which is exactly the signal
+   mobile Chrome/Safari use to decide the WHOLE PAGE needs to auto-zoom-out
+   to "fit everything" — silently breaking every position:sticky/fixed
+   element's visual pinning even though nothing was actually scrollable.
+   contain:layout tells the browser this element's content can never affect
+   anything outside it, closing the leak at its source. */
 .members-thead-wrap {
   position: sticky;
   top: var(--members-thead-top, 96px);
   z-index: 10;
   overflow-x: hidden;
+  contain: layout;
   border: 1px solid var(--border);
   border-bottom: none;
   border-radius: 14px 14px 0 0;
@@ -595,6 +616,7 @@ table.members-table { width: 1010px; margin-top: 0; }
 .members-tbody-wrap {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  contain: layout;
   border: 1px solid var(--border);
   border-radius: 0 0 14px 14px;
 }
