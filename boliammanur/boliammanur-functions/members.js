@@ -64,24 +64,10 @@ window.addEventListener("load", syncHeaderTitleCollapse);
 if (document.fonts) document.fonts.ready.then(syncHeaderTitleCollapse);
 syncHeaderTitleCollapse();
 
-// A single scroll gesture only fires a couple of "scroll" events, but the
-// CSS shrink/expand transition runs for 200ms after — and reading
-// offsetHeight mid-transition returns whatever size is currently painted,
-// not the final one. Re-measuring every frame for the transition's duration
-// (instead of only once, or only at the very end via transitionend) is what
-// makes the pills bar and table header track the header's shrink smoothly
-// in real time rather than jumping once the header finishes.
-let compactAnimUntil = 0;
-function trackCompactTransition(deadline) {
-  resyncStickyOffsets();
-  if (performance.now() < deadline) requestAnimationFrame(() => trackCompactTransition(deadline));
-}
-
 let scrollTicking = false;
 function updateScrollCompactState() {
   document.body.classList.toggle("is-scrolled", window.scrollY > 10);
-  compactAnimUntil = performance.now() + 260; // covers the 0.2s CSS transitions plus a margin
-  trackCompactTransition(compactAnimUntil);
+  resyncStickyOffsets();
   scrollTicking = false;
 }
 window.addEventListener(
@@ -93,6 +79,19 @@ window.addEventListener(
   },
   { passive: true }
 );
+
+// CSS transitions don't advance the underlying layout value until later
+// frames — reading offsetHeight synchronously right after toggling the
+// class still returns the pre-transition size, so a single scroll gesture
+// can leave --header-height/--members-thead-top stale until the shrink
+// animation actually finishes. Re-syncing on transitionend closes that gap.
+// (A version of this that instead re-synced on every animation frame while
+// the transition was running was tried and reverted — measured directly,
+// it forced enough synchronous layout reads to drop the header's own
+// transition to ~25-30fps, i.e. it caused the exact stepping it was meant
+// to fix. transitionend fires once per finished transition, so it's cheap.)
+document.querySelector("header").addEventListener("transitionend", resyncStickyOffsets);
+document.querySelector(".members-filter-card").addEventListener("transitionend", resyncStickyOffsets);
 updateScrollCompactState();
 
 function setStatus(message, isError) {
