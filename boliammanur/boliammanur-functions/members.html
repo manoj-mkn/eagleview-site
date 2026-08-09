@@ -14,41 +14,68 @@
 </header>
 
 <main>
-  <section class="card compact">
+  <section class="card compact members-filter-card">
     <div class="pill-row" id="type-filter-pills">
       <button type="button" class="pill" data-filter="all">மொத்த உறுப்பினர்கள்</button>
       <button type="button" class="pill active" data-filter="24manai">24 Manai</button>
+      <button type="button" class="pill" data-filter="others">Others</button>
     </div>
   </section>
 
-  <section class="card">
-    <div class="table-wrap sheet-wrap">
-      <table class="sheet wide">
+  <section class="card members-table-card">
+    <div class="members-thead-wrap" id="members-thead-wrap">
+      <table class="sheet wide members-table">
         <thead>
-          <tr><th>S.No.</th><th>பெயர்</th><th>Name</th><th>Mobile Number</th><th>Type</th></tr>
+          <tr><th>S.No</th><th>Roll No.</th><th>பெயர்</th><th>Name</th><th>Mobile Number</th><th>Type</th><th>Avoid</th></tr>
           <tr class="filter-row">
-            <td><input type="text" id="filter-sno" class="filter-input" placeholder="Filter" /></td>
-            <td><input type="text" id="filter-name" class="filter-input" placeholder="Filter" /></td>
-            <td><input type="text" id="filter-name-en" class="filter-input" placeholder="Filter" /></td>
-            <td><input type="text" id="filter-mobile" class="filter-input" placeholder="Filter" /></td>
+            <td><label for="filter-sno" class="sr-only">Filter by S.No</label><input type="text" id="filter-sno" class="filter-input" placeholder="Filter" /></td>
+            <td><label for="filter-roll" class="sr-only">Filter by Roll No.</label><input type="text" id="filter-roll" class="filter-input" placeholder="Filter" /></td>
+            <td><label for="filter-name" class="sr-only">Filter by பெயர்</label><input type="text" id="filter-name" class="filter-input" placeholder="Filter" /></td>
+            <td><label for="filter-name-en" class="sr-only">Filter by Name</label><input type="text" id="filter-name-en" class="filter-input" placeholder="Filter" /></td>
+            <td><label for="filter-mobile" class="sr-only">Filter by Mobile Number</label><input type="text" id="filter-mobile" class="filter-input" placeholder="Filter" /></td>
             <td>
+              <label for="filter-type" class="sr-only">Filter by Type</label>
               <select id="filter-type" class="filter-input">
                 <option value="">All</option>
                 <option value="24Manai">24Manai</option>
                 <option value="Others">Others</option>
               </select>
             </td>
+            <td></td>
           </tr>
         </thead>
-        <tbody id="members-body"></tbody>
       </table>
     </div>
-    <p class="status" id="members-status"></p>
+    <div class="table-wrap members-tbody-wrap" id="members-tbody-wrap">
+      <table class="sheet wide members-table">
+        <tbody id="members-body"></tbody>
+        <tfoot>
+          <tr id="new-member-row">
+            <td id="new-m-sno" class="new-member-num"></td>
+            <td id="new-m-roll" class="new-member-num"></td>
+            <td><label for="new-m-name" class="sr-only">New member's பெயர்</label><input type="text" id="new-m-name" placeholder="புதிய பெயரை உள்ளிடவும்..." /></td>
+            <td><label for="new-m-name-en" class="sr-only">New member's Name</label><input type="text" id="new-m-name-en" placeholder="Name" /></td>
+            <td><label for="new-m-mobile" class="sr-only">New member's Mobile Number</label><input type="text" id="new-m-mobile" placeholder="Mobile" inputmode="numeric" pattern="[0-9]*" disabled /></td>
+            <td>
+              <label for="new-m-type" class="sr-only">New member's Type</label>
+              <select id="new-m-type" disabled required>
+                <option value="">Select Type…</option>
+                <option value="24Manai">24Manai</option>
+                <option value="Others">Others</option>
+              </select>
+            </td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <p class="status" id="members-status" role="status" aria-live="polite"></p>
   </section>
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
+<script src="shared.js"></script>
 <script src="members.js"></script>
 </body>
 </html>

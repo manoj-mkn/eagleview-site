@@ -83,6 +83,18 @@
             <td class="total-cell">0</td>
             <td><input type="text" id="new-paid" placeholder="குறிப்பு" disabled /></td>
           </tr>
+          <tr id="new-type-row" class="hidden">
+            <td colspan="10">
+              <div class="new-type-picker">
+                <span>This function allows all people-Types — pick one for the new member:</span>
+                <select id="new-type" required>
+                  <option value="">Select Type…</option>
+                  <option value="24Manai">24Manai</option>
+                  <option value="Others">Others</option>
+                </select>
+              </div>
+            </td>
+          </tr>
         </tfoot>
       </table>
       </div>
@@ -104,6 +116,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
+<script src="shared.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

@@ -15,34 +15,8 @@ function setStatus(id, message, isError) {
   el.className = "status " + (isError ? "error" : "ok");
 }
 
-function escapeHtml(str) {
-  return String(str).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-}
-
-// Mobile numbers display as: first 3 chars, space, next 5, space, remaining balance.
-function formatMobile(value) {
-  const raw = String(value ?? "").replace(/\s+/g, "");
-  if (raw.length <= 3) return raw;
-  const part1 = raw.slice(0, 3);
-  const rest = raw.slice(3);
-  if (rest.length <= 5) return `${part1} ${rest}`;
-  const part2 = rest.slice(0, 5);
-  const part3 = rest.slice(5);
-  return `${part1} ${part2} ${part3}`;
-}
-
-// Mobile number fields only accept digits and "+" as the user types.
-function filterMobileInput(el) {
-  const cleaned = el.value.replace(/[^\d+]/g, "");
-  if (cleaned !== el.value) el.value = cleaned;
-}
-
-function syncHeaderHeight() {
-  const header = document.querySelector("header");
-  document.documentElement.style.setProperty("--header-height", header.offsetHeight + "px");
-}
-window.addEventListener("resize", syncHeaderHeight);
-syncHeaderHeight();
+// escapeHtml, formatMobile, filterMobileInput, syncHeaderHeight live in
+// shared.js (loaded before this file) — kept as one copy with members.js.
 
 // ---------- Password gate ----------
 
@@ -171,21 +145,37 @@ async function loadLedgerEntries() {
   prefillNewRowNumber();
 }
 
+// nextMemberNo/nextRollNumber wrap the shared computeNextMemberNo/
+// computeNextRollNumber (shared.js) bound to this page's `people` array —
+// see shared.js for the Roll Number HEART LOGIC rule.
 function nextMemberNo() {
-  const max = people.reduce((m, p) => Math.max(m, p.member_no || 0), 0);
-  return max + 1;
+  return computeNextMemberNo(people);
+}
+function nextRollNumber() {
+  return computeNextRollNumber(people);
 }
 
 function prefillNewRowNumber() {
   $("new-member-no").value = nextMemberNo();
   updateNewRowLock();
   refreshNewRowSanthaAmount();
+  refreshNewTypeRow();
 }
 
 function refreshNewRowSanthaAmount() {
   const amount = currentSanthaAmount();
   $("new-santha-check").dataset.amount = amount;
   $("new-santha-amount").textContent = amount.toFixed(0);
+}
+
+// HEART LOGIC — Type is mandatory at creation and permanently uneditable
+// afterward (see members.js). Functions restricted to one Type assign it
+// automatically; a function set to "All" must ask, since it's ambiguous.
+function refreshNewTypeRow() {
+  const f = functionsList.find((f) => f.id === selectedFunctionId);
+  const needsChoice = (f?.allowed_type || "All") === "All";
+  $("new-type-row").classList.toggle("hidden", !needsChoice);
+  if (!needsChoice) $("new-type").value = "";
 }
 
 // New row starts locked (only the Name field is enterable) until a name is typed.
@@ -202,11 +192,19 @@ function updateNewRowLock() {
 
 // Each function can restrict its Ledger Sheet to just 24Manai, just Others,
 // or everyone ("All", the default for functions created before this existed).
+// HEART LOGIC — "Avoid" (set on the members page) means the person is no
+// longer active (e.g. deceased). They're hidden from this and every future
+// function's Ledger Sheet, EXCEPT a function where they already have an
+// existing ledger_entries row — that historical record stays visible.
 function peopleForCurrentFunction() {
   const f = functionsList.find((f) => f.id === selectedFunctionId);
   const allowedType = f?.allowed_type || "All";
-  if (allowedType === "All") return people;
-  return people.filter((p) => p.type === allowedType);
+  let filtered = allowedType === "All" ? people : people.filter((p) => p.type === allowedType);
+
+  const hasExistingEntry = new Set(ledgerEntries.map((e) => e.person_id));
+  filtered = filtered.filter((p) => !p.avoid || hasExistingEntry.has(p.id));
+
+  return filtered;
 }
 
 // சந்தா is a fixed price the admin sets per function (Dashboard) — members are
@@ -216,10 +214,14 @@ function currentSanthaAmount() {
   return Number(f?.santha_amount ?? 1000);
 }
 
+// S.No. shown on this sheet is a plain running count for whoever's actually on
+// it — not the person's permanent member_no, which has gaps once a function's
+// people-Type restriction excludes some members.
 function entryRows() {
   const entryMap = Object.fromEntries(ledgerEntries.map((e) => [e.person_id, e]));
-  return peopleForCurrentFunction().map((p) => ({
+  return peopleForCurrentFunction().map((p, idx) => ({
     p,
+    seq: idx + 1,
     e: entryMap[p.id] || { asal: 0, santha: 0, vatti: 0, thogai: 0, total: 0, paid: "", santha_checked: false, low_confidence: false },
   }));
 }
@@ -239,8 +241,8 @@ function renderSheet() {
   const totalQ = $("filter-total").value.trim();
   const paidQ = $("filter-paid").value.trim().toLowerCase();
 
-  const visible = rows.filter(({ p, e }) => {
-    if (snoQ && !String(p.member_no ?? "").toLowerCase().includes(snoQ)) return false;
+  const visible = rows.filter(({ p, seq, e }) => {
+    if (snoQ && !String(seq).includes(snoQ)) return false;
     if (nameQ && !(p.name || "").toLowerCase().includes(nameQ)) return false;
     if (nameEnQ && !(p.name_en || "").toLowerCase().includes(nameEnQ)) return false;
     if (mobileQ && !formatMobile(p.mobile).replace(/\s+/g, "").toLowerCase().includes(mobileQ)) return false;
@@ -254,10 +256,10 @@ function renderSheet() {
   });
 
   $("sheet-body").innerHTML = visible
-    .map(({ p, e }) => {
+    .map(({ p, seq, e }) => {
       const cls = e.low_confidence ? "uncertain" : "";
       return `<tr data-person="${p.id}">
-        <td>${p.member_no ?? ""}</td>
+        <td>${seq}</td>
         <td><input type="text" class="f-name" value="${escapeHtml(p.name)}" readonly /></td>
         <td><input type="text" class="f-name-en" value="${escapeHtml(p.name_en ?? "")}" /></td>
         <td><input type="text" class="f-mobile" value="${escapeHtml(formatMobile(p.mobile))}" inputmode="numeric" /></td>
@@ -496,7 +498,26 @@ async function addNewRow() {
   }
 
   const mobile = formatMobile($("new-mobile").value.trim());
-  const { data: person, error: personError } = await client.from("people").insert({ name, member_no: memberNo, mobile, name_en: nameEn }).select().single();
+  // HEART LOGIC — Type is mandatory and set once, at creation, then never
+  // editable again (see members.js). A function restricted to one Type
+  // assigns it automatically; a function set to "All" requires an explicit
+  // pick via #new-type since it can't be inferred.
+  const currentFunction = functionsList.find((f) => f.id === funcId);
+  let newPersonType = null;
+  if (currentFunction?.allowed_type && currentFunction.allowed_type !== "All") {
+    newPersonType = currentFunction.allowed_type;
+  } else {
+    newPersonType = $("new-type").value;
+    if (!newPersonType) {
+      setStatus("sheet-status", "Pick a Type (24Manai/Others) for the new member before saving.", true);
+      return;
+    }
+  }
+  const { data: person, error: personError } = await client
+    .from("people")
+    .insert({ name, member_no: memberNo, mobile, name_en: nameEn, type: newPersonType, roll_number: nextRollNumber() })
+    .select()
+    .single();
   if (personError) {
     setStatus("sheet-status", "Error adding person: " + personError.message, true);
     return;
@@ -523,7 +544,7 @@ async function addNewRow() {
     return;
   }
 
-  ["new-member-no", "new-mobile", "new-name-en", "new-name", "new-asal", "new-vatti", "new-thogai", "new-paid"].forEach((id) => ($(id).value = ""));
+  ["new-member-no", "new-mobile", "new-name-en", "new-name", "new-asal", "new-vatti", "new-thogai", "new-paid", "new-type"].forEach((id) => ($(id).value = ""));
   $("new-santha-check").checked = false;
   $("sheet-new-row").querySelector(".total-cell").textContent = "0";
   updateNewRowLock();
