@@ -34,16 +34,33 @@ $("members-tbody-wrap").addEventListener("scroll", () => {
 
 // Once the user is actually scrolling to browse the sheet, the header and
 // pills bar shrink (see body.is-scrolled rules in style.css) to give more
-// of the screen to the table. syncHeaderHeight/syncMembersStickyOffsets
-// already measure these elements live for sticky positioning, so calling
-// them again right after the class toggle keeps the table header/filter
-// row correctly pinned right below the now-smaller stack — no hardcoded
-// heights to keep in sync by hand.
+// of the screen to the table. --header-height/--members-thead-top drive the
+// pills bar's and table header's own `top` (also CSS-transitioned), so
+// pinning them to a live measurement — instead of a hardcoded number — is
+// what makes the whole stack shrink as one cascade instead of snapping.
+function resyncStickyOffsets() {
+  syncHeaderHeight();
+  syncMembersStickyOffsets();
+}
+
+// A single scroll gesture only fires a couple of "scroll" events, but the
+// CSS shrink/expand transition runs for 200ms after — and reading
+// offsetHeight mid-transition returns whatever size is currently painted,
+// not the final one. Re-measuring every frame for the transition's duration
+// (instead of only once, or only at the very end via transitionend) is what
+// makes the pills bar and table header track the header's shrink smoothly
+// in real time rather than jumping once the header finishes.
+let compactAnimUntil = 0;
+function trackCompactTransition(deadline) {
+  resyncStickyOffsets();
+  if (performance.now() < deadline) requestAnimationFrame(() => trackCompactTransition(deadline));
+}
+
 let scrollTicking = false;
 function updateScrollCompactState() {
   document.body.classList.toggle("is-scrolled", window.scrollY > 10);
-  syncHeaderHeight();
-  syncMembersStickyOffsets();
+  compactAnimUntil = performance.now() + 260; // covers the 0.2s CSS transitions plus a margin
+  trackCompactTransition(compactAnimUntil);
   scrollTicking = false;
 }
 window.addEventListener(
@@ -55,9 +72,6 @@ window.addEventListener(
   },
   { passive: true }
 );
-// One more sync once the shrink/expand transition itself finishes, in case
-// a fast scroll-then-stop left the offset measured mid-transition.
-document.querySelector("header").addEventListener("transitionend", syncMembersStickyOffsets);
 updateScrollCompactState();
 
 function setStatus(message, isError) {

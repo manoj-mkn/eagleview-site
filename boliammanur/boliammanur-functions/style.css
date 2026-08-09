@@ -34,6 +34,15 @@ body {
   color: var(--text);
   line-height: 1.5;
   overflow-x: hidden;
+  /* overflow-anchor:none on the individual shrinking elements (header etc.)
+     wasn't enough — the browser's scroll anchoring picks its "anchor node"
+     from anywhere in the scrollport, not necessarily the element that's
+     actually changing size, so it kept compensating for the members.html
+     scroll-compact shrink by silently reducing scrollY to match (confirmed
+     by logging scrollY alongside body.scrollHeight — they fell in
+     lockstep). Disabling it here, on the actual scroll container, is what's
+     needed for that animation to be intentional rather than fought. */
+  overflow-anchor: none;
 }
 
 header {
@@ -46,6 +55,14 @@ header {
   background: linear-gradient(120deg, #fb923c, #ea580c 55%, #b91c1c);
   box-shadow: 0 6px 20px -8px rgba(234, 88, 12, 0.55);
   transition: padding 0.2s ease;
+  /* Without this, the browser's scroll anchoring "compensates" for this
+     element shrinking by silently reducing scrollY to match — which drops
+     it below the is-scrolled threshold, un-triggers the shrink, and the
+     element snaps back to full size while scroll position stays stuck near
+     0. Confirmed by logging scrollY alongside the shrink: they fell in
+     lockstep until scrollY bottomed out. This animation is intentional, not
+     an accidental content-shift the browser needs to protect against. */
+  overflow-anchor: none;
 }
 
 /* members.html only — members.js toggles this once the page is scrolled a
@@ -624,6 +641,8 @@ table.members-table { width: 1010px; margin-top: 0; }
   border-bottom: none;
   border-radius: 14px 14px 0 0;
   background: var(--surface);
+  transition: top 0.2s ease;
+  overflow-anchor: none;
 }
 .members-tbody-wrap {
   overflow-x: auto;
@@ -646,7 +665,8 @@ table.members-table { width: 1010px; margin-top: 0; }
   position: sticky;
   top: var(--header-height, 96px);
   z-index: 15;
-  transition: padding 0.2s ease;
+  transition: padding 0.2s ease, top 0.2s ease;
+  overflow-anchor: none;
 }
 
 body.is-scrolled .members-filter-card { padding: 8px 20px; }
