@@ -345,7 +345,19 @@ $("type-filter-pills").addEventListener("click", (e) => {
   const btn = e.target.closest("button[data-filter]");
   if (!btn) return;
   currentFilter = btn.dataset.filter;
-  $("type-filter-pills").querySelectorAll(".pill").forEach((p) => p.classList.toggle("active", p === btn));
+  const pillsRow = $("type-filter-pills");
+  pillsRow.querySelectorAll(".pill").forEach((p) => p.classList.toggle("active", p === btn));
+  // Scrolls the clicked pill to the horizontal center of the row (see
+  // .pill-row's overflow-x:auto in style.css) — on a phone where not all
+  // filters fit at once, this leaves a sliver of whichever neighbors exist
+  // visible on both sides, signaling there's more to swipe to instead of
+  // just leaving the tapped pill wherever it happened to already be. A
+  // no-op wherever everything already fits (desktop): scrollLeft just
+  // clamps back to 0, same as it already was.
+  pillsRow.scrollTo({
+    left: btn.offsetLeft - pillsRow.clientWidth / 2 + btn.offsetWidth / 2,
+    behavior: "smooth",
+  });
   requestRenderRows();
 });
 

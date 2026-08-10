@@ -816,9 +816,9 @@ body.is-scrolled .members-thead-wrap { margin-top: 0; }
    padding:16px 20px (the .card.compact defaults) to go back to the boxed
    look. */
 .members-filter-card {
-  width: fit-content; /* hugs the segmented control's own width (see .pill-row's inline-flex below) instead of stretching to match the spreadsheet's 1058px and leaving empty space beside it */
+  width: 1058px; /* always matches .members-thead-wrap's own width exactly, so the pill row's outer edges line up with the spreadsheet below it — the pill-row itself scrolls internally (see below) if its content doesn't fit at this width, rather than the card growing/shrinking to match content */
   max-width: 100%; /* of .sticky-top-inner's already-padded content box (see above) */
-  margin: 28px auto 0; /* auto left/right centers the now fit-content card; top value replicates <main>'s old header→pills gap, now that this card lives in .sticky-top-stack instead of <main> */
+  margin: 28px auto 0; /* top value replicates <main>'s old header→pills gap, now that this card lives in .sticky-top-stack instead of <main> */
   background: none;
   border: none;
   box-shadow: none;
@@ -843,19 +843,36 @@ body.is-scrolled .members-thead-wrap { margin-top: 0; }
    .pill-row's gap to 12px below.
    REVERT to the original boxed pills: also see .members-filter-card's own
    revert note above (restores the card background/border/shadow/padding). */
+/* flex-wrap:nowrap (overriding the base .pill-row's wrap) + overflow-x:auto
+   keeps this one continuous line at every width — on a phone too narrow to
+   fit all three labels, it becomes horizontally swipeable instead of
+   wrapping, which previously split the shared outline unevenly around one
+   filled pill on its own line and two bare labels on the next. Scrollbar
+   hidden since a swipe/drag gesture is the expected interaction here (same
+   idea as .members-thead-wrap's own hidden horizontal scroll), not a
+   traditional scrollable list. */
 .members-filter-card .pill-row {
   display: inline-flex;
+  flex-wrap: nowrap;
+  max-width: 100%;
+  margin-left: auto; /* centers the visible outline within .members-filter-card, which is now wider (1058px) than the outline itself needs to be */
+  margin-right: auto;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
   gap: 4px;
   padding: 4px;
   border: 1px solid var(--border);
   border-radius: 999px;
   background: var(--surface);
 }
+.members-filter-card .pill-row::-webkit-scrollbar { display: none; }
 .members-filter-card .pill {
   background: none;
   border: none;
   color: var(--muted);
   box-shadow: none;
+  flex-shrink: 0; /* keeps each label at its natural width instead of getting squeezed to fit — the row scrolls instead */
 }
 .members-filter-card .pill:hover { color: var(--accent); }
 .members-filter-card .pill.active {
