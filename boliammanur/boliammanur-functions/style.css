@@ -74,9 +74,10 @@ header {
   overflow-anchor: none;
 }
 
-/* members.html only — members.js toggles this once the page is scrolled a
-   bit, shrinking the pinned header/pills/table-header stack so more of the
-   sheet is visible while browsing. */
+/* Shared by index.html and members.html — each page's own JS toggles
+   body.is-scrolled once the page is scrolled a bit, shrinking the pinned
+   header/pills/table-header stack so more of the sheet is visible while
+   browsing. */
 body.is-scrolled header { padding: 10px 16px; }
 /* HEART LOGIC — do not change without asking (transform, not font-size).
    Deliberately NOT font-size here — shrinking font-size continuously changes
@@ -164,6 +165,10 @@ header h1 {
 }
 
 .header-logo { height: 2.4em; width: auto; flex-shrink: 0; margin: -0.55em 0; }
+/* index.html's main app header — same logo as the password gate (already
+   has the full name baked in), sized to fill the header banner instead of
+   sitting as a small icon next to separate heading text. */
+.header-logo-main { height: 140px; width: auto; max-width: 100%; }
 
 header p { margin: 0; color: rgba(255,255,255,0.85); font-size: 0.9rem; }
 
@@ -317,21 +322,26 @@ main {
 
 .card h2 { margin: 0 0 14px; font-size: 1.05rem; font-weight: 700; color: #9a3412; }
 
+/* Was independently position:sticky with top:var(--header-height) — now a
+   plain normal-flow child of .sticky-top-inner (see .sticky-top-stack's own
+   HEART LOGIC comment), so it needs no position/top of its own; the shared
+   stack's own background (var(--bg) on .sticky-top-stack) is what keeps
+   scrolled-past table rows from showing through, same as the rest of the
+   stack's children. */
 #sheet-title {
   font-size: 1.75rem;
   font-weight: 800;
   color: #c2410c;
-  position: sticky;
-  top: var(--header-height, 96px);
-  z-index: 15;
-  background: var(--surface);
   padding: 4px 0;
+  margin: 12px 0 0;
   letter-spacing: -0.01em;
   display: flex;
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
+  transition: margin-top 0.2s ease;
 }
+body.is-scrolled #sheet-title { margin-top: 0; }
 
 .members-toggle {
   font-size: 0.85rem;
@@ -429,6 +439,12 @@ th { color: var(--muted); font-weight: 600; }
 
 #gate .card { width: 100%; max-width: 460px; text-align: center; }
 .gate-logo { width: 400px; max-width: 100%; height: auto; display: block; margin: 0 auto 12px; }
+/* #gate-status is a <p>, which carries a default browser margin — visible
+   as extra space below the Unlock button even while the status text is
+   empty (min-height:1.2em above already reserves room for the message
+   itself, so this margin was pure excess, not needed for the no-layout-jump
+   behavior that min-height exists for). */
+#gate .status { margin: 0; }
 
 .hidden { display: none !important; }
 
@@ -473,6 +489,12 @@ th { color: var(--muted); font-weight: 600; }
 
 @media (max-width: 480px) {
   header h1 { font-size: 1.8rem; }
+  /* index.html only (members.html's header has no logo image) — at 140px
+     fixed height, the logo + long title together are wider than a phone
+     viewport; header h1's flex row doesn't wrap or shrink on its own, so
+     the combined content overflowed centered (bleeding off both left and
+     right edges), forcing real horizontal scroll on the whole page. */
+  .header-logo-main { height: 70px; }
   main { padding: 18px 12px 52px; gap: 16px; }
   .card { padding: 18px; }
   .totals-shine { font-size: 0.62rem; }
@@ -481,11 +503,65 @@ th { color: var(--muted); font-weight: 600; }
 
 /* ---------- Ledger spreadsheet ---------- */
 
-.sheet-wrap {
-  max-height: 74vh;
-  overflow-y: auto;
+/* index.html only — same architecture as members.html's
+   .members-thead-wrap/.members-tbody-wrap/.members-table-card (see that
+   file's HEART LOGIC index for the full reasoning): header + pills +
+   #sheet-title + this thead all share .sticky-top-stack/.sticky-top-inner
+   instead of each independently computing a sticky offset from
+   --header-height, and the table itself is now part of the page's own
+   scroll instead of its own boxed max-height:74vh/overflow-y:auto area —
+   that internal scroll box was incompatible with the shared-stack shrink
+   approach (the "scroll" that should trigger the shrink is the PAGE's
+   scroll, not a scroll happening inside a small fixed-height box).
+   Unlike members.html's table, this one already stretches to fill its
+   container (table.sheet's own width:100% + this table's percentage
+   columns, not literal fixed px) — so .sheet-thead-wrap and
+   .sheet-table-card below don't need explicit width-matching numbers, just
+   width:auto within the same max-width:1320px/margin:auto/padding
+   container (.sticky-top-inner / <main>) that guarantees alignment. */
+.sheet-thead-wrap {
+  overflow: hidden;
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-bottom: none;
+  border-radius: 14px 14px 0 0;
+  box-shadow: var(--shadow);
+  contain: layout;
+  overflow-anchor: none;
+  margin-top: 22px;
+  transition: margin-top 0.2s ease;
+}
+body.is-scrolled .sheet-thead-wrap { margin-top: 0; }
+
+.sheet-tbody-wrap {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--border);
+  border-radius: 0 0 14px 14px;
+  box-shadow: var(--shadow);
+  contain: layout;
+}
+
+/* No card framing around the ledger sheet's own card wrapper — its border/
+   shadow/rounding now lives directly on .sheet-thead-wrap/.sheet-tbody-wrap
+   instead (same "no container" treatment as members.html's spreadsheet). */
+.sheet-table-card {
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+/* Same transform:scale() treatment as .members-filter-card (see its own
+   HEART LOGIC comment) — the whole pills card shrinks as one compositor-
+   only unit instead of animating each pill's own padding/font-size. */
+.sheet-filter-card {
+  transform-origin: top center;
+  transition: transform 0.2s ease, margin-top 0.2s ease, margin-bottom 0.2s ease;
+}
+body.is-scrolled .sheet-filter-card {
+  transform: scale(0.85);
+  margin-bottom: var(--sheet-filter-card-margin-collapse, 0px);
 }
 
 table.sheet { width: 100%; table-layout: fixed; font-size: 1rem; font-variant-numeric: tabular-nums; }

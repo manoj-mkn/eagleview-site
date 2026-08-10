@@ -15,8 +15,8 @@ function setStatus(id, message, isError) {
   el.className = "status " + (isError ? "error" : "ok");
 }
 
-// escapeHtml, formatMobile, filterMobileInput, syncHeaderHeight live in
-// shared.js (loaded before this file) — kept as one copy with members.js.
+// escapeHtml, formatMobile, filterMobileInput, syncHeaderTitleCollapse live
+// in shared.js (loaded before this file) — kept as one copy with members.js.
 
 // ---------- Password gate ----------
 
@@ -41,12 +41,54 @@ function unlockApp() {
   $("gate").classList.add("hidden");
   $("app").classList.remove("hidden");
   loadAll();
-  syncHeaderHeight();
 }
 
 if (sessionStorage.getItem("boliammanur_unlocked") === "1") {
   unlockApp();
 }
+
+// ---------- Scroll-compact shrink ----------
+// Same architecture as members.html (see that file's HEART LOGIC index for
+// the full reasoning): header + pills + #sheet-title + the ledger sheet's
+// own thead all live in one shared .sticky-top-stack (style.css), so the
+// only JS-computed value still needed is the pills card's own collapse
+// (same transform:scale() technique as .members-filter-card — the whole
+// card shrinks as one compositor-only unit instead of animating individual
+// pill buttons' padding/font-size). SCALE here must match
+// body.is-scrolled .sheet-filter-card's scale() in style.css.
+const SHEET_FILTER_CARD_COMPACT_SCALE = 0.85;
+function syncSheetFilterCardCollapse() {
+  const card = document.querySelector(".sheet-filter-card");
+  if (!card) return;
+  const collapse = -(card.offsetHeight * (1 - SHEET_FILTER_CARD_COMPACT_SCALE));
+  document.documentElement.style.setProperty("--sheet-filter-card-margin-collapse", collapse + "px");
+}
+window.addEventListener("resize", syncSheetFilterCardCollapse);
+window.addEventListener("load", syncSheetFilterCardCollapse);
+if (document.fonts) document.fonts.ready.then(syncSheetFilterCardCollapse);
+syncSheetFilterCardCollapse();
+// Year/function pill counts (and thus how many lines they wrap onto) change
+// every time the user picks a different year/function — re-measuring only
+// on load/resize left the card's real height uncorrected after that, the
+// same undershoot bug fixed for members.html's pills card.
+const sheetFilterCard = document.querySelector(".sheet-filter-card");
+if (sheetFilterCard) new MutationObserver(syncSheetFilterCardCollapse).observe(sheetFilterCard, { childList: true, subtree: true, characterData: true });
+
+let scrollTicking = false;
+function updateScrollCompactState() {
+  document.body.classList.toggle("is-scrolled", window.scrollY > 10);
+  scrollTicking = false;
+}
+window.addEventListener(
+  "scroll",
+  () => {
+    if (scrollTicking) return;
+    scrollTicking = true;
+    requestAnimationFrame(updateScrollCompactState);
+  },
+  { passive: true }
+);
+updateScrollCompactState();
 
 // ---------- Data loading ----------
 
@@ -101,13 +143,19 @@ function updateSheetTitle() {
   const f = functionsList.find((f) => f.id === selectedFunctionId);
   const title = f ? `${f.name} (${f.year})` : "Ledger Sheet";
   $("sheet-title").innerHTML = `<span>${escapeHtml(title)}</span> <button type="button" id="toggle-members-btn" class="members-toggle active">உறுப்பினர்கள் - ${peopleForCurrentFunction().length}</button>`;
-  $("sheet-table-wrap").classList.remove("hidden");
+  $("sheet-tbody-wrap").classList.remove("hidden");
+  $("sheet-thead-wrap").classList.remove("hidden");
 }
 
 $("sheet-title").addEventListener("click", (e) => {
   const btn = e.target.closest("#toggle-members-btn");
   if (!btn) return;
-  const nowHidden = $("sheet-table-wrap").classList.toggle("hidden");
+  // .sheet-thead-wrap lives in .sticky-top-stack now (see that HEART LOGIC
+  // comment in style.css), separate from .sheet-tbody-wrap in <main> — both
+  // need toggling together to fully collapse/restore the table, matching
+  // the original single-wrap behavior before the split.
+  const nowHidden = $("sheet-tbody-wrap").classList.toggle("hidden");
+  $("sheet-thead-wrap").classList.toggle("hidden", nowHidden);
   btn.classList.toggle("active", !nowHidden);
   if (!nowHidden) alignTotalsBanner();
 });
@@ -320,7 +368,14 @@ function alignTotalsBanner() {
   });
 }
 window.addEventListener("resize", alignTotalsBanner);
-$("sheet-table-wrap").addEventListener("scroll", alignTotalsBanner);
+// #sheet-thead-wrap itself doesn't scroll horizontally (overflow:hidden —
+// same reasoning as members.html's .members-thead-wrap) so a horizontal
+// drag on the body table mirrors onto it here, keeping columns aligned on
+// narrow screens (this table has a mobile min-width, same as members.html's).
+$("sheet-tbody-wrap").addEventListener("scroll", () => {
+  $("sheet-thead-wrap").scrollLeft = $("sheet-tbody-wrap").scrollLeft;
+  alignTotalsBanner();
+});
 
 [
   "filter-sno",

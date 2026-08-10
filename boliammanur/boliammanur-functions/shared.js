@@ -30,12 +30,29 @@ function filterDigitsInput(el) {
   if (cleaned !== el.value) el.value = cleaned;
 }
 
-function syncHeaderHeight() {
-  const header = document.querySelector("header");
-  document.documentElement.style.setProperty("--header-height", header.offsetHeight + "px");
+// HEART LOGIC — do not change without asking (transform, not font-size, for
+// the title's shrink — see members.html's HEART LOGIC index, point 3, for
+// the full reasoning: animating font-size on wrapping text causes a
+// discrete, unsmoothable jump exactly when it collapses from 2 lines to 1).
+// Shared by index.html and members.html — both use the same
+// body.is-scrolled header h1 transform:scale() rule in style.css. Scaling
+// alone doesn't shrink the space the title reserves in the page (transform
+// is purely visual, not layout), so a negative margin pulls that freed
+// space closed — computed from the title's actual rendered height
+// (h1.offsetHeight, which transform doesn't affect) rather than guessed,
+// since the Tamil text's wrap/height varies by screen width.
+// SCALE here must match the `scale(0.6)` in body.is-scrolled header h1.
+const HEADER_TITLE_COMPACT_SCALE = 0.6;
+function syncHeaderTitleCollapse() {
+  const h1 = document.querySelector("header h1");
+  if (!h1) return;
+  const collapse = -(h1.offsetHeight * (1 - HEADER_TITLE_COMPACT_SCALE));
+  document.documentElement.style.setProperty("--header-h1-margin-collapse", collapse + "px");
 }
-window.addEventListener("resize", syncHeaderHeight);
-syncHeaderHeight();
+window.addEventListener("resize", syncHeaderTitleCollapse);
+window.addEventListener("load", syncHeaderTitleCollapse);
+if (document.fonts) document.fonts.ready.then(syncHeaderTitleCollapse);
+syncHeaderTitleCollapse();
 
 // HEART LOGIC — do not change without asking first.
 // Roll Number is each person's permanent TOWN REGISTRY identification number

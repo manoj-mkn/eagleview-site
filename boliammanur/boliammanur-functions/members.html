@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>போளியம்மனூர் உறுப்பினர்கள் — போளியம்மனூர் திருப்பணி சங்கம்</title>
-<link rel="stylesheet" href="style.css?v=20260810b" />
+<link rel="stylesheet" href="style.css?v=20260811a" />
 </head>
 <!--
   HEART LOGIC INDEX — members.html — do not change any of the following
@@ -60,10 +60,16 @@
      (style.css), never wraps to multiple lines — wrapping split the
      shared rounded outline unevenly. members.js scrolls the clicked pill
      to center on click so neighbors peek on both sides on narrow screens.
-  10. style.css / members.js are loaded with a ?v=... cache-busting query
-      string (this file) — browsers repeatedly served a stale cached copy
-      after a real deploy until a manual hard refresh; bump the version
-      string on every future change to these two files.
+  10. style.css / shared.js / members.js are loaded with a ?v=... cache-
+      busting query string (this file, and the same three files' equivalents
+      in index.html) — browsers repeatedly served a stale cached copy after
+      a real deploy until a manual hard refresh, which on index.html once
+      surfaced as a much worse symptom than stale styling: a stale app.js
+      referencing an element id that had been renamed in a restructure
+      silently threw and aborted before the ledger rows ever rendered,
+      leaving only the static header row visible with no data — bump the
+      version string on every future change to any of these three files, on
+      both pages, every time.
   11. Deployment: this file has two homes — the boliammanur-functions repo
       (source) and the eagleview-site repo (mirror, actually served at
       newmantech.in) — every change needs pushing to BOTH, verified by
@@ -147,7 +153,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
-<script src="shared.js"></script>
-<script src="members.js?v=20260810b"></script>
+<script src="shared.js?v=20260811a"></script>
+<script src="members.js?v=20260811a"></script>
 </body>
 </html>

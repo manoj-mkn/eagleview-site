@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>போளியம்மனூர் திருப்பணி சங்கம்</title>
-<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="style.css?v=20260811a" />
 </head>
 <body>
 
@@ -23,46 +23,56 @@
 </div>
 
 <div id="app" class="hidden">
-  <header>
-    <h1><img src="logo.png" alt="" class="header-logo" />போளியம்மனூர் திருப்பணி சங்கம்</h1>
-  </header>
+  <div class="sticky-top-stack">
+    <header>
+      <h1><img src="logo-emblem-only.png" alt="" class="header-logo-main" />போளியம்மனூர் திருப்பணி சங்கம்</h1>
+    </header>
+
+    <div class="sticky-top-inner">
+      <section class="card compact sheet-filter-card">
+        <div class="pills-inline">
+          <div class="pill-line">
+            <span class="pill-label">வருடம்:</span>
+            <div id="year-pills" class="pill-row"></div>
+          </div>
+          <span class="pill-divider"></span>
+          <div class="pill-line">
+            <span class="pill-label">விழா:</span>
+            <div id="function-pills" class="pill-row"></div>
+          </div>
+        </div>
+        <p class="status" id="sheet-status"></p>
+      </section>
+
+      <h2 id="sheet-title">Ledger Sheet</h2>
+
+      <div class="sheet-thead-wrap" id="sheet-thead-wrap">
+        <table class="sheet wide">
+          <thead>
+            <tr><th>S.No.</th><th>பெயர்</th><th>Name</th><th>Mobile Number</th><th>சந்தா</th><th>அசல்</th><th>வட்டி</th><th>தொகை</th><th>மொத்தம்</th><th>குறிப்பு</th></tr>
+            <tr class="filter-row">
+              <td><input type="text" id="filter-sno" class="filter-input" placeholder="Filter" /></td>
+              <td><input type="text" id="filter-name" class="filter-input" placeholder="Filter" /></td>
+              <td><input type="text" id="filter-name-en" class="filter-input" placeholder="Filter" /></td>
+              <td><input type="text" id="filter-mobile" class="filter-input" placeholder="Filter" /></td>
+              <td><input type="text" id="filter-santha" class="filter-input" placeholder="Filter" /></td>
+              <td><input type="text" id="filter-asal" class="filter-input" placeholder="Filter" /></td>
+              <td><input type="text" id="filter-vatti" class="filter-input" placeholder="Filter" /></td>
+              <td><input type="text" id="filter-thogai" class="filter-input" placeholder="Filter" /></td>
+              <td><input type="text" id="filter-total" class="filter-input" placeholder="Filter" /></td>
+              <td><input type="text" id="filter-paid" class="filter-input" placeholder="Filter" /></td>
+            </tr>
+          </thead>
+        </table>
+      </div>
+    </div>
+  </div>
 
   <main>
 
-    <section class="card compact">
-      <div class="pills-inline">
-        <div class="pill-line">
-          <span class="pill-label">வருடம்:</span>
-          <div id="year-pills" class="pill-row"></div>
-        </div>
-        <span class="pill-divider"></span>
-        <div class="pill-line">
-          <span class="pill-label">விழா:</span>
-          <div id="function-pills" class="pill-row"></div>
-        </div>
-      </div>
-      <p class="status" id="sheet-status"></p>
-    </section>
-
-    <section class="card">
-      <h2 id="sheet-title">Ledger Sheet</h2>
-      <div class="table-wrap sheet-wrap" id="sheet-table-wrap">
+    <section class="card sheet-table-card">
+      <div class="table-wrap sheet-tbody-wrap" id="sheet-tbody-wrap">
       <table class="sheet wide">
-        <thead>
-          <tr><th>S.No.</th><th>பெயர்</th><th>Name</th><th>Mobile Number</th><th>சந்தா</th><th>அசல்</th><th>வட்டி</th><th>தொகை</th><th>மொத்தம்</th><th>குறிப்பு</th></tr>
-          <tr class="filter-row">
-            <td><input type="text" id="filter-sno" class="filter-input" placeholder="Filter" /></td>
-            <td><input type="text" id="filter-name" class="filter-input" placeholder="Filter" /></td>
-            <td><input type="text" id="filter-name-en" class="filter-input" placeholder="Filter" /></td>
-            <td><input type="text" id="filter-mobile" class="filter-input" placeholder="Filter" /></td>
-            <td><input type="text" id="filter-santha" class="filter-input" placeholder="Filter" /></td>
-            <td><input type="text" id="filter-asal" class="filter-input" placeholder="Filter" /></td>
-            <td><input type="text" id="filter-vatti" class="filter-input" placeholder="Filter" /></td>
-            <td><input type="text" id="filter-thogai" class="filter-input" placeholder="Filter" /></td>
-            <td><input type="text" id="filter-total" class="filter-input" placeholder="Filter" /></td>
-            <td><input type="text" id="filter-paid" class="filter-input" placeholder="Filter" /></td>
-          </tr>
-        </thead>
         <tbody id="sheet-body"></tbody>
         <tfoot>
           <tr id="sheet-new-row">
@@ -116,7 +126,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
-<script src="shared.js"></script>
-<script src="app.js"></script>
+<script src="shared.js?v=20260811a"></script>
+<script src="app.js?v=20260811a"></script>
 </body>
 </html>

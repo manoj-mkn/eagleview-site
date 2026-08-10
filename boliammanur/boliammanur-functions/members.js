@@ -50,28 +50,9 @@ syncPillsCardCollapse();
 const pillRow = document.getElementById("type-filter-pills");
 if (pillRow) new MutationObserver(syncPillsCardCollapse).observe(pillRow, { childList: true, subtree: true, characterData: true });
 
-// HEART LOGIC — do not change without asking (transform, not font-size, for
-// the title's shrink).
-// The compact header title uses transform:scale() rather than a smaller
-// font-size (see the body.is-scrolled header h1 comment in style.css for
-// why — font-size changes how the title wraps mid-transition, which can't
-// be smoothed). Scaling alone doesn't shrink the space the title reserves
-// in the page (transform is purely visual, not layout), so a negative
-// margin pulls that freed space closed — computed from the title's actual
-// rendered height (h1.offsetHeight, which transform doesn't affect) rather
-// than guessed, since the Tamil text's wrap/height varies by screen width.
-// SCALE here must match the `scale(0.6)` in body.is-scrolled header h1.
-const HEADER_TITLE_COMPACT_SCALE = 0.6;
-function syncHeaderTitleCollapse() {
-  const h1 = document.querySelector("header h1");
-  if (!h1) return;
-  const collapse = -(h1.offsetHeight * (1 - HEADER_TITLE_COMPACT_SCALE));
-  document.documentElement.style.setProperty("--header-h1-margin-collapse", collapse + "px");
-}
-window.addEventListener("resize", syncHeaderTitleCollapse);
-window.addEventListener("load", syncHeaderTitleCollapse);
-if (document.fonts) document.fonts.ready.then(syncHeaderTitleCollapse);
-syncHeaderTitleCollapse();
+// syncHeaderTitleCollapse (HEART LOGIC — transform, not font-size, for the
+// title's shrink) now lives in shared.js, since index.html needs the exact
+// same behavior — one copy so the two pages can't drift apart.
 
 let scrollTicking = false;
 function updateScrollCompactState() {
