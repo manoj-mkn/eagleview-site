@@ -816,9 +816,9 @@ body.is-scrolled .members-thead-wrap { margin-top: 0; }
    padding:16px 20px (the .card.compact defaults) to go back to the boxed
    look. */
 .members-filter-card {
-  width: 1058px;
+  width: fit-content; /* hugs the segmented control's own width (see .pill-row's inline-flex below) instead of stretching to match the spreadsheet's 1058px and leaving empty space beside it */
   max-width: 100%; /* of .sticky-top-inner's already-padded content box (see above) */
-  margin: 28px auto 0; /* top value replicates <main>'s old header→pills gap, now that this card lives in .sticky-top-stack instead of <main> */
+  margin: 28px auto 0; /* auto left/right centers the now fit-content card; top value replicates <main>'s old header→pills gap, now that this card lives in .sticky-top-stack instead of <main> */
   background: none;
   border: none;
   box-shadow: none;
