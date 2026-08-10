@@ -78,7 +78,8 @@ header {
    bit, shrinking the pinned header/pills/table-header stack so more of the
    sheet is visible while browsing. */
 body.is-scrolled header { padding: 10px 16px; }
-/* Deliberately NOT font-size here — shrinking font-size continuously changes
+/* HEART LOGIC — do not change without asking (transform, not font-size).
+   Deliberately NOT font-size here — shrinking font-size continuously changes
    how many words fit per line, and the exact moment the title's text
    re-wraps from 2 lines to 1 is a discrete layout event (not a continuous
    one), so it can't be smoothed by a transition — it snaps, no matter how
@@ -111,7 +112,8 @@ header h1 {
   gap: 10px;
 }
 
-/* members.html only — header, the type-filter pills, and the spreadsheet's
+/* HEART LOGIC — do not change without asking (one shared sticky container).
+   members.html only — header, the type-filter pills, and the spreadsheet's
    own column-title/filter row all need to scroll-pin and shrink together as
    one visual unit (see body.is-scrolled rules below). Giving them one shared
    sticky container instead of each being independently sticky (with the
@@ -137,7 +139,9 @@ header h1 {
    should begin. */
 .sticky-top-stack + main { padding-top: 0; }
 
-/* Wraps the pills bar + table header (not <header> itself, which stays
+/* HEART LOGIC — do not change without asking (.sticky-top-inner shares
+   <main>'s exact container mechanism, not a lookalike).
+   Wraps the pills bar + table header (not <header> itself, which stays
    full-bleed edge-to-edge) using the exact same max-width/margin/padding
    numbers as <main> below it — not just similar values, the same
    mechanism — so the pills bar and table header are structurally
@@ -423,7 +427,8 @@ th { color: var(--muted); font-weight: 600; }
   background: linear-gradient(160deg, #fb923c, #ea580c 45%, #7c2d12);
 }
 
-#gate .card { width: 100%; max-width: 380px; text-align: center; }
+#gate .card { width: 100%; max-width: 460px; text-align: center; }
+.gate-logo { width: 400px; max-width: 100%; height: auto; display: block; margin: 0 auto 12px; }
 
 .hidden { display: none !important; }
 
@@ -505,7 +510,9 @@ table.sheet thead th:nth-child(2), table.sheet thead th:nth-child(n+5):nth-child
 
 table.sheet td { border: 1px solid var(--border); padding: 0; vertical-align: middle; }
 table.sheet td:nth-child(1) { text-align: center; padding: 10px 8px; }
-/* Explicit rather than left transparent — members.html's table sits
+/* HEART LOGIC — do not change without asking (explicit white, not
+   transparent, for members.html's sake).
+   Explicit rather than left transparent — members.html's table sits
    directly on the page background now (no card wrapper behind it, see
    .members-table-card above), which is a very faint cream (--bg), not true
    white; explicit white here keeps the white/cream zebra contrast crisp
@@ -725,7 +732,9 @@ table.members-table { width: 1056px; margin-top: 0; }
    element's visual pinning even though nothing was actually scrollable.
    contain:layout tells the browser this element's content can never affect
    anything outside it, closing the leak at its source. */
-/* .members-thead-wrap now lives inside .sticky-top-stack (see members.html),
+/* HEART LOGIC — do not change without asking (thead-wrap's position,
+   separation from tbody, and width-matching to .members-filter-card).
+   .members-thead-wrap now lives inside .sticky-top-stack (see members.html),
    right after the pills bar, instead of inside .members-table-card — a plain
    normal-flow child of an already-sticky ancestor needs no position/top of
    its own, so its screen position tracks the stack natively with zero JS
@@ -738,14 +747,15 @@ table.members-table { width: 1056px; margin-top: 0; }
    internal scroll, never real page scroll. Its horizontal scroll position is
    mirrored from the body by members.js so columns still track left/right
    drags on narrow screens.
-   Matches .members-filter-card's own 1102px footprint (1056px table + 44px
-   padding + 2px border) and centers within .sticky-top-inner the same way —
-   the same max-width:1320px/margin:auto/padding container <main> uses, so
-   this is structurally guaranteed to line up with .members-table-card below
-   rather than computing its own separate width math. On phones it shrinks
-   below 1102px (max-width:100% of a narrower .sticky-top-inner), which is
-   what makes the table inside overflow and need the horizontal scroll-sync
-   in the first place. */
+   Matches .members-filter-card's own 1058px footprint (1056px table + 2px
+   border, no padding — see the "no container" note on .members-table-card
+   below) and centers within .sticky-top-inner the same way — the same
+   max-width:1320px/margin:auto/padding container <main> uses, so this is
+   structurally guaranteed to line up with .members-table-card below rather
+   than computing its own separate width math. On phones it shrinks below
+   1058px (max-width:100% of a narrower .sticky-top-inner), which is what
+   makes the table inside overflow and need the horizontal scroll-sync in
+   the first place. */
 .members-thead-wrap {
   /* overflow:hidden (not just overflow-x) clips the header cells' own
      square corners into this rounded shape — with border-collapse:collapse
@@ -789,7 +799,9 @@ body.is-scrolled .members-thead-wrap { margin-top: 0; }
   box-shadow: var(--shadow); /* same shadow every .card on the page uses */
 }
 
-/* No card framing (border/background/shadow/padding) around the spreadsheet
+/* HEART LOGIC — do not change without asking (no .card framing around the
+   spreadsheet, by explicit request).
+   No card framing (border/background/shadow/padding) around the spreadsheet
    at all — it sits directly on the page background, just the table itself
    with each cell supplying its own background color. Card hugs the table's
    fixed width instead of stretching to the page's max width, then centers
@@ -843,14 +855,17 @@ body.is-scrolled .members-thead-wrap { margin-top: 0; }
    .pill-row's gap to 12px below.
    REVERT to the original boxed pills: also see .members-filter-card's own
    revert note above (restores the card background/border/shadow/padding). */
-/* flex-wrap:nowrap (overriding the base .pill-row's wrap) + overflow-x:auto
+/* HEART LOGIC — do not change without asking (pill row never wraps).
+   flex-wrap:nowrap (overriding the base .pill-row's wrap) + overflow-x:auto
    keeps this one continuous line at every width — on a phone too narrow to
    fit all three labels, it becomes horizontally swipeable instead of
    wrapping, which previously split the shared outline unevenly around one
    filled pill on its own line and two bare labels on the next. Scrollbar
    hidden since a swipe/drag gesture is the expected interaction here (same
    idea as .members-thead-wrap's own hidden horizontal scroll), not a
-   traditional scrollable list. */
+   traditional scrollable list. members.js scrolls the clicked pill to the
+   row's center on click for the same reason (see its own HEART LOGIC
+   comment there). */
 .members-filter-card .pill-row {
   display: inline-flex;
   flex-wrap: nowrap;
@@ -890,7 +905,9 @@ body.is-scrolled .members-thead-wrap { margin-top: 0; }
   .members-filter-card { margin-top: 18px; }
 }
 
-/* Scaling the whole card visually (rather than animating each pill's own
+/* HEART LOGIC — do not change without asking (transform, not per-pill
+   padding/font-size — same reasoning as header h1 above).
+   Scaling the whole card visually (rather than animating each pill's own
    padding/font-size, ~10+ separate layout-triggering properties every
    frame) means everything inside — padding, buttons, text — rides along
    unscaled and un-animated, at zero extra layout cost. transform doesn't

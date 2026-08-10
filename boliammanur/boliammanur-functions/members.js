@@ -18,6 +18,8 @@ $("members-tbody-wrap").addEventListener("scroll", () => {
   $("members-thead-wrap").scrollLeft = $("members-tbody-wrap").scrollLeft;
 });
 
+// HEART LOGIC — do not change without asking (measures card.offsetHeight
+// directly, not the parent's auto height).
 // The header, pills bar, and table header row all live in one shared
 // .sticky-top-stack now (see style.css), so only the pills bar itself needs
 // a JS-computed value: its scroll-compact state uses transform:scale()
@@ -48,6 +50,8 @@ syncPillsCardCollapse();
 const pillRow = document.getElementById("type-filter-pills");
 if (pillRow) new MutationObserver(syncPillsCardCollapse).observe(pillRow, { childList: true, subtree: true, characterData: true });
 
+// HEART LOGIC — do not change without asking (transform, not font-size, for
+// the title's shrink).
 // The compact header title uses transform:scale() rather than a smaller
 // font-size (see the body.is-scrolled header h1 comment in style.css for
 // why — font-size changes how the title wraps mid-transition, which can't
@@ -347,6 +351,7 @@ $("type-filter-pills").addEventListener("click", (e) => {
   currentFilter = btn.dataset.filter;
   const pillsRow = $("type-filter-pills");
   pillsRow.querySelectorAll(".pill").forEach((p) => p.classList.toggle("active", p === btn));
+  // HEART LOGIC — do not change without asking (scroll-to-center on click).
   // Scrolls the clicked pill to the horizontal center of the row (see
   // .pill-row's overflow-x:auto in style.css) — on a phone where not all
   // filters fit at once, this leaves a sliver of whichever neighbors exist
