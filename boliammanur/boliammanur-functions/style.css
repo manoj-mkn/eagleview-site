@@ -1,5 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
 
+/* Custom display face for the page header titles only (site-wide) — not
+   applied to body text, which stays on Poppins. */
+@font-face {
+  font-family: 'Poliyammanur Tamil Display';
+  src: url('fonts/Poliyammanur-Tamil-Display.ttf') format('truetype');
+  font-weight: 400 900; /* variable-range fallback in case the file has multiple weights baked in; browsers just pick the closest match if it's a single static weight */
+  font-display: swap;
+}
+
 :root {
   --bg: #fff8f1;
   --surface: #ffffff;
@@ -66,10 +75,8 @@ header {
 }
 
 /* members.html only — members.js toggles this once the page is scrolled a
-   bit, shrinking the pinned header/pills stack so more of the sheet is
-   visible while browsing. --header-height/--members-thead-top (already
-   measured live for sticky offsets) get recalculated right after, so
-   nothing needs to be hardcoded to match. */
+   bit, shrinking the pinned header/pills/table-header stack so more of the
+   sheet is visible while browsing. */
 body.is-scrolled header { padding: 10px 16px; }
 /* Deliberately NOT font-size here — shrinking font-size continuously changes
    how many words fit per line, and the exact moment the title's text
@@ -90,6 +97,7 @@ body.is-scrolled header h1 {
 
 header h1 {
   margin: 0 0 4px;
+  font-family: 'Poliyammanur Tamil Display', 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   font-size: 2.3rem;
   font-weight: 800;
   color: #fff;
@@ -101,6 +109,54 @@ header h1 {
   align-items: center;
   justify-content: center;
   gap: 10px;
+}
+
+/* members.html only — header, the type-filter pills, and the spreadsheet's
+   own column-title/filter row all need to scroll-pin and shrink together as
+   one visual unit (see body.is-scrolled rules below). Giving them one shared
+   sticky container instead of each being independently sticky (with the
+   pills bar's/table header's own `top` computed via JS from the elements
+   above them) avoids a real, measured two-stage stutter: a plain CSS class
+   change on one piece started shrinking at t=0, but a sibling's position
+   only updated once JS re-measured — often a whole transition-duration
+   later — so it sat frozen while its neighbor shrank, then snapped into
+   place. Inside one sticky wrapper, everything below the first child is
+   back in normal flow, always correctly adjacent with zero timing
+   dependency and zero per-frame JS cost, regardless of page size. */
+.sticky-top-stack {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--bg);
+  overflow-anchor: none;
+}
+.sticky-top-stack header { position: static; }
+/* <main>'s own top padding existed to space it from the sticky header —
+   redundant now that the header (and everything meant to sit flush below
+   it) lives inside .sticky-top-stack instead, ending exactly where <main>
+   should begin. */
+.sticky-top-stack + main { padding-top: 0; }
+
+/* Wraps the pills bar + table header (not <header> itself, which stays
+   full-bleed edge-to-edge) using the exact same max-width/margin/padding
+   numbers as <main> below it — not just similar values, the same
+   mechanism — so the pills bar and table header are structurally
+   guaranteed to line up with .members-table-card, rather than each
+   computing its own separate centering math that only coincidentally
+   lands on the same numbers. An earlier version had .members-thead-wrap
+   compute its own max-width via calc()/min() directly; that measured
+   correctly in every automated check (multiple browser engines, many
+   widths) but still intermittently rendered flush against the left edge
+   on a real device, fixed by a reload — sharing one container instead of
+   keeping two independent calculations in sync removes that failure mode
+   entirely rather than chasing it. */
+.sticky-top-inner {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+@media (max-width: 900px) {
+  .sticky-top-inner { padding: 0 12px; }
 }
 
 .header-logo { height: 2.4em; width: auto; flex-shrink: 0; margin: -0.55em 0; }
@@ -168,6 +224,18 @@ main {
 
 @media (max-width: 600px) {
   .totals-banner .header-link-btn { font-size: 0.75rem; padding: 6px 12px; left: 10px; }
+}
+
+/* members.html only — its footer banner has no .totals-track (no ledger
+   numbers to leave room for, unlike the main Ledger Sheet page that shares
+   this same .totals-banner markup), so the back button can sit centered
+   across the whole bar instead of pinned to the left edge. Scoped to this
+   extra class rather than changing .totals-banner .header-link-btn itself,
+   since that rule's left:16px is deliberately left-anchored specifically to
+   leave room for the Ledger Sheet's totals-track columns. */
+.totals-banner-simple .header-link-btn {
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .totals-track { position: relative; width: 100%; height: 100%; }
@@ -437,6 +505,12 @@ table.sheet thead th:nth-child(2), table.sheet thead th:nth-child(n+5):nth-child
 
 table.sheet td { border: 1px solid var(--border); padding: 0; vertical-align: middle; }
 table.sheet td:nth-child(1) { text-align: center; padding: 10px 8px; }
+/* Explicit rather than left transparent — members.html's table sits
+   directly on the page background now (no card wrapper behind it, see
+   .members-table-card above), which is a very faint cream (--bg), not true
+   white; explicit white here keeps the white/cream zebra contrast crisp
+   regardless of what's behind the table on any given page. */
+table.sheet tbody tr:nth-child(odd) td { background: var(--surface); }
 table.sheet tbody tr:nth-child(even) td { background: var(--surface-2); }
 table.sheet tbody tr:hover td { background: var(--accent-soft); }
 
@@ -618,13 +692,17 @@ table.sheet thead tr.filter-row td {
 }
 
 /* ---------- Members page table widths — HEART LOGIC, do not change without asking ----------
-   S.No. 70px / Roll No. 70px / பெயர் 230px / Name 230px / Mobile Number 200px / Type 130px / Avoid 80px
+   S.No. 70px / Roll No. 80px / பெயர் 248px / Name 248px / Mobile Number 200px / Type 130px / Avoid 80px
+   (= 1056px total, matching .members-thead-wrap's own 22px side padding +
+   1px side border exactly, so the table fills that frame with no leftover
+   gap on either side — the wrap's outer width below is 1056 + 44 + 2 =
+   1102px to fit it.)
    Literal fixed pixel widths, identical on desktop/tablet/mobile — the table
    does NOT stretch to fill its card (unlike table.sheet's default). On a
    screen narrower than the table's total width, it scrolls horizontally
    within its own card (table-wrap already supports this), same technique
    used for the main Ledger Sheet on phones — nothing else on the page moves. */
-table.members-table { width: 1010px; margin-top: 0; }
+table.members-table { width: 1056px; margin-top: 0; }
 
 /* The header (column titles + filter inputs) is a separate mini table from
    the data rows, pinned via position:sticky on this WRAPPING div rather than
@@ -647,50 +725,170 @@ table.members-table { width: 1010px; margin-top: 0; }
    element's visual pinning even though nothing was actually scrollable.
    contain:layout tells the browser this element's content can never affect
    anything outside it, closing the leak at its source. */
+/* .members-thead-wrap now lives inside .sticky-top-stack (see members.html),
+   right after the pills bar, instead of inside .members-table-card — a plain
+   normal-flow child of an already-sticky ancestor needs no position/top of
+   its own, so its screen position tracks the stack natively with zero JS
+   measurement, however large the table body below it gets. It's still a
+   separate element from .members-tbody-wrap (not one shared table) because
+   any ancestor with overflow-x:auto (needed for the horizontal-scroll mobile
+   fallback below) silently becomes the containing block for position:sticky
+   on its descendants — a per-cell sticky header nested inside that
+   horizontally-scrolling box would only track the box's own (nonexistent)
+   internal scroll, never real page scroll. Its horizontal scroll position is
+   mirrored from the body by members.js so columns still track left/right
+   drags on narrow screens.
+   Matches .members-filter-card's own 1102px footprint (1056px table + 44px
+   padding + 2px border) and centers within .sticky-top-inner the same way —
+   the same max-width:1320px/margin:auto/padding container <main> uses, so
+   this is structurally guaranteed to line up with .members-table-card below
+   rather than computing its own separate width math. On phones it shrinks
+   below 1102px (max-width:100% of a narrower .sticky-top-inner), which is
+   what makes the table inside overflow and need the horizontal scroll-sync
+   in the first place. */
 .members-thead-wrap {
-  position: sticky;
-  top: var(--members-thead-top, 96px);
-  z-index: 10;
-  overflow-x: hidden;
-  contain: layout;
-  border: 1px solid var(--border);
-  border-bottom: none;
+  /* overflow:hidden (not just overflow-x) clips the header cells' own
+     square corners into this rounded shape — with border-collapse:collapse
+     (the table default), border-radius directly on a <th> renders
+     unreliably, so the corner-rounding happens here at the wrapper instead.
+     Still fine for the horizontal scrollLeft sync in members.js — hidden
+     still accepts a programmatic scrollLeft, it just has no visible
+     scrollbar/drag, same as overflow-x:hidden did. */
+  overflow: hidden;
   border-radius: 14px 14px 0 0;
-  background: var(--surface);
-  transition: top 0.2s ease;
+  border: 1px solid var(--border);
+  border-bottom: none; /* .members-tbody-wrap supplies its own top border instead — one single seam line, not a doubled-up pair */
+  box-shadow: var(--shadow); /* same shadow every .card on the page uses — box-shadow paints outside the border-box, unaffected by this element's own overflow:hidden */
+  contain: layout;
   overflow-anchor: none;
+  width: 1058px; /* 1056px table + 2px border (1px each side) so the table still fits exactly, without the border clipping it */
+  max-width: 100%;
+  margin: 22px auto 0; /* top value is breathing room from the pills bar above; closes to 0 once scrolled, just like the pills bar's own margin does */
+  transition: margin-top 0.2s ease;
 }
+body.is-scrolled .members-thead-wrap { margin-top: 0; }
+
+/* contain:layout closes a real gap: overflow-x alone visually clips a
+   wide table fine, but doesn't stop its true width from still counting
+   toward the document root's scrollWidth. On real mobile browsers (not
+   reproducible in desktop devtools/emulation) that phantom width made
+   <html> report far wider than the actual phone screen, which is exactly
+   the signal mobile Chrome/Safari use to decide the WHOLE PAGE needs to
+   auto-zoom-out to "fit everything" — silently breaking every
+   position:sticky/fixed element's visual pinning even though nothing was
+   actually scrollable. contain:layout tells the browser this element's
+   content can never affect anything outside it, closing the leak at its
+   source. */
 .members-tbody-wrap {
-  overflow-x: auto;
+  overflow-x: auto; /* real user drag-scroll on narrow screens, unlike thead-wrap's hidden/JS-driven mirror — must stay auto, not hidden */
+  overflow-y: hidden; /* clips the last row's own square bottom corners into this rounded shape, same reasoning as .members-thead-wrap above */
   -webkit-overflow-scrolling: touch;
   contain: layout;
-  border: 1px solid var(--border);
   border-radius: 0 0 14px 14px;
+  border: 1px solid var(--border); /* top edge doubles as the one seam line between this and .members-thead-wrap above (which has no bottom border of its own) */
+  box-shadow: var(--shadow); /* same shadow every .card on the page uses */
 }
 
-/* Card hugs the table's fixed width instead of stretching to the page's max
-   width, then centers itself horizontally — no more empty space on one side. */
-.members-table-card { align-self: center; width: fit-content; max-width: 100%; }
-
-/* Matches the table card's total footprint exactly (1010px table + 44px
-   card padding + 2px border = 1056px) so both cards line up. */
-.members-filter-card {
+/* No card framing (border/background/shadow/padding) around the spreadsheet
+   at all — it sits directly on the page background, just the table itself
+   with each cell supplying its own background color. Card hugs the table's
+   fixed width instead of stretching to the page's max width, then centers
+   itself horizontally — no empty space on either side. */
+.members-table-card {
   align-self: center;
-  width: 1056px;
+  width: fit-content;
   max-width: 100%;
-  position: sticky;
-  top: var(--header-height, 96px);
-  z-index: 15;
-  transition: padding 0.2s ease, top 0.2s ease;
-  overflow-anchor: none;
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+.members-table-card .status { margin-top: 12px; }
+
+/* No card framing (border/background/shadow/padding) — same "sits directly
+   on the page" treatment as the spreadsheet below it (see
+   .members-table-card). pill-row's own gap widens a bit (see further down)
+   for breathing room now that there's no card edge to imply spacing.
+
+   REVERT: restore width:1058px (was matching .members-thead-wrap's 1056px
+   table + 2px border) and background:var(--surface); border:1px solid
+   var(--border); border-radius:var(--radius); box-shadow:var(--shadow);
+   padding:16px 20px (the .card.compact defaults) to go back to the boxed
+   look. */
+.members-filter-card {
+  width: 1058px;
+  max-width: 100%; /* of .sticky-top-inner's already-padded content box (see above) */
+  margin: 28px auto 0; /* top value replicates <main>'s old header→pills gap, now that this card lives in .sticky-top-stack instead of <main> */
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  transform-origin: top center;
+  transition: transform 0.2s ease, margin-top 0.2s ease, margin-bottom 0.2s ease;
+}
+/* Design option 4 (segmented control, tried after option 1's plain pills,
+   option 2's underline tabs, and option 3's ghost pills) — the three
+   filters live inside ONE tight pill-shaped outline (not the big white
+   card — this wraps just the button row itself) with the active choice
+   shown as a solid block inside it, like an iOS segmented switcher. Reads
+   as one cohesive control instead of three separate buttons.
+   inline-flex (not the default flex, which stretches to the row's full
+   available width) so this outline hugs exactly the three buttons' own
+   width rather than spanning edge-to-edge.
+
+   REVERT to option 3 (ghost pills): see the previous version of this
+   block in conversation/git history.
+   REVERT to option 1 (plain pills as .pill already styles them, no
+   override needed here at all): delete this whole block, restore
+   .pill-row's gap to 12px below.
+   REVERT to the original boxed pills: also see .members-filter-card's own
+   revert note above (restores the card background/border/shadow/padding). */
+.members-filter-card .pill-row {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+}
+.members-filter-card .pill {
+  background: none;
+  border: none;
+  color: var(--muted);
+  box-shadow: none;
+}
+.members-filter-card .pill:hover { color: var(--accent); }
+.members-filter-card .pill.active {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  color: #fff;
+  box-shadow: 0 4px 10px -4px rgba(234, 88, 12, 0.45);
 }
 
-body.is-scrolled .members-filter-card { padding: 8px 20px; }
-body.is-scrolled .members-filter-card .pill { padding: 4px 12px; min-height: 24px; font-size: 0.75rem; }
+/* margin-top eases down at the same breakpoints/rhythm main's own top
+   padding used to. */
+@media (max-width: 900px) {
+  .members-filter-card { margin-top: 22px; }
+}
+@media (max-width: 480px) {
+  .members-filter-card { margin-top: 18px; }
+}
+
+/* Scaling the whole card visually (rather than animating each pill's own
+   padding/font-size, ~10+ separate layout-triggering properties every
+   frame) means everything inside — padding, buttons, text — rides along
+   unscaled and un-animated, at zero extra layout cost. transform doesn't
+   shrink the space the card reserves in the page, so a negative
+   margin-bottom (computed in members.js from the card's actual rendered
+   height, which transform doesn't affect) pulls that freed space closed. */
+body.is-scrolled .members-filter-card {
+  transform: scale(0.72);
+  margin-top: 0;
+  margin-bottom: var(--pills-card-margin-collapse, 0px);
+}
 table.members-table th:nth-child(1), table.members-table td:nth-child(1) { width: 70px; }
-table.members-table th:nth-child(2), table.members-table td:nth-child(2) { width: 70px; }
-table.members-table th:nth-child(3), table.members-table td:nth-child(3) { width: 230px; }
-table.members-table th:nth-child(4), table.members-table td:nth-child(4) { width: 230px; }
+table.members-table th:nth-child(2), table.members-table td:nth-child(2) { width: 80px; }
+table.members-table th:nth-child(3), table.members-table td:nth-child(3) { width: 248px; }
+table.members-table th:nth-child(4), table.members-table td:nth-child(4) { width: 248px; }
 table.members-table th:nth-child(5), table.members-table td:nth-child(5) { width: 200px; }
 table.members-table th:nth-child(6), table.members-table td:nth-child(6) { width: 130px; }
 table.members-table th:nth-child(7), table.members-table td:nth-child(7) { width: 80px; }

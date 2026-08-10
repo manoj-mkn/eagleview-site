@@ -8,20 +8,20 @@
 </head>
 <body>
 
-<header>
-  <h1>போளியம்மனூர் உறுப்பினர்கள்</h1>
-</header>
+<div class="sticky-top-stack">
+  <header>
+    <h1>போளியம்மனூர் உறுப்பினர்கள்</h1>
+  </header>
 
-<main>
-  <section class="card compact members-filter-card">
-    <div class="pill-row" id="type-filter-pills">
-      <button type="button" class="pill active" data-filter="all" data-label="மொத்த உறுப்பினர்கள்">மொத்த உறுப்பினர்கள்</button>
-      <button type="button" class="pill" data-filter="24manai" data-label="24 Manai">24 Manai</button>
-      <button type="button" class="pill" data-filter="others" data-label="Others">Others</button>
-    </div>
-  </section>
+  <div class="sticky-top-inner">
+    <section class="card compact members-filter-card">
+      <div class="pill-row" id="type-filter-pills">
+        <button type="button" class="pill active" data-filter="all" data-label="மொத்த உறுப்பினர்கள்">மொத்த உறுப்பினர்கள்</button>
+        <button type="button" class="pill" data-filter="24manai" data-label="24 Manai">24 Manai</button>
+        <button type="button" class="pill" data-filter="others" data-label="Others">Others</button>
+      </div>
+    </section>
 
-  <section class="card members-table-card">
     <div class="members-thead-wrap" id="members-thead-wrap">
       <table class="sheet wide members-table">
         <thead>
@@ -45,6 +45,11 @@
         </thead>
       </table>
     </div>
+  </div>
+</div>
+
+<main>
+  <section class="card members-table-card">
     <div class="table-wrap members-tbody-wrap" id="members-tbody-wrap">
       <table class="sheet wide members-table">
         <tbody id="members-body"></tbody>
@@ -72,7 +77,7 @@
   </section>
 </main>
 
-<div class="totals-banner">
+<div class="totals-banner totals-banner-simple">
   <a href="index.html" class="header-link-btn">← Back</a>
 </div>
 

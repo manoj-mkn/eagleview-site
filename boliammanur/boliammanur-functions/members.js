@@ -8,22 +8,8 @@ if (sessionStorage.getItem("boliammanur_unlocked") !== "1") {
 let allPeople = [];
 let currentFilter = "all";
 
-// escapeHtml, formatMobile, syncHeaderHeight live in shared.js (loaded
-// before this file) — kept as one copy with app.js.
-
-// #members-thead-wrap (column titles + filter inputs) sticks against the
-// whole PAGE scroll, stacked below the site header and the filter-pills
-// card — its sticky "top" must equal their combined height, measured live
-// since it varies by screen width (see .members-thead-wrap in style.css).
-function syncMembersStickyOffsets() {
-  const header = document.querySelector("header");
-  const pillsCard = document.querySelector(".members-filter-card");
-  if (!header || !pillsCard) return;
-  document.documentElement.style.setProperty("--members-thead-top", header.offsetHeight + pillsCard.offsetHeight + "px");
-}
-window.addEventListener("resize", syncMembersStickyOffsets);
-window.addEventListener("load", syncMembersStickyOffsets);
-syncMembersStickyOffsets();
+// escapeHtml, formatMobile live in shared.js (loaded before this file) —
+// kept as one copy with app.js.
 
 // #members-thead-wrap itself doesn't scroll horizontally (overflow-x:hidden
 // — see style.css comment for why) so a horizontal drag on the body table
@@ -32,16 +18,35 @@ $("members-tbody-wrap").addEventListener("scroll", () => {
   $("members-thead-wrap").scrollLeft = $("members-tbody-wrap").scrollLeft;
 });
 
-// Once the user is actually scrolling to browse the sheet, the header and
-// pills bar shrink (see body.is-scrolled rules in style.css) to give more
-// of the screen to the table. --header-height/--members-thead-top drive the
-// pills bar's and table header's own `top` (also CSS-transitioned), so
-// pinning them to a live measurement — instead of a hardcoded number — is
-// what makes the whole stack shrink as one cascade instead of snapping.
-function resyncStickyOffsets() {
-  syncHeaderHeight();
-  syncMembersStickyOffsets();
+// The header, pills bar, and table header row all live in one shared
+// .sticky-top-stack now (see style.css), so only the pills bar itself needs
+// a JS-computed value: its scroll-compact state uses transform:scale()
+// rather than animating each pill's own padding/font-size (see the
+// body.is-scrolled .members-filter-card comment in style.css for why), and
+// scaling alone doesn't shrink the space the card reserves in the page
+// (transform is purely visual, not layout) — a negative margin pulls that
+// freed space closed, computed from the card's actual rendered height
+// (offsetHeight, which transform doesn't affect) rather than guessed, since
+// it varies by screen width and by how many pills wrap onto their own line.
+// SCALE here must match the `scale(0.72)` in body.is-scrolled .members-filter-card.
+const PILLS_CARD_COMPACT_SCALE = 0.72;
+function syncPillsCardCollapse() {
+  const card = document.querySelector(".members-filter-card");
+  if (!card) return;
+  const collapse = -(card.offsetHeight * (1 - PILLS_CARD_COMPACT_SCALE));
+  document.documentElement.style.setProperty("--pills-card-margin-collapse", collapse + "px");
 }
+window.addEventListener("resize", syncPillsCardCollapse);
+window.addEventListener("load", syncPillsCardCollapse);
+if (document.fonts) document.fonts.ready.then(syncPillsCardCollapse);
+syncPillsCardCollapse();
+// The pill counts ("மொத்த உறுப்பினர்கள் - 96") populate asynchronously once
+// Supabase data arrives, well after "load" fires — re-measuring only then
+// left the card's real (taller, count-populated) height uncorrected,
+// undershooting the margin and leaving a residual gap. Watching the pill
+// row's own text content is the direct fix.
+const pillRow = document.getElementById("type-filter-pills");
+if (pillRow) new MutationObserver(syncPillsCardCollapse).observe(pillRow, { childList: true, subtree: true, characterData: true });
 
 // The compact header title uses transform:scale() rather than a smaller
 // font-size (see the body.is-scrolled header h1 comment in style.css for
@@ -67,7 +72,6 @@ syncHeaderTitleCollapse();
 let scrollTicking = false;
 function updateScrollCompactState() {
   document.body.classList.toggle("is-scrolled", window.scrollY > 10);
-  resyncStickyOffsets();
   scrollTicking = false;
 }
 window.addEventListener(
@@ -79,19 +83,6 @@ window.addEventListener(
   },
   { passive: true }
 );
-
-// CSS transitions don't advance the underlying layout value until later
-// frames — reading offsetHeight synchronously right after toggling the
-// class still returns the pre-transition size, so a single scroll gesture
-// can leave --header-height/--members-thead-top stale until the shrink
-// animation actually finishes. Re-syncing on transitionend closes that gap.
-// (A version of this that instead re-synced on every animation frame while
-// the transition was running was tried and reverted — measured directly,
-// it forced enough synchronous layout reads to drop the header's own
-// transition to ~25-30fps, i.e. it caused the exact stepping it was meant
-// to fix. transitionend fires once per finished transition, so it's cheap.)
-document.querySelector("header").addEventListener("transitionend", resyncStickyOffsets);
-document.querySelector(".members-filter-card").addEventListener("transitionend", resyncStickyOffsets);
 updateScrollCompactState();
 
 function setStatus(message, isError) {
