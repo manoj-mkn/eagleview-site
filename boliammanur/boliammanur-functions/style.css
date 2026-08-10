@@ -168,7 +168,7 @@ header h1 {
 /* index.html's main app header — same logo as the password gate (already
    has the full name baked in), sized to fill the header banner instead of
    sitting as a small icon next to separate heading text. */
-.header-logo-main { height: 140px; width: auto; max-width: 100%; }
+.header-logo-main { height: 90px; width: auto; max-width: 100%; }
 
 header p { margin: 0; color: rgba(255,255,255,0.85); font-size: 0.9rem; }
 
@@ -464,10 +464,6 @@ th { color: var(--muted); font-weight: 600; }
 @media (max-width: 900px) {
   main { padding: 22px 12px 84px; }
   .card { padding: 16px; }
-  table.sheet th:nth-child(1), table.sheet td:nth-child(1) { width: 42px; }
-  table.sheet th:nth-child(2), table.sheet td:nth-child(2) { width: 130px; }
-  table.sheet th:nth-child(3), table.sheet td:nth-child(3) { width: 100px; }
-  table.sheet th:nth-child(4), table.sheet td:nth-child(4) { width: 110px; }
   table.sheet td input { padding: 8px 6px; font-size: 0.9rem; }
   table.sheet thead th { padding: 10px 6px; font-size: 0.8rem; }
   table.sheet thead th:nth-child(2), table.sheet thead th:nth-child(n+5):nth-child(-n+9) { font-size: 0.95rem; }
@@ -494,7 +490,7 @@ th { color: var(--muted); font-weight: 600; }
      viewport; header h1's flex row doesn't wrap or shrink on its own, so
      the combined content overflowed centered (bleeding off both left and
      right edges), forcing real horizontal scroll on the whole page. */
-  .header-logo-main { height: 70px; }
+  .header-logo-main { height: 45px; }
   main { padding: 18px 12px 52px; gap: 16px; }
   .card { padding: 18px; }
   .totals-shine { font-size: 0.62rem; }
@@ -580,6 +576,7 @@ table.sheet thead th {
   white-space: normal;
   word-break: break-word;
   color: #9a3412;
+  transition: padding 0.2s ease, font-size 0.2s ease;
 }
 
 table.sheet thead th:nth-child(2), table.sheet thead th:nth-child(n+5):nth-child(-n+9) { font-size: 1.05rem; }
@@ -612,16 +609,39 @@ table.sheet td:nth-child(2) input, table.sheet td:nth-child(3) input, table.shee
 table.sheet input.f-name[readonly] { cursor: default; }
 table.sheet input.f-name[readonly]:focus { outline: none; box-shadow: none; }
 table.sheet td:nth-child(1) input { text-align: center; padding-left: 8px; padding-right: 8px; }
-table.sheet th:nth-child(1), table.sheet td:nth-child(1) { width: 62px; }
+/* ---------- Ledger Sheet table widths — HEART LOGIC, do not change without
+   asking ----------
+   S.No. 60px / பெயர் 200px / Name 200px / Mobile Number 170px / சந்தா 100px /
+   அசல் 100px / வட்டி 100px / தொகை 100px / மொத்தம் 100px / குறிப்பு 120px
+   (= 1250px total.) Literal fixed pixel widths, identical on desktop/
+   tablet/mobile — same "no stretch" approach as members.html's table, and
+   for the same reason percentages were dropped here: table-layout:fixed
+   does NOT resolve a column's % against the table's own width when other
+   columns are literal px and the table's rendered width is constrained
+   (e.g. by min-width on a narrow screen) — it instead treats the percentage
+   values as relative WEIGHTS splitting whatever space is left after the
+   fixed-px columns, which on a phone (where little space was left) measured
+   as low as 13.7px for a 9% column — the actual money columns, unusably
+   narrow. Fixed px for every column sidesteps that resolution question
+   entirely. A responsive override for columns 1-4 used to exist at the
+   903px breakpoint above, but it never actually applied at any width (same
+   specificity, always beaten by this base rule's later position in the
+   file, same category of bug as .members-filter-card's own max-width
+   override once had) — removed rather than fixed, since fixed widths at
+   every screen size is what's wanted now anyway. On a screen narrower than
+   the table's total width, it scrolls horizontally within its own card,
+   same technique used by members.html. */
+table.sheet:not(.members-table) { width: 1250px; margin-left: auto; margin-right: auto; } /* centers it on the rare wide screen where the container (up to 1288px) is actually wider than the table itself */
+table.sheet th:nth-child(1), table.sheet td:nth-child(1) { width: 60px; }
 table.sheet th:nth-child(2), table.sheet td:nth-child(2) { width: 200px; }
 table.sheet th:nth-child(3), table.sheet td:nth-child(3) { width: 200px; }
 table.sheet th:nth-child(4), table.sheet td:nth-child(4) { width: 170px; }
-table.sheet th:nth-child(5), table.sheet td:nth-child(5) { width: 9%; }
-table.sheet th:nth-child(6), table.sheet td:nth-child(6) { width: 9%; }
-table.sheet th:nth-child(7), table.sheet td:nth-child(7) { width: 9%; }
-table.sheet th:nth-child(8), table.sheet td:nth-child(8) { width: 9%; }
-table.sheet th:nth-child(9), table.sheet td:nth-child(9) { width: 9%; }
-table.sheet th:nth-child(10), table.sheet td:nth-child(10) { width: 12%; }
+table.sheet th:nth-child(5), table.sheet td:nth-child(5) { width: 100px; }
+table.sheet th:nth-child(6), table.sheet td:nth-child(6) { width: 100px; }
+table.sheet th:nth-child(7), table.sheet td:nth-child(7) { width: 100px; }
+table.sheet th:nth-child(8), table.sheet td:nth-child(8) { width: 100px; }
+table.sheet th:nth-child(9), table.sheet td:nth-child(9) { width: 100px; }
+table.sheet th:nth-child(10), table.sheet td:nth-child(10) { width: 120px; }
 
 table.sheet td input:focus { outline: 2px solid var(--accent); outline-offset: -2px; background: var(--bg); }
 
@@ -1074,3 +1094,10 @@ body.is-scrolled table.sheet thead tr.filter-row td {
   padding: 1px 6px;
 }
 body.is-scrolled .filter-input { min-height: 14px; padding: 1px 6px; font-size: 0.72rem; }
+
+/* index.html's own Ledger Sheet column-title row — same shrink treatment
+   as table.members-table's above, just missed when the scroll-compact
+   architecture was first ported to this page (the filter-row rule above,
+   and .filter-input, already applied here since those are shared
+   table.sheet selectors, not members-table-specific — this one wasn't). */
+body.is-scrolled table.sheet:not(.members-table) thead th { padding: 3px 6px; font-size: 0.78rem; }
