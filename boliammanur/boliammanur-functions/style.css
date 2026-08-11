@@ -85,6 +85,11 @@ header {
    actual rendered height, already accounts for however tall the title
    ends up being — see syncHeaderTitleCollapse in shared.js). */
 body.is-scrolled header { padding: 30px 16px; }
+/* index.html only — its header has a logo image (.header-logo-main;
+   members.html's header is text-only), used here to scope this override
+   without needing a body/page-level class. Tighter vertical padding once
+   scrolled than the shared 30px above, by explicit request. */
+body.is-scrolled header:has(.header-logo-main) { padding: 5px 16px; }
 /* HEART LOGIC — do not change without asking (transform, not font-size).
    Deliberately NOT font-size here — shrinking font-size continuously changes
    how many words fit per line, and the exact moment the title's text
