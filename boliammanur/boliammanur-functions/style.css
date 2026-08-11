@@ -88,7 +88,9 @@ body.is-scrolled header { padding: 30px 16px; }
 /* index.html only — its header has a logo image (.header-logo-main;
    members.html's header is text-only), used here to scope this override
    without needing a body/page-level class. Tighter vertical padding once
-   scrolled than the shared 30px above, by explicit request. */
+   scrolled than the shared 30px above, by explicit request — independent
+   of the title's own height-driven shrink (h1's transform:scale() +
+   negative margin-bottom above), which still applies on top of this. */
 body.is-scrolled header:has(.header-logo-main) { padding: 5px 16px; }
 /* HEART LOGIC — do not change without asking (transform, not font-size).
    Deliberately NOT font-size here — shrinking font-size continuously changes
@@ -344,7 +346,14 @@ main {
   font-weight: 800;
   color: #c2410c;
   padding: 4px 0;
-  margin: 12px 0 0;
+  margin: 12px auto 0;
+  /* Matches .sheet-filter-card/.sheet-thead-wrap/.sheet-table-card's own
+     width:1252px (see .sheet-thead-wrap's comment) — without this, this
+     row stretched to .sticky-top-inner's full ~1288px instead of the
+     table's 1252px, so the title/member-count pill could sit visibly past
+     the spreadsheet's right edge on wide screens. */
+  width: 1252px;
+  max-width: 100%;
   letter-spacing: -0.01em;
   display: flex;
   align-items: center;
@@ -601,9 +610,9 @@ body.is-scrolled .sheet-thead-wrap { margin-top: 0; }
   width: 1252px;
   max-width: 100%;
   margin: 22px auto 0;
-  transition: margin-top 0.2s ease;
+  transition: margin-top 0.2s ease, padding 0.2s ease;
 }
-body.is-scrolled .sheet-filter-card { margin-top: 0; }
+body.is-scrolled .sheet-filter-card { margin-top: 0; padding: 10px 24px; }
 
 /* Same transform:scale() technique as .members-filter-card (see its own
    HEART LOGIC comment) — shrinks as one compositor-only unit instead of

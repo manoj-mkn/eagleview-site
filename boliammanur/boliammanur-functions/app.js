@@ -40,6 +40,15 @@ $("gate-form").addEventListener("submit", async (e) => {
 function unlockApp() {
   $("gate").classList.add("hidden");
   $("app").classList.remove("hidden");
+  // #app is display:none behind the gate, so header h1's offsetHeight read
+  // as 0 when syncHeaderTitleCollapse() ran on the page's "load" event —
+  // its only other triggers are resize/fonts.ready, neither of which fires
+  // just from unhiding #app — leaving --header-h1-margin-collapse stuck at
+  // 0px for the rest of the session. Re-run it now that h1 is actually
+  // laid out, so the scrolled-state header height genuinely shrinks to fit
+  // the (now correctly measured) title instead of just visually scaling
+  // without reclaiming the freed space.
+  syncHeaderTitleCollapse();
   // #gate-password's autofocus scrolls the page to bring it into view
   // during the initial render (its card is taller than a lot of real
   // viewports) — that residual scroll position doesn't reset on its own
