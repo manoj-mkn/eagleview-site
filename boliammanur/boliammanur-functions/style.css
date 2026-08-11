@@ -27,7 +27,7 @@
 }
 
 * { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; color-scheme: light; }
+html { -webkit-text-size-adjust: 100%; color-scheme: light; overflow-anchor: none; }
 
 input[type="number"] { -moz-appearance: textfield; }
 input[type="number"]::-webkit-inner-spin-button,
@@ -58,7 +58,7 @@ header {
   position: sticky;
   top: 0;
   z-index: 20;
-  padding: 26px 16px;
+  padding: 30px 16px;
   text-align: center;
   border-bottom: 1px solid var(--border);
   background: linear-gradient(120deg, #fb923c, #ea580c 55%, #b91c1c);
@@ -77,8 +77,14 @@ header {
 /* Shared by index.html and members.html — each page's own JS toggles
    body.is-scrolled once the page is scrolled a bit, shrinking the pinned
    header/pills/table-header stack so more of the sheet is visible while
-   browsing. */
-body.is-scrolled header { padding: 10px 16px; }
+   browsing. 30px vertical padding is a fixed value regardless of how many
+   lines the title wraps to — the banner's total height isn't set directly
+   anywhere, it's just padding + content, so it naturally grows to fit 2-3
+   wrapped lines on a narrow screen without needing separate rules per line
+   count (h1's own negative margin-bottom, computed live in JS from its
+   actual rendered height, already accounts for however tall the title
+   ends up being — see syncHeaderTitleCollapse in shared.js). */
+body.is-scrolled header { padding: 30px 16px; }
 /* HEART LOGIC — do not change without asking (transform, not font-size).
    Deliberately NOT font-size here — shrinking font-size continuously changes
    how many words fit per line, and the exact moment the title's text
@@ -339,9 +345,23 @@ main {
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
-  transition: margin-top 0.2s ease;
+  /* top left, not top center — unlike header h1/.sheet-filter-card, this
+     title is left-aligned, not centered; scaling from center would shift
+     its left edge sideways as it shrinks. */
+  transform-origin: top left;
+  transition: transform 0.2s ease, margin-top 0.2s ease, margin-bottom 0.2s ease;
 }
-body.is-scrolled #sheet-title { margin-top: 0; }
+/* Same transform:scale() treatment as header h1/.sheet-filter-card (see
+   their own HEART LOGIC comments) — not font-size, since this title's text
+   length varies (different function names) and could wrap, and animating
+   font-size on wrapping text causes a discrete, unsmoothable jump exactly
+   when it collapses from 2 lines to 1. SCALE here must match
+   syncSheetTitleCollapse's own constant in app.js. */
+body.is-scrolled #sheet-title {
+  transform: scale(0.7);
+  margin-top: 0;
+  margin-bottom: var(--sheet-title-margin-collapse, 0px);
+}
 
 .members-toggle {
   font-size: 0.85rem;
@@ -515,6 +535,13 @@ th { color: var(--muted); font-weight: 600; }
    .sheet-table-card below don't need explicit width-matching numbers, just
    width:auto within the same max-width:1320px/margin:auto/padding
    container (.sticky-top-inner / <main>) that guarantees alignment. */
+/* width explicitly matches the table's own fixed 1250px + 2px border
+   footprint (1252px), same as .sheet-table-card and .sheet-filter-card
+   below — without this, all three just filled their shared container
+   (up to 1288px wide), leaving each one's border/shadow/rounded-corner box
+   visibly wider than the actual table/pills content centered inside it, on
+   any screen wider than 1252px. Same fix members.html needed for
+   .members-thead-wrap/.members-filter-card. */
 .sheet-thead-wrap {
   overflow: hidden;
   border: 1px solid var(--border);
@@ -523,7 +550,9 @@ th { color: var(--muted); font-weight: 600; }
   box-shadow: var(--shadow);
   contain: layout;
   overflow-anchor: none;
-  margin-top: 22px;
+  width: 1252px;
+  max-width: 100%;
+  margin: 22px auto 0;
   transition: margin-top 0.2s ease;
 }
 body.is-scrolled .sheet-thead-wrap { margin-top: 0; }
@@ -540,22 +569,48 @@ body.is-scrolled .sheet-thead-wrap { margin-top: 0; }
 
 /* No card framing around the ledger sheet's own card wrapper — its border/
    shadow/rounding now lives directly on .sheet-thead-wrap/.sheet-tbody-wrap
-   instead (same "no container" treatment as members.html's spreadsheet). */
+   instead (same "no container" treatment as members.html's spreadsheet).
+   width/margin match .sheet-thead-wrap's own footprint — see its comment
+   above. */
 .sheet-table-card {
   background: none;
   border: none;
   box-shadow: none;
   padding: 0;
+  width: 1252px;
+  max-width: 100%;
+  margin: 0 auto;
 }
 
-/* Same transform:scale() treatment as .members-filter-card (see its own
-   HEART LOGIC comment) — the whole pills card shrinks as one compositor-
-   only unit instead of animating each pill's own padding/font-size. */
+/* Keeps its .card.compact framing (unlike .sheet-thead-wrap/
+   .sheet-table-card above) — width still explicitly matches the table's
+   own 1252px footprint (see .sheet-thead-wrap's comment above for why),
+   just with the card's usual background/border/shadow/padding restored.
+   No transform here (unlike .members-filter-card) — transform:scale()
+   shrinks an element's rendered width along with everything else, which
+   would pull this card's visible width away from the table's below it the
+   moment it's scrolled. The shrink instead happens on .pills-inline (its
+   only real content, below) while this outer box's own width/padding stay
+   fixed, so its box keeps matching the spreadsheet's width in every state. */
 .sheet-filter-card {
-  transform-origin: top center;
-  transition: transform 0.2s ease, margin-top 0.2s ease, margin-bottom 0.2s ease;
+  width: 1252px;
+  max-width: 100%;
+  margin: 22px auto 0;
+  transition: margin-top 0.2s ease;
 }
-body.is-scrolled .sheet-filter-card {
+body.is-scrolled .sheet-filter-card { margin-top: 0; }
+
+/* Same transform:scale() technique as .members-filter-card (see its own
+   HEART LOGIC comment) — shrinks as one compositor-only unit instead of
+   animating each pill's own padding/font-size — just scoped to this inner
+   wrapper instead of .sheet-filter-card itself (see that rule's own
+   comment for why). top left, not top center, since its content
+   (வருடம்/விழா rows) is left-aligned, not centered. */
+.pills-inline {
+  transform-origin: top left;
+  transition: transform 0.2s ease, margin-bottom 0.2s ease;
+}
+body.is-scrolled .pills-inline {
   transform: scale(0.85);
   margin-bottom: var(--sheet-filter-card-margin-collapse, 0px);
 }

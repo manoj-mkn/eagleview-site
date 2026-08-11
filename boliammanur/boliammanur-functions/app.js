@@ -40,6 +40,13 @@ $("gate-form").addEventListener("submit", async (e) => {
 function unlockApp() {
   $("gate").classList.add("hidden");
   $("app").classList.remove("hidden");
+  // #gate-password's autofocus scrolls the page to bring it into view
+  // during the initial render (its card is taller than a lot of real
+  // viewports) — that residual scroll position doesn't reset on its own
+  // once #gate is hidden and #app appears, and was enough on its own to
+  // cross the is-scrolled threshold (window.scrollY > 10) before the user
+  // had scrolled anything, starting the whole page in its compact state.
+  window.scrollTo(0, 0);
   loadAll();
 }
 
@@ -50,17 +57,21 @@ if (sessionStorage.getItem("boliammanur_unlocked") === "1") {
 // ---------- Scroll-compact shrink ----------
 // Same architecture as members.html (see that file's HEART LOGIC index for
 // the full reasoning): header + pills + #sheet-title + the ledger sheet's
-// own thead all live in one shared .sticky-top-stack (style.css), so the
-// only JS-computed value still needed is the pills card's own collapse
-// (same transform:scale() technique as .members-filter-card — the whole
-// card shrinks as one compositor-only unit instead of animating individual
-// pill buttons' padding/font-size). SCALE here must match
-// body.is-scrolled .sheet-filter-card's scale() in style.css.
+// own thead all live in one shared .sticky-top-stack (style.css). .pills-
+// inline and #sheet-title each shrink via transform:scale() (same
+// technique as .members-filter-card — the whole element shrinks as one
+// compositor-only unit instead of animating individual children's padding/
+// font-size), so each needs its own JS-measured margin-collapse below.
+// Measures .pills-inline specifically, not .sheet-filter-card itself —
+// that outer card's own width must stay fixed at all times to keep
+// matching the spreadsheet's width below it (see .sheet-filter-card's own
+// comment in style.css), so it can't be the thing that scales. SCALE here
+// must match body.is-scrolled .pills-inline's scale() in style.css.
 const SHEET_FILTER_CARD_COMPACT_SCALE = 0.85;
 function syncSheetFilterCardCollapse() {
-  const card = document.querySelector(".sheet-filter-card");
-  if (!card) return;
-  const collapse = -(card.offsetHeight * (1 - SHEET_FILTER_CARD_COMPACT_SCALE));
+  const pillsInline = document.querySelector(".pills-inline");
+  if (!pillsInline) return;
+  const collapse = -(pillsInline.offsetHeight * (1 - SHEET_FILTER_CARD_COMPACT_SCALE));
   document.documentElement.style.setProperty("--sheet-filter-card-margin-collapse", collapse + "px");
 }
 window.addEventListener("resize", syncSheetFilterCardCollapse);
@@ -71,8 +82,29 @@ syncSheetFilterCardCollapse();
 // every time the user picks a different year/function — re-measuring only
 // on load/resize left the card's real height uncorrected after that, the
 // same undershoot bug fixed for members.html's pills card.
-const sheetFilterCard = document.querySelector(".sheet-filter-card");
+const sheetFilterCard = document.querySelector(".pills-inline");
 if (sheetFilterCard) new MutationObserver(syncSheetFilterCardCollapse).observe(sheetFilterCard, { childList: true, subtree: true, characterData: true });
+
+// Same transform:scale() + margin-collapse technique as
+// syncSheetFilterCardCollapse above, for #sheet-title (the function
+// name/year heading + உறுப்பினர்கள் toggle button). SCALE here must match
+// body.is-scrolled #sheet-title's scale() in style.css.
+const SHEET_TITLE_COMPACT_SCALE = 0.7;
+function syncSheetTitleCollapse() {
+  const title = document.getElementById("sheet-title");
+  if (!title) return;
+  const collapse = -(title.offsetHeight * (1 - SHEET_TITLE_COMPACT_SCALE));
+  document.documentElement.style.setProperty("--sheet-title-margin-collapse", collapse + "px");
+}
+window.addEventListener("resize", syncSheetTitleCollapse);
+window.addEventListener("load", syncSheetTitleCollapse);
+if (document.fonts) document.fonts.ready.then(syncSheetTitleCollapse);
+syncSheetTitleCollapse();
+// updateSheetTitle() replaces #sheet-title's entire innerHTML (new function
+// name/year, new உறுப்பினர்கள் count) every time the user picks a different
+// year/function — same re-measure-on-content-change need as the pills card.
+const sheetTitleEl = document.getElementById("sheet-title");
+if (sheetTitleEl) new MutationObserver(syncSheetTitleCollapse).observe(sheetTitleEl, { childList: true, subtree: true, characterData: true });
 
 let scrollTicking = false;
 function updateScrollCompactState() {
