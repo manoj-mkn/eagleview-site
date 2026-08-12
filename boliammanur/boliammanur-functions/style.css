@@ -349,7 +349,7 @@ main {
   font-size: 1.75rem;
   font-weight: 800;
   color: #c2410c;
-  padding: 4px 0;
+  padding: 4px 0 4px 5px;
   margin: 12px auto 0;
   /* Matches .sheet-filter-card/.sheet-thead-wrap/.sheet-table-card's own
      width:1252px (see .sheet-thead-wrap's comment) — without this, this
@@ -379,6 +379,11 @@ body.is-scrolled #sheet-title {
   transform: scale(0.7);
   margin-top: 0;
   margin-bottom: var(--sheet-title-margin-collapse, 0px);
+  /* padding-left here is inside the same box being scale(0.7)'d from its
+     top-left corner, so it renders 0.7x smaller than declared (see the
+     base rule's plain 5px, and this session's earlier padding-left:62px
+     case) — 5px / 0.7 keeps the visual gap at 5px in both states. */
+  padding-left: 7.14px;
 }
 
 .members-toggle {
@@ -632,6 +637,10 @@ body.is-scrolled .pills-inline {
   transform: scale(0.85);
   margin-bottom: var(--sheet-filter-card-margin-collapse, 0px);
 }
+/* வருடம்:/விழா: labels — dropped once compact, by explicit request; the
+   pill buttons themselves already show the selected value, so the label
+   is redundant once space is at a premium. */
+body.is-scrolled .pill-label { display: none; }
 
 table.sheet { width: 100%; table-layout: fixed; font-size: 1rem; font-variant-numeric: tabular-nums; }
 
