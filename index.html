@@ -3,329 +3,882 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Newman Tech</title>
+<title>Newman Tech — Software That Works For You</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
-body{font-family:'Arial Black',Arial,sans-serif;background:#0D0520;color:#E8E0FF;overflow-x:hidden}
-
-/* SCANLINE overlay */
-body::before{content:'';position:fixed;inset:0;z-index:500;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(0,0,0,.07) 0px,rgba(0,0,0,.07) 1px,transparent 1px,transparent 2px)}
-
-/* NAV */
-.gnav{position:fixed;top:0;left:0;right:0;z-index:300;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(16px,4vw,52px);background:rgba(13,5,32,.8);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,0,122,.2)}
-.nlogo{display:flex;align-items:center;gap:10px;text-decoration:none}
-.nm-ico{width:26px;height:26px;border-radius:4px;background:linear-gradient(135deg,#FF007A,#6B00CC);display:flex;align-items:center;justify-content:center;box-shadow:0 0 12px rgba(255,0,122,.5)}
-.nm-ico svg{width:12px;height:14px;fill:#fff}
-.nname{font-size:12px;font-weight:900;color:#fff;letter-spacing:.08em;text-shadow:0 0 10px rgba(255,0,122,.6)}
-.navls{display:flex;gap:0}
-.navls a{padding:0 14px;height:52px;display:flex;align-items:center;font-size:11px;font-weight:700;letter-spacing:.08em;color:rgba(255,0,122,.6);text-decoration:none;transition:all .15s}
-.navls a:hover{color:#FF007A;text-shadow:0 0 10px rgba(255,0,122,.8)}
-.nav-cta{padding:7px 18px;border-radius:3px;border:1px solid #FF007A;color:#FF007A;font-size:11px;font-weight:900;letter-spacing:.08em;text-decoration:none;transition:all .2s;box-shadow:0 0 10px rgba(255,0,122,.3)}
-.nav-cta:hover{background:rgba(255,0,122,.15);box-shadow:0 0 20px rgba(255,0,122,.5)}
-
-/* HERO */
-.hero{position:relative;height:100vh;overflow:hidden;display:flex;flex-direction:column;justify-content:center;padding:0 clamp(16px,5vw,64px)}
-.sky{position:absolute;inset:0;background:linear-gradient(to bottom,#0D0520 0%,#1A0B3C 25%,#3D0060 45%,#7A1070 58%,#CC3B1E 72%,#FF8C00 83%,#FFDC00 92%,#FFF380 100%)}
-.sun{position:absolute;width:clamp(140px,20vw,260px);height:clamp(140px,20vw,260px);border-radius:50%;background:linear-gradient(to bottom,#FFDC00 0%,#FF8C00 40%,#FF4500 70%,#CC1E00 100%);left:50%;transform:translateX(-50%);bottom:calc(38% - clamp(70px,10vw,130px));z-index:2;box-shadow:0 0 80px rgba(255,140,0,.6),0 0 160px rgba(255,69,0,.3)}
-.mountains{position:absolute;bottom:38%;left:0;right:0;z-index:3}
-.grid-canvas{position:absolute;bottom:0;left:0;right:0;height:38%;z-index:4}
-.grid-overlay{position:absolute;bottom:0;left:0;right:0;height:38%;background:linear-gradient(to bottom,rgba(13,5,32,0) 0%,rgba(13,5,32,.3) 100%);z-index:5;pointer-events:none}
-.hero-content{position:relative;z-index:10;text-align:center}
-.hero-eyebrow{font-size:10px;font-weight:900;letter-spacing:.35em;text-transform:uppercase;color:rgba(255,0,122,.8);margin-bottom:clamp(10px,2vh,20px);text-shadow:0 0 15px rgba(255,0,122,.7)}
-.hero-title{font-size:clamp(52px,11vw,140px);font-weight:900;letter-spacing:-.02em;line-height:.88;text-transform:uppercase;margin-bottom:clamp(12px,2.5vh,24px)}
-.ht1{display:block;color:#00FFFF;text-shadow:0 0 30px rgba(0,255,255,.7),0 0 60px rgba(0,255,255,.3)}
-.ht2{display:block;color:#FF007A;text-shadow:0 0 30px rgba(255,0,122,.8),0 0 60px rgba(255,0,122,.3)}
-.hero-sub{font-size:clamp(12px,1.4vw,16px);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.4);max-width:480px;margin:0 auto clamp(20px,3vh,36px)}
-.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.hb1{padding:12px 26px;border-radius:2px;background:linear-gradient(135deg,#FF007A,#6B00CC);color:#fff;font-size:12px;font-weight:900;letter-spacing:.1em;text-decoration:none;text-transform:uppercase;transition:all .2s;box-shadow:0 0 20px rgba(255,0,122,.5)}
-.hb1:hover{box-shadow:0 0 40px rgba(255,0,122,.8);transform:translateY(-2px)}
-.hb2{padding:12px 26px;border-radius:2px;border:1px solid #00FFFF;color:#00FFFF;font-size:12px;font-weight:900;letter-spacing:.1em;text-decoration:none;text-transform:uppercase;transition:all .2s;box-shadow:0 0 15px rgba(0,255,255,.3)}
-.hb2:hover{background:rgba(0,255,255,.1);box-shadow:0 0 30px rgba(0,255,255,.6)}
-
-/* SECTIONS */
-.sec{padding:clamp(60px,10vh,100px) clamp(16px,5vw,64px);max-width:1200px;margin:0 auto}
-.sec-tag{font-size:10px;font-weight:900;letter-spacing:.25em;text-transform:uppercase;margin-bottom:12px}
-.sec-tag.pink{color:rgba(255,0,122,.7);text-shadow:0 0 10px rgba(255,0,122,.4)}
-.sec-tag.cyan{color:rgba(0,255,255,.7);text-shadow:0 0 10px rgba(0,255,255,.3)}
-.sec-h2{font-size:clamp(32px,5.5vw,68px);font-weight:900;letter-spacing:-.03em;line-height:.95;text-transform:uppercase;margin-bottom:20px}
-.sec-h2.pink{color:#FF007A;text-shadow:0 0 20px rgba(255,0,122,.4)}
-.sec-h2.cyan{color:#00FFFF;text-shadow:0 0 20px rgba(0,255,255,.3)}
-
-/* NEON CARD */
-.nc{background:rgba(255,255,255,.03);border:1px solid;border-radius:4px;padding:clamp(16px,2.5vw,28px);transition:all .25s;position:relative;overflow:hidden}
-.nc::before{content:'';position:absolute;top:0;left:0;right:0;height:1px}
-.nc.p{border-color:rgba(255,0,122,.2)}.nc.p::before{background:linear-gradient(to right,transparent,rgba(255,0,122,.6),transparent)}
-.nc.c{border-color:rgba(0,255,255,.2)}.nc.c::before{background:linear-gradient(to right,transparent,rgba(0,255,255,.5),transparent)}
-.nc.g{border-color:rgba(107,0,204,.3)}.nc.g::before{background:linear-gradient(to right,transparent,rgba(107,0,204,.7),transparent)}
-.nc:hover{background:rgba(255,255,255,.06)}
-
-/* ABOUT GRID */
-.about-g{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
-.nc-h{font-size:14px;font-weight:900;letter-spacing:.04em;text-transform:uppercase;margin-bottom:8px}
-.nc-h.pink{color:#FF007A;text-shadow:0 0 8px rgba(255,0,122,.5)}
-.nc-h.cyan{color:#00FFFF;text-shadow:0 0 8px rgba(0,255,255,.4)}
-.nc-p{font-size:13px;line-height:1.75;color:rgba(232,224,255,.55);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-weight:400}
-.about-main{display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,5vw,64px);align-items:center;margin-bottom:24px}
-
-/* PRODUCT */
-.prod-g{display:grid;grid-template-columns:1.2fr 1fr;gap:clamp(32px,5vw,64px);align-items:center;margin-top:20px}
-.feat-list{display:flex;flex-direction:column;gap:6px;margin-bottom:20px}
-.feat{display:flex;align-items:center;gap:10px;font-size:13px;color:rgba(232,224,255,.65);padding:7px 0;border-bottom:1px solid rgba(255,255,255,.05);font-family:-apple-system,BlinkMacSystemFont,sans-serif}
-.feat::before{content:'›';font-size:9px;color:#FF007A;flex-shrink:0}
-.dl-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:2px;background:linear-gradient(135deg,#FF007A,#6B00CC);color:#fff;font-size:12px;font-weight:900;letter-spacing:.1em;text-decoration:none;text-transform:uppercase;box-shadow:0 0 20px rgba(255,0,122,.4);transition:all .2s}
-.dl-btn:hover{box-shadow:0 0 40px rgba(255,0,122,.7);transform:translateY(-2px)}
-
-/* RETRO SCREEN */
-.retro-screen{background:#000;border:2px solid rgba(0,255,255,.3);border-radius:4px;padding:12px;box-shadow:0 0 30px rgba(0,255,255,.15),inset 0 0 30px rgba(0,0,0,.8)}
-.rs-hd{border-bottom:1px solid rgba(0,255,255,.2);padding-bottom:8px;margin-bottom:10px;display:flex;align-items:center;gap:6px;font-size:9px;font-weight:900;letter-spacing:.12em;color:rgba(0,255,255,.6)}
-.rs-hd::before{content:'◆';color:#FF007A}
-.rs-row{display:flex;justify-content:space-between;align-items:center;padding:5px 8px;margin-bottom:3px;font-family:ui-monospace,monospace;font-size:9px}
-.rs-rl{color:rgba(0,255,255,.5)}
-.rs-rv{color:#00FFFF;font-weight:700;background:rgba(0,255,255,.08);padding:1px 5px;border-radius:2px}
-.rs-ft{margin-top:10px;padding-top:8px;border-top:1px solid rgba(0,255,255,.1);display:flex;align-items:center;gap:5px;font-size:8px;font-family:ui-monospace,monospace;color:rgba(0,255,255,.25)}
-.rs-ft::before{content:'';width:5px;height:5px;border-radius:50%;background:#22C55E;flex-shrink:0;box-shadow:0 0 6px rgba(34,197,94,.8)}
-
-/* TEAM GRID */
-.team-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(160px,20vw,200px),1fr));gap:10px;margin-top:20px}
-.tc .av{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:17px;color:#fff;margin-bottom:10px;border:1px solid rgba(255,255,255,.15)}
-.av1{background:linear-gradient(135deg,#FF007A,#6B00CC)}.av2{background:linear-gradient(135deg,#6B00CC,#002899)}.av3{background:linear-gradient(135deg,#00FFFF,#006B99)}.av4{background:linear-gradient(135deg,#FF007A,#FF4500)}.av5{background:linear-gradient(135deg,#FFD700,#FF8C00)}.av6{background:linear-gradient(135deg,#6B00CC,#FF007A)}.av7{background:linear-gradient(135deg,#00FFFF,#6B00CC)}
-.tc-n{font-size:13px;font-weight:900;letter-spacing:.02em;text-transform:uppercase;color:#fff;margin-bottom:3px}
-.tc-r{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,0,122,.6);margin-bottom:7px}
-.tc-b{font-size:11.5px;color:rgba(232,224,255,.45);line-height:1.6;font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-weight:400}
-
-/* CONTACT */
-.ct-g{display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,5vw,64px);margin-top:20px;align-items:start}
-.ct-h{font-size:clamp(28px,4.5vw,56px);font-weight:900;letter-spacing:-.03em;line-height:.95;text-transform:uppercase;color:#FF007A;text-shadow:0 0 20px rgba(255,0,122,.4);margin-bottom:14px}
-.ct-sub{font-size:14px;color:rgba(232,224,255,.45);line-height:1.78;margin-bottom:20px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-weight:400}
-.ct-lks{display:flex;flex-direction:column;gap:7px}
-.ct-lk{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,0,122,.2);border-radius:3px;color:#FF007A;text-decoration:none;font-size:12px;font-weight:700;letter-spacing:.04em;transition:all .15s}
-.ct-lk:hover{background:rgba(255,0,122,.08);border-color:rgba(255,0,122,.4);box-shadow:0 0 15px rgba(255,0,122,.2)}
-.cf{display:flex;flex-direction:column;gap:10px}
-.fl{font-size:9px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:rgba(0,255,255,.4);display:block;margin-bottom:4px}
-.fi,.fta{width:100%;padding:10px 13px;background:rgba(0,255,255,.04);border:1px solid rgba(0,255,255,.15);border-radius:3px;color:#E8E0FF;font-family:inherit;font-size:13px;outline:none;transition:all .2s}
-.fi::placeholder,.fta::placeholder{color:rgba(232,224,255,.2)}
-.fi:focus,.fta:focus{border-color:rgba(0,255,255,.5);box-shadow:0 0 12px rgba(0,255,255,.15)}
-.fta{min-height:90px;resize:vertical}
-.f-btn{padding:12px;border-radius:3px;background:linear-gradient(135deg,rgba(255,0,122,.3),rgba(107,0,204,.3));border:1px solid rgba(255,0,122,.4);color:#FF007A;font-family:inherit;font-size:12px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .2s}
-.f-btn:hover{box-shadow:0 0 20px rgba(255,0,122,.3);border-color:rgba(255,0,122,.7)}
-
-/* DIVIDER */
-.neon-divider{height:1px;background:linear-gradient(to right,transparent,rgba(255,0,122,.5),rgba(107,0,204,.5),rgba(0,255,255,.5),transparent);margin:0}
-
-/* FOOTER */
-footer{background:rgba(0,0,0,.6);border-top:1px solid rgba(255,0,122,.2);padding:clamp(16px,3vh,28px) clamp(16px,5vw,64px);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;position:relative;z-index:10}
-.ft-b{font-size:12px;font-weight:900;color:rgba(255,0,122,.8);letter-spacing:.08em;text-transform:uppercase;text-shadow:0 0 10px rgba(255,0,122,.5)}
-.ft-c{font-size:10px;color:rgba(232,224,255,.25);letter-spacing:.06em}
-.ft-ls{display:flex;gap:18px}
-.ft-ls a{font-size:11px;color:rgba(0,255,255,.4);text-decoration:none;font-weight:700;letter-spacing:.06em;text-transform:uppercase;transition:all .15s}
-.ft-ls a:hover{color:#00FFFF;text-shadow:0 0 8px rgba(0,255,255,.5)}
-
-/* REVEAL */
-.rv{opacity:0;transform:translateY(28px);transition:opacity .7s,transform .7s}
-.rv.in{opacity:1;transform:none}
-.rv.d1{transition-delay:.08s}.rv.d2{transition-delay:.16s}.rv.d3{transition-delay:.24s}.rv.d4{transition-delay:.32s}
-
-@media(max-width:800px){
-  .about-main,.prod-g,.ct-g{grid-template-columns:1fr}
-  .about-g{grid-template-columns:1fr}
+:root{
+  --bg:#060A16;--bg2:#0B1224;--bg3:#111B32;
+  --card:rgba(255,255,255,0.04);--card-border:rgba(0,198,232,0.12);
+  --accent:#00C6E8;--violet:#7C5BFC;--gold:#F5A623;
+  --text:#EEF2FF;--text2:#7A8BB0;--text3:#4A5A78;
+  --shadow:0 4px 32px rgba(0,0,0,0.5);
+  --radius:16px;
 }
+@media(prefers-color-scheme:light){:root{
+  --bg:#F2F5FC;--bg2:#FFFFFF;--bg3:#E6EBF8;
+  --card:rgba(0,0,0,0.03);--card-border:rgba(0,150,200,0.15);
+  --text:#0A1020;--text2:#4A5A78;--text3:#8A9AB8;
+  --shadow:0 4px 32px rgba(0,0,0,0.08);
+}}
+:root[data-theme="dark"]{
+  --bg:#060A16;--bg2:#0B1224;--bg3:#111B32;
+  --card:rgba(255,255,255,0.04);--card-border:rgba(0,198,232,0.12);
+  --text:#EEF2FF;--text2:#7A8BB0;--text3:#4A5A78;--shadow:0 4px 32px rgba(0,0,0,0.5);
+}
+:root[data-theme="light"]{
+  --bg:#F2F5FC;--bg2:#FFFFFF;--bg3:#E6EBF8;
+  --card:rgba(0,0,0,0.03);--card-border:rgba(0,150,200,0.15);
+  --text:#0A1020;--text2:#4A5A78;--text3:#8A9AB8;--shadow:0 4px 32px rgba(0,0,0,0.08);
+}
+html{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);scroll-behavior:smooth}
+body{min-height:100vh;overflow-x:hidden}
+img{max-width:100%}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 clamp(20px,5vw,80px);height:64px;
+  background:rgba(6,10,22,0.85);backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  transition:background 0.3s;
+}
+:root[data-theme="light"] nav{background:rgba(242,245,252,0.88)}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nav-logo-mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--violet));display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nav-logo-mark svg{width:18px;height:18px;fill:white}
+.nav-logo-text{font-size:16px;font-weight:800;color:var(--text);letter-spacing:-0.3px}
+.nav-logo-text span{color:var(--accent)}
+.nav-links{display:flex;align-items:center;gap:32px}
+.nav-links a{font-size:13px;font-weight:600;color:var(--text2);text-decoration:none;letter-spacing:0.02em;transition:color 0.15s}
+.nav-links a:hover{color:var(--accent)}
+.nav-actions{display:flex;align-items:center;gap:12px}
+.btn-nav{padding:8px 20px;border-radius:8px;border:1px solid var(--card-border);background:var(--card);color:var(--text);font-size:13px;font-weight:600;cursor:pointer;transition:all 0.15s;text-decoration:none;display:inline-flex;align-items:center}
+.btn-nav:hover{background:var(--accent);border-color:var(--accent);color:#000}
+.btn-theme{width:36px;height:36px;border-radius:8px;border:1px solid var(--card-border);background:var(--card);cursor:pointer;color:var(--text2);font-size:15px;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
+.btn-theme:hover{border-color:var(--accent);color:var(--accent)}
+.nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:4px}
+.nav-hamburger span{width:22px;height:2px;background:var(--text2);border-radius:2px;transition:0.2s}
+
+/* ── HERO ── */
+#hero{
+  position:relative;min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:100px clamp(20px,6vw,80px) 80px;text-align:center;overflow:hidden;
+}
+#bg-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 16px;border-radius:100px;
+  border:1px solid rgba(0,198,232,0.3);background:rgba(0,198,232,0.08);
+  font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:28px;position:relative;
+}
+.hero-eyebrow::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse-dot 2s ease-in-out infinite}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)}}
+.hero-h1{
+  font-size:clamp(40px,7vw,88px);font-weight:900;line-height:1.0;
+  letter-spacing:-0.03em;color:var(--text);
+  max-width:900px;position:relative;
+}
+.hero-h1 .grad{background:linear-gradient(90deg,var(--accent),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{
+  font-size:clamp(16px,2.2vw,20px);color:var(--text2);max-width:580px;
+  line-height:1.7;margin-top:24px;position:relative;
+}
+.hero-ctas{display:flex;gap:14px;margin-top:40px;flex-wrap:wrap;justify-content:center;position:relative}
+.btn-primary{
+  padding:14px 32px;border-radius:10px;border:none;
+  background:linear-gradient(135deg,var(--accent),var(--violet));
+  color:white;font-size:15px;font-weight:700;cursor:pointer;
+  transition:all 0.2s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;
+  box-shadow:0 0 32px rgba(0,198,232,0.25);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 40px rgba(0,198,232,0.4)}
+.btn-outline{
+  padding:14px 32px;border-radius:10px;
+  border:1px solid var(--card-border);background:var(--card);
+  color:var(--text);font-size:15px;font-weight:700;cursor:pointer;
+  transition:all 0.2s;text-decoration:none;display:inline-flex;align-items:center;gap:8px;
+  backdrop-filter:blur(10px);
+}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+.hero-stats{
+  display:flex;gap:48px;margin-top:72px;position:relative;
+  border-top:1px solid rgba(255,255,255,0.06);padding-top:40px;
+  flex-wrap:wrap;justify-content:center;
+}
+.hero-stat-num{font-size:32px;font-weight:900;color:var(--accent);letter-spacing:-0.02em}
+.hero-stat-label{font-size:12px;color:var(--text2);font-weight:600;letter-spacing:0.06em;text-transform:uppercase;margin-top:4px}
+
+/* ── SECTION SHELL ── */
+.section{padding:clamp(64px,10vw,120px) clamp(20px,6vw,80px);max-width:1200px;margin:0 auto}
+.section-full{padding:clamp(64px,10vw,120px) clamp(20px,6vw,80px);background:var(--bg2)}
+.section-full .inner{max-width:1200px;margin:0 auto}
+.eyebrow{font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:16px}
+.section-h2{font-size:clamp(28px,4vw,48px);font-weight:900;letter-spacing:-0.02em;color:var(--text);line-height:1.15}
+.section-h2 span{color:var(--accent)}
+.section-lead{font-size:clamp(15px,1.8vw,18px);color:var(--text2);line-height:1.75;max-width:560px;margin-top:16px}
+
+/* ── ABOUT ── */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,5vw,80px);align-items:center;margin-top:clamp(40px,6vw,64px)}
+.about-text{}
+.about-text p{color:var(--text2);line-height:1.8;font-size:15px;margin-top:16px}
+.about-values{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:32px}
+.value-card{padding:20px;border-radius:12px;border:1px solid var(--card-border);background:var(--card)}
+.value-icon{font-size:22px;margin-bottom:10px}
+.value-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px}
+.value-desc{font-size:12px;color:var(--text2);line-height:1.6}
+.about-visual{display:flex;flex-direction:column;gap:16px}
+.stat-pill{
+  padding:20px 24px;border-radius:14px;border:1px solid var(--card-border);
+  background:var(--card);display:flex;align-items:center;gap:16px;
+  backdrop-filter:blur(10px);transition:border-color 0.2s,transform 0.2s;
+}
+.stat-pill:hover{border-color:var(--accent);transform:translateX(6px)}
+.stat-pill-num{font-size:36px;font-weight:900;color:var(--accent);min-width:60px}
+.stat-pill-text{font-size:13px;color:var(--text2);line-height:1.5}
+.stat-pill-text strong{display:block;font-size:15px;color:var(--text);margin-bottom:3px}
+
+/* ── PRODUCT ── */
+.product-card{
+  margin-top:clamp(40px,6vw,64px);border-radius:24px;
+  border:1px solid var(--card-border);overflow:hidden;
+  background:var(--card);backdrop-filter:blur(10px);
+  display:grid;grid-template-columns:1fr 1fr;
+}
+.product-info{padding:clamp(32px,5vw,56px)}
+.product-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:100px;border:1px solid rgba(124,91,252,0.3);background:rgba(124,91,252,0.1);font-size:11px;font-weight:700;color:var(--violet);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:24px}
+.product-name{font-size:clamp(28px,4vw,44px);font-weight:900;color:var(--text);letter-spacing:-0.03em;line-height:1.1}
+.product-desc{font-size:15px;color:var(--text2);line-height:1.75;margin-top:16px}
+.product-platforms{display:flex;gap:10px;margin-top:28px;flex-wrap:wrap}
+.platform-tag{padding:7px 14px;border-radius:8px;border:1px solid var(--card-border);background:var(--bg3);font-size:12px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:6px}
+.product-cta{margin-top:32px;display:flex;gap:12px;flex-wrap:wrap}
+.product-visual{
+  background:linear-gradient(135deg,rgba(0,198,232,0.08),rgba(124,91,252,0.12));
+  display:flex;align-items:center;justify-content:center;padding:40px;
+  min-height:360px;position:relative;overflow:hidden;
+}
+.product-visual::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 60% 40%,rgba(0,198,232,0.15),transparent 70%);
+}
+.ev-mockup{
+  width:160px;height:360px;border-radius:20px;
+  background:linear-gradient(180deg,#0F1E36,#060E1E);
+  border:1px solid rgba(0,198,232,0.2);
+  box-shadow:0 24px 80px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.06);
+  position:relative;overflow:hidden;display:flex;flex-direction:column;
+}
+.ev-header{height:44px;background:linear-gradient(135deg,#E87722,#C45E00);display:flex;align-items:center;padding:0 12px;gap:8px}
+.ev-header-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,0.4)}
+.ev-header-title{font-size:9px;font-weight:700;color:white;letter-spacing:0.05em}
+.ev-row{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.05)}
+.ev-row-label{font-size:7px;color:rgba(255,255,255,0.6);font-weight:600}
+.ev-row-badge{font-size:7px;color:#E87722;font-weight:700;background:rgba(232,119,34,0.15);padding:2px 5px;border-radius:4px}
+.ev-footer{margin-top:auto;padding:8px 10px;border-top:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:space-between}
+.ev-footer-dot{width:6px;height:6px;border-radius:50%;background:#22C55E}
+.ev-footer-text{font-size:6px;color:rgba(255,255,255,0.4)}
+
+/* ── TEAM ── */
+.team-intro{text-align:center;margin-bottom:clamp(40px,6vw,72px)}
+.team-intro .section-lead{margin:16px auto 0}
+.team-block{margin-bottom:clamp(48px,8vw,80px)}
+.team-block-label{
+  display:flex;align-items:center;gap:16px;margin-bottom:32px;
+}
+.team-block-label::before,.team-block-label::after{content:'';flex:1;height:1px;background:var(--card-border)}
+.team-block-label span{font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);white-space:nowrap;padding:0 8px}
+.founders-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}
+.developer-grid{display:grid;grid-template-columns:1fr;max-width:520px;margin:0 auto}
+.mentors-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+.team-card{
+  padding:clamp(24px,4vw,36px);border-radius:20px;
+  border:1px solid var(--card-border);background:var(--card);
+  text-align:center;transition:all 0.25s;position:relative;overflow:hidden;
+}
+.team-card::before{
+  content:'';position:absolute;inset:0;opacity:0;transition:opacity 0.25s;
+  background:radial-gradient(ellipse at 50% 0%,rgba(0,198,232,0.07),transparent 70%);
+}
+.team-card:hover{border-color:rgba(0,198,232,0.35);transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,0.2)}
+.team-card:hover::before{opacity:1}
+.team-card.developer{background:linear-gradient(135deg,rgba(124,91,252,0.06),rgba(0,198,232,0.04));border-color:rgba(124,91,252,0.2)}
+.team-card.developer:hover{border-color:rgba(124,91,252,0.5)}
+.avatar-wrap{width:96px;height:96px;margin:0 auto 20px;border-radius:50%;overflow:hidden;border:2px solid var(--card-border);transition:border-color 0.25s}
+.team-card:hover .avatar-wrap{border-color:var(--accent)}
+.team-card.developer .avatar-wrap{width:110px;height:110px;border-color:rgba(124,91,252,0.3)}
+.mentor-card .avatar-wrap{width:80px;height:80px}
+.member-name{font-size:17px;font-weight:800;color:var(--text);letter-spacing:-0.01em}
+.mentor-card .member-name{font-size:15px}
+.member-role{font-size:12px;font-weight:600;color:var(--accent);letter-spacing:0.04em;text-transform:uppercase;margin-top:5px}
+.member-bio{font-size:13px;color:var(--text2);line-height:1.65;margin-top:12px}
+.mentor-card .member-bio{font-size:12px;margin-top:8px}
+.member-tags{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:14px}
+.tag{padding:4px 10px;border-radius:6px;border:1px solid var(--card-border);background:var(--bg3);font-size:11px;font-weight:600;color:var(--text2)}
+.developer .tag{border-color:rgba(124,91,252,0.2);color:var(--violet)}
+
+/* ── CONTACT ── */
+.contact-inner{
+  display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,80px);align-items:start;
+}
+.contact-info p{color:var(--text2);font-size:15px;line-height:1.75;margin-top:16px}
+.contact-links{display:flex;flex-direction:column;gap:16px;margin-top:32px}
+.contact-link{
+  display:flex;align-items:center;gap:14px;padding:16px 20px;
+  border-radius:12px;border:1px solid var(--card-border);background:var(--card);
+  text-decoration:none;color:var(--text);transition:all 0.2s;
+}
+.contact-link:hover{border-color:var(--accent);transform:translateX(6px)}
+.contact-link-icon{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--violet));display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.contact-link-icon svg{width:16px;height:16px;fill:white}
+.contact-link-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--text2)}
+.contact-link-value{font-size:14px;font-weight:600;color:var(--text);margin-top:2px}
+.contact-form{display:flex;flex-direction:column;gap:14px}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-label{font-size:12px;font-weight:700;color:var(--text2);letter-spacing:0.04em}
+.form-input,.form-textarea{
+  padding:12px 16px;border-radius:10px;
+  border:1px solid var(--card-border);background:var(--bg3);
+  color:var(--text);font-size:14px;font-family:inherit;
+  transition:border-color 0.15s,box-shadow 0.15s;outline:none;
+  resize:vertical;
+}
+.form-input:focus,.form-textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(0,198,232,0.1)}
+.form-textarea{min-height:120px}
+.btn-submit{
+  padding:14px;border-radius:10px;border:none;
+  background:linear-gradient(135deg,var(--accent),var(--violet));
+  color:white;font-size:15px;font-weight:700;cursor:pointer;
+  transition:all 0.2s;box-shadow:0 0 24px rgba(0,198,232,0.2);
+}
+.btn-submit:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(0,198,232,0.35)}
+
+/* ── FOOTER ── */
+footer{
+  padding:clamp(40px,6vw,64px) clamp(20px,6vw,80px) 32px;
+  background:var(--bg);border-top:1px solid rgba(255,255,255,0.05);
+}
+.footer-inner{max-width:1200px;margin:0 auto}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px}
+.footer-brand p{font-size:13px;color:var(--text2);line-height:1.75;margin-top:12px;max-width:260px}
+.footer-col-title{font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:16px}
+.footer-links{display:flex;flex-direction:column;gap:10px}
+.footer-links a{font-size:13px;color:var(--text2);text-decoration:none;transition:color 0.15s}
+.footer-links a:hover{color:var(--accent)}
+.footer-bottom{display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(255,255,255,0.05);padding-top:24px;flex-wrap:wrap;gap:12px}
+.footer-copy{font-size:12px;color:var(--text3)}
+.footer-social{display:flex;gap:12px}
+.social-btn{width:34px;height:34px;border-radius:8px;border:1px solid var(--card-border);background:var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;text-decoration:none}
+.social-btn:hover{border-color:var(--accent);color:var(--accent)}
+.social-btn svg{width:15px;height:15px;fill:var(--text2)}
+.social-btn:hover svg{fill:var(--accent)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .nav-links{display:none}
+  .nav-hamburger{display:flex}
+  .about-grid{grid-template-columns:1fr}
+  .product-card{grid-template-columns:1fr}
+  .product-visual{min-height:220px}
+  .contact-inner{grid-template-columns:1fr}
+  .footer-top{grid-template-columns:1fr 1fr}
+}
+@media(max-width:700px){
+  .founders-grid{grid-template-columns:1fr}
+  .mentors-grid{grid-template-columns:repeat(2,1fr)}
+  .footer-top{grid-template-columns:1fr}
+}
+@media(max-width:400px){
+  .mentors-grid{grid-template-columns:1fr}
+  .hero-stats{gap:28px}
+}
+
+/* ── SCROLL FADE IN ── */
+.fade-up{opacity:0;transform:translateY(24px);transition:opacity 0.6s ease,transform 0.6s ease}
+.fade-up.visible{opacity:1;transform:translateY(0)}
 </style>
 </head>
 <body>
 
 <!-- NAV -->
-<nav class="gnav">
-  <a class="nlogo" href="#">
-    <div class="nm-ico"><svg viewBox="0 0 22 26"><rect x="0" y="0" width="5.5" height="26" rx="1"/><polygon points="5.5,0 11,0 22,26 16.5,26"/><rect x="16.5" y="0" width="5.5" height="26" rx="1"/></svg></div>
-    <span class="nname">Newman Tech</span>
+<nav id="main-nav">
+  <a class="nav-logo" href="#hero">
+    <div class="nav-logo-mark">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    </div>
+    <span class="nav-logo-text">Newman<span>Tech</span></span>
   </a>
-  <nav class="navls">
-    <a href="#about-sw">About</a>
-    <a href="#prod-sw">Product</a>
-    <a href="#team-sw">Team</a>
-    <a href="#ct-sw">Contact</a>
-  </nav>
-  <span class="nav-cta">GET EAGLE VIEW</span>
+  <div class="nav-links">
+    <a href="#about">About</a>
+    <a href="#products">Products</a>
+    <a href="#team">Team</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <div class="nav-actions">
+    <button class="btn-theme" onclick="toggleTheme()" title="Toggle theme">◐</button>
+    <a class="btn-nav" href="#contact">Get in Touch</a>
+  </div>
+  <div class="nav-hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
 </nav>
 
 <!-- HERO -->
-<section class="hero">
-  <div class="sky"></div>
-  <div class="sun"></div>
-  <svg class="mountains" viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-    <polygon points="0,120 180,20 320,80 480,5 640,60 760,15 900,70 1060,0 1200,50 1360,10 1440,55 1440,120" fill="#1A0B3C"/>
-    <polygon points="0,120 120,50 260,90 400,35 560,85 700,30 840,75 960,25 1100,65 1260,20 1440,70 1440,120" fill="#0D0520" opacity=".7"/>
-  </svg>
-  <canvas class="grid-canvas" id="grid"></canvas>
-  <div class="grid-overlay"></div>
-  <div class="hero-content">
-    <div class="hero-eyebrow">// Newman Technologies · India · Est. 2026</div>
-    <h1 class="hero-title"><span class="ht1">NEWMAN</span><span class="ht2">TECHNOLOGIES</span></h1>
-    <p class="hero-sub">Intelligent Desktop Software for Modern Professionals</p>
-    <div class="hero-btns">
-      <span class="hb1">Get Eagle View</span>
-      <span class="hb2">Discover More</span>
+<section id="hero">
+  <canvas id="bg-canvas"></canvas>
+  <div class="hero-eyebrow">Software Product Company · Est. 2026</div>
+  <h1 class="hero-h1">We Build Software<br><span class="grad">That Works For You</span></h1>
+  <p class="hero-sub">Newman Tech creates intelligent desktop tools that keep professionals connected, productive, and in control — without switching between apps.</p>
+  <div class="hero-ctas">
+    <a class="btn-primary" href="#products">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      See Our Product
+    </a>
+    <a class="btn-outline" href="#team">Meet the Team</a>
+  </div>
+  <div class="hero-stats">
+    <div>
+      <div class="hero-stat-num">1</div>
+      <div class="hero-stat-label">Product Live</div>
+    </div>
+    <div>
+      <div class="hero-stat-num">2</div>
+      <div class="hero-stat-label">Platforms</div>
+    </div>
+    <div>
+      <div class="hero-stat-num">4</div>
+      <div class="hero-stat-label">Mentors</div>
+    </div>
+    <div>
+      <div class="hero-stat-num">∞</div>
+      <div class="hero-stat-label">Possibilities</div>
     </div>
   </div>
 </section>
-
-<div class="neon-divider"></div>
 
 <!-- ABOUT -->
-<section id="about-sw">
-  <div class="sec">
-    <div class="about-main">
-      <div>
-        <div class="sec-tag pink rv">// About Newman Tech</div>
-        <h2 class="sec-h2 pink rv d1">SOFTWARE THAT WORKS.</h2>
-        <p class="rv d2" style="font-size:14px;line-height:1.8;color:rgba(232,224,255,.55);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-weight:400">We build professional desktop tools using Rust, React, and Tauri v2. Native quality. Zero bloat. Always on. Always fast. Built in India for the world.</p>
-      </div>
-      <div class="about-g">
-        <div class="nc p rv d1"><div class="nc-h pink">Performance</div><div class="nc-p">Every ms of unnecessary latency is a design failure.</div></div>
-        <div class="nc c rv d2"><div class="nc-h cyan">Native</div><div class="nc-p">Desktop software that feels like the OS built it.</div></div>
-        <div class="nc g rv d3"><div class="nc-h" style="color:#A855F7;text-shadow:0 0 8px rgba(168,85,247,.5)">Invisible</div><div class="nc-p">The best interface is one you forget you're using.</div></div>
-        <div class="nc p rv d4"><div class="nc-h pink">Zero Bloat</div><div class="nc-p">Every feature earns its place or it doesn't ship.</div></div>
-      </div>
+<section id="about" style="background:var(--bg2)">
+  <div class="section">
+    <div class="fade-up">
+      <div class="eyebrow">About Us</div>
+      <h2 class="section-h2">Crafting tools that<br><span>professionals love</span></h2>
     </div>
-  </div>
-</section>
-
-<div class="neon-divider"></div>
-
-<!-- PRODUCT -->
-<section id="prod-sw">
-  <div class="sec">
-    <div class="sec-tag cyan rv">// Eagle View · v1.1.3</div>
-    <h2 class="sec-h2 cyan rv d1">EAGLE VIEW.</h2>
-    <div class="prod-g">
-      <div>
-        <p class="rv d1" style="font-size:14px;line-height:1.8;color:rgba(232,224,255,.55);margin-bottom:18px;font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-weight:400">A real-time desktop sidebar. Always visible. Never in the way. Free for macOS and Windows.</p>
-        <div class="feat-list rv d2">
-          <div class="feat">Real-time Outlook + Gmail inbox</div>
-          <div class="feat">Microsoft Calendar + meeting links</div>
-          <div class="feat">Jira, Azure DevOps, Slack integration</div>
-          <div class="feat">Microsoft To Do — flagged tasks</div>
-          <div class="feat">World clock + quick links + widgets</div>
-          <div class="feat">Near-zero CPU + memory usage</div>
+    <div class="about-grid fade-up">
+      <div class="about-text">
+        <p>Newman Tech is an Indian software product company founded with a singular purpose — to build tools that genuinely improve how professionals work. We believe that great software should disappear into your workflow, not demand your attention.</p>
+        <p style="margin-top:16px">Our team combines deep technical expertise with a passion for elegant design, resulting in products that are powerful under the hood but effortless to use. We serve corporate professionals across industries, with a focus on productivity and real-time information access.</p>
+        <div class="about-values">
+          <div class="value-card">
+            <div class="value-icon">⚡</div>
+            <div class="value-title">Speed First</div>
+            <div class="value-desc">Every decision is weighed against its impact on user speed and efficiency.</div>
+          </div>
+          <div class="value-card">
+            <div class="value-icon">🎯</div>
+            <div class="value-title">Precision Design</div>
+            <div class="value-desc">We obsess over details that others overlook — pixels, transitions, timing.</div>
+          </div>
+          <div class="value-card">
+            <div class="value-icon">🔒</div>
+            <div class="value-title">Privacy Matters</div>
+            <div class="value-desc">Your data stays yours. No cloud sync, no telemetry without consent.</div>
+          </div>
+          <div class="value-card">
+            <div class="value-icon">🌱</div>
+            <div class="value-title">Built to Grow</div>
+            <div class="value-desc">Our products evolve with your needs — every version better than the last.</div>
+          </div>
         </div>
-        <span class="dl-btn rv d3">▼ DOWNLOAD FREE</span>
       </div>
-      <div class="retro-screen rv d2">
-        <div class="rs-hd">EAGLE VIEW SYSTEM STATUS</div>
-        <div class="rs-row"><span class="rs-rl">◆ MAILS</span><span class="rs-rv">12</span></div>
-        <div class="rs-row"><span class="rs-rl">◆ TO DO</span><span class="rs-rv">3</span></div>
-        <div class="rs-row"><span class="rs-rl">◆ MEETINGS</span><span class="rs-rv">2</span></div>
-        <div class="rs-row"><span class="rs-rl">⚡ INCIDENTS</span><span class="rs-rv">5</span></div>
-        <div class="rs-row"><span class="rs-rl">◆ JIRA</span><span class="rs-rv">4</span></div>
-        <div class="rs-row"><span class="rs-rl">◆ SLACK</span><span class="rs-rv">7</span></div>
-        <div class="rs-row"><span class="rs-rl">◷ CLOCK</span><span class="rs-rv" id="mclk">--:--</span></div>
-        <div class="rs-ft">SYNC LIVE · ALL SYSTEMS NOMINAL</div>
+      <div class="about-visual">
+        <div class="stat-pill fade-up">
+          <div class="stat-pill-num">2</div>
+          <div class="stat-pill-text"><strong>Visionary Founders</strong>Building the future of corporate productivity tools</div>
+        </div>
+        <div class="stat-pill fade-up">
+          <div class="stat-pill-num">4</div>
+          <div class="stat-pill-text"><strong>Industry Mentors</strong>Guiding strategy, technology, and market growth</div>
+        </div>
+        <div class="stat-pill fade-up">
+          <div class="stat-pill-num" style="color:var(--violet)">macOS</div>
+          <div class="stat-pill-text"><strong>+ Windows</strong>Cross-platform apps built with Tauri &amp; React</div>
+        </div>
+        <div class="stat-pill fade-up">
+          <div class="stat-pill-num" style="color:var(--gold)">v1.1</div>
+          <div class="stat-pill-text"><strong>Active Development</strong>Regular updates shipping every sprint</div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<div class="neon-divider"></div>
+<!-- PRODUCTS -->
+<section id="products">
+  <div class="section">
+    <div class="fade-up">
+      <div class="eyebrow">Our Product</div>
+      <h2 class="section-h2">Introducing <span>Eagle View</span></h2>
+      <p class="section-lead">The intelligent desktop sidebar that keeps your mails, meetings, tasks, and tools one click away — without leaving what you're working on.</p>
+    </div>
+    <div class="product-card fade-up">
+      <div class="product-info">
+        <div class="product-badge">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          Featured Product
+        </div>
+        <div class="product-name">Eagle View</div>
+        <p class="product-desc">A lightweight, always-on sidebar for Windows and macOS that surfaces your Outlook and Gmail inbox, calendar meetings, flagged tasks, and custom quick links — all in a single glanceable panel. Built with Tauri v2 and React for blazing-fast performance with a tiny memory footprint.</p>
+        <div class="product-platforms">
+          <div class="platform-tag">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            macOS
+          </div>
+          <div class="platform-tag">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
+            Windows
+          </div>
+          <div class="platform-tag">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            Outlook &amp; Gmail
+          </div>
+          <div class="platform-tag">⚡ Tauri v2 · React · Rust</div>
+        </div>
+        <div class="product-cta">
+          <a class="btn-primary" href="https://newmantech.in/eagleview.html" target="_blank">Download Free</a>
+          <a class="btn-outline" href="https://newmantech.in/eagleview.html" target="_blank">Learn More</a>
+        </div>
+      </div>
+      <div class="product-visual">
+        <div class="ev-mockup">
+          <div class="ev-header">
+            <div class="ev-header-dot"></div>
+            <div class="ev-header-title">EAGLE VIEW</div>
+          </div>
+          <div class="ev-row"><span class="ev-row-label">✉ Mails</span><span class="ev-row-badge">12</span></div>
+          <div class="ev-row"><span class="ev-row-label">📋 To Do</span><span class="ev-row-badge">3</span></div>
+          <div class="ev-row"><span class="ev-row-label">📅 Meetings</span><span class="ev-row-badge">2</span></div>
+          <div class="ev-row"><span class="ev-row-label">🔔 Incidents</span><span class="ev-row-badge">5</span></div>
+          <div class="ev-row"><span class="ev-row-label">📊 Jira</span><span class="ev-row-badge">4</span></div>
+          <div class="ev-row"><span class="ev-row-label">⚡ Azure</span><span class="ev-row-badge">5</span></div>
+          <div class="ev-row"><span class="ev-row-label">🕐 World Clock</span><span class="ev-row-badge" style="color:#4DD4C8">09:41</span></div>
+          <div class="ev-footer">
+            <div class="ev-footer-dot"></div>
+            <div class="ev-footer-text">Updated 09:41 AM</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- TEAM -->
-<section id="team-sw">
-  <div class="sec">
-    <div class="sec-tag pink rv">// The Team</div>
-    <h2 class="sec-h2 pink rv d1">THE CREW.</h2>
-    <div class="team-g">
-      <div class="nc p tc rv d1"><div class="av av1">P</div><div class="tc-n">Priya Sharma</div><div class="tc-r">Co-Founder · CEO</div><div class="tc-b">10+ years enterprise software &amp; product strategy.</div></div>
-      <div class="nc c tc rv d2"><div class="av av2">D</div><div class="tc-n">Divya Krishnan</div><div class="tc-r">Co-Founder · COO</div><div class="tc-b">Operations expert turning great ideas into reality.</div></div>
-      <div class="nc g tc rv d3"><div class="av av3">P</div><div class="tc-n">Praveen Kumar</div><div class="tc-r">Lead Developer</div><div class="tc-b">Built Eagle View end-to-end. Rust, React, Tauri v2.</div></div>
-      <div class="nc p tc rv d1"><div class="av av4">R</div><div class="tc-n">Dr. Rajesh Menon</div><div class="tc-r">Tech Advisor</div><div class="tc-b">Former CTO, 20+ years cloud architecture.</div></div>
-      <div class="nc c tc rv d2"><div class="av av5">A</div><div class="tc-n">Anitha Nair</div><div class="tc-r">Strategy Advisor</div><div class="tc-b">Serial entrepreneur, B2B ecosystem builder.</div></div>
-      <div class="nc g tc rv d3"><div class="av av6">S</div><div class="tc-n">Suresh Patel</div><div class="tc-r">Product Advisor</div><div class="tc-b">Shaped products used by millions.</div></div>
-      <div class="nc p tc rv d4"><div class="av av7">K</div><div class="tc-n">Dr. Kavitha Reddy</div><div class="tc-r">Marketing Advisor</div><div class="tc-b">B2B SaaS growth &amp; brand strategy.</div></div>
+<section id="team" style="background:var(--bg2)">
+  <div class="section">
+    <div class="team-intro fade-up">
+      <div class="eyebrow">Our Team</div>
+      <h2 class="section-h2">The People Behind <span>Newman Tech</span></h2>
+      <p class="section-lead">A small, focused team of builders, strategists, and mentors united by one goal — creating software that truly makes a difference.</p>
+    </div>
+
+    <!-- FOUNDERS -->
+    <div class="team-block fade-up">
+      <div class="team-block-label"><span>Founders</span></div>
+      <div class="founders-grid">
+        <!-- Founder 1 -->
+        <div class="team-card">
+          <div class="avatar-wrap">
+            <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" width="96" height="96">
+              <defs>
+                <clipPath id="cp1"><circle cx="48" cy="48" r="48"/></clipPath>
+                <linearGradient id="bg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#2D1B69"/><stop offset="100%" stop-color="#1A0F3D"/></linearGradient>
+                <linearGradient id="sk1" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#F9C58A"/><stop offset="100%" stop-color="#E8A060"/></linearGradient>
+              </defs>
+              <circle cx="48" cy="48" r="48" fill="url(#bg1)"/>
+              <ellipse cx="48" cy="35" rx="22" ry="24" fill="#150900" clip-path="url(#cp1)"/>
+              <ellipse cx="48" cy="46" rx="17" ry="19" fill="url(#sk1)" clip-path="url(#cp1)"/>
+              <rect x="28" y="36" width="7" height="26" rx="3" fill="#150900" clip-path="url(#cp1)"/>
+              <rect x="61" y="36" width="7" height="26" rx="3" fill="#150900" clip-path="url(#cp1)"/>
+              <circle cx="42" cy="43" r="2" fill="#3A1800"/>
+              <circle cx="54" cy="43" r="2" fill="#3A1800"/>
+              <circle cx="42.8" cy="42.2" r="0.7" fill="white"/>
+              <circle cx="54.8" cy="42.2" r="0.7" fill="white"/>
+              <path d="M 42 52 Q 48 57 54 52" stroke="#C47A3A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+              <rect x="43" y="63" width="10" height="9" rx="3" fill="url(#sk1)" clip-path="url(#cp1)"/>
+              <path d="M 10 96 Q 20 74 48 72 Q 76 74 86 96" fill="#7C5BFC" clip-path="url(#cp1)"/>
+            </svg>
+          </div>
+          <div class="member-name">Priya Sharma</div>
+          <div class="member-role">Co-Founder &amp; CEO</div>
+          <p class="member-bio">Visionary leader with 10+ years in enterprise software and product strategy. Priya drives Newman Tech's mission to make professional tools genuinely human-centred.</p>
+          <div class="member-tags">
+            <span class="tag">Strategy</span>
+            <span class="tag">Product Vision</span>
+            <span class="tag">Leadership</span>
+          </div>
+        </div>
+        <!-- Founder 2 -->
+        <div class="team-card">
+          <div class="avatar-wrap">
+            <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" width="96" height="96">
+              <defs>
+                <clipPath id="cp2"><circle cx="48" cy="48" r="48"/></clipPath>
+                <linearGradient id="bg2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0A3040"/><stop offset="100%" stop-color="#061828"/></linearGradient>
+                <linearGradient id="sk2" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#F0B88A"/><stop offset="100%" stop-color="#D8906A"/></linearGradient>
+              </defs>
+              <circle cx="48" cy="48" r="48" fill="url(#bg2)"/>
+              <path d="M 26 30 Q 28 16 48 14 Q 68 16 70 30 Q 64 20 48 20 Q 32 20 26 30 Z" fill="#1A0600" clip-path="url(#cp2)"/>
+              <ellipse cx="48" cy="36" rx="22" ry="20" fill="#1A0600" clip-path="url(#cp2)"/>
+              <ellipse cx="48" cy="46" rx="17" ry="19" fill="url(#sk2)" clip-path="url(#cp2)"/>
+              <path d="M 26 44 Q 28 62 30 66" stroke="#1A0600" stroke-width="5" fill="none" stroke-linecap="round" clip-path="url(#cp2)"/>
+              <path d="M 70 44 Q 68 62 66 66" stroke="#1A0600" stroke-width="5" fill="none" stroke-linecap="round" clip-path="url(#cp2)"/>
+              <circle cx="42" cy="43" r="2" fill="#2A1000"/>
+              <circle cx="54" cy="43" r="2" fill="#2A1000"/>
+              <circle cx="42.8" cy="42.2" r="0.7" fill="white"/>
+              <circle cx="54.8" cy="42.2" r="0.7" fill="white"/>
+              <path d="M 42 52 Q 48 57 54 52" stroke="#B86830" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+              <rect x="43" y="63" width="10" height="9" rx="3" fill="url(#sk2)" clip-path="url(#cp2)"/>
+              <path d="M 10 96 Q 20 74 48 72 Q 76 74 86 96" fill="#00C6E8" clip-path="url(#cp2)"/>
+            </svg>
+          </div>
+          <div class="member-name">Divya Krishnan</div>
+          <div class="member-role">Co-Founder &amp; COO</div>
+          <p class="member-bio">Operations expert who ensures every product ships with precision and purpose. Divya brings systematic thinking and business acumen that turns great ideas into market-ready realities.</p>
+          <div class="member-tags">
+            <span class="tag">Operations</span>
+            <span class="tag">Business Dev</span>
+            <span class="tag">GTM Strategy</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEVELOPER -->
+    <div class="team-block fade-up">
+      <div class="team-block-label"><span>Developer</span></div>
+      <div class="developer-grid">
+        <div class="team-card developer">
+          <div class="avatar-wrap">
+            <svg viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg" width="110" height="110">
+              <defs>
+                <clipPath id="cp3"><circle cx="55" cy="55" r="55"/></clipPath>
+                <linearGradient id="bg3" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0D2848"/><stop offset="100%" stop-color="#061428"/></linearGradient>
+                <linearGradient id="sk3" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#E8A070"/><stop offset="100%" stop-color="#C87848"/></linearGradient>
+              </defs>
+              <circle cx="55" cy="55" r="55" fill="url(#bg3)"/>
+              <ellipse cx="55" cy="38" rx="20" ry="16" fill="#180C00" clip-path="url(#cp3)"/>
+              <rect x="35" y="32" width="40" height="12" rx="6" fill="#180C00" clip-path="url(#cp3)"/>
+              <ellipse cx="55" cy="52" rx="18" ry="20" fill="url(#sk3)" clip-path="url(#cp3)"/>
+              <circle cx="48" cy="49" r="2.2" fill="#2A1200"/>
+              <circle cx="62" cy="49" r="2.2" fill="#2A1200"/>
+              <circle cx="48.9" cy="48.2" r="0.8" fill="white"/>
+              <circle cx="62.9" cy="48.2" r="0.8" fill="white"/>
+              <ellipse cx="55" cy="58" rx="3" ry="1.5" fill="rgba(0,0,0,0.12)"/>
+              <path d="M 48 62 Q 55 68 62 62" stroke="#A05828" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+              <rect x="49" y="70" width="12" height="10" rx="4" fill="url(#sk3)" clip-path="url(#cp3)"/>
+              <path d="M 10 110 Q 22 84 55 82 Q 88 84 100 110" fill="#1E3A8A" clip-path="url(#cp3)"/>
+            </svg>
+          </div>
+          <div class="member-name">Manoj Kumar</div>
+          <div class="member-role">Lead Developer &amp; Architect</div>
+          <p class="member-bio">Full-stack engineer who built Eagle View from the ground up using Tauri v2, React, and Rust. Manoj architects every layer of the product — from the Rust backend to the pixel-perfect React UI — with a relentless focus on performance and reliability.</p>
+          <div class="member-tags">
+            <span class="tag">Tauri v2</span>
+            <span class="tag">React</span>
+            <span class="tag">Rust</span>
+            <span class="tag">macOS &amp; Windows</span>
+            <span class="tag">Microsoft Graph API</span>
+            <span class="tag">Gmail API</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MENTORS -->
+    <div class="team-block fade-up">
+      <div class="team-block-label"><span>Mentors</span></div>
+      <div class="mentors-grid">
+        <!-- Mentor 1 -->
+        <div class="team-card mentor-card">
+          <div class="avatar-wrap">
+            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" width="80" height="80">
+              <defs>
+                <clipPath id="cp4"><circle cx="40" cy="40" r="40"/></clipPath>
+                <linearGradient id="bg4" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1A2A3A"/><stop offset="100%" stop-color="#0A1520"/></linearGradient>
+                <linearGradient id="sk4" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#D4905A"/><stop offset="100%" stop-color="#B87040"/></linearGradient>
+              </defs>
+              <circle cx="40" cy="40" r="40" fill="url(#bg4)"/>
+              <ellipse cx="40" cy="27" rx="15" ry="12" fill="#8A8A8A" clip-path="url(#cp4)"/>
+              <rect x="25" y="24" width="30" height="8" rx="4" fill="#8A8A8A" clip-path="url(#cp4)"/>
+              <ellipse cx="40" cy="36" rx="13" ry="14" fill="url(#sk4)" clip-path="url(#cp4)"/>
+              <rect x="29" y="30" width="22" height="3" rx="1.5" fill="rgba(200,200,200,0.4)" clip-path="url(#cp4)"/>
+              <circle cx="35" cy="33.5" r="1.5" fill="#2A1800"/>
+              <circle cx="45" cy="33.5" r="1.5" fill="#2A1800"/>
+              <path d="M 35 40 Q 40 44 45 40" stroke="#904020" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+              <rect x="35" y="49" width="10" height="7" rx="2" fill="url(#sk4)" clip-path="url(#cp4)"/>
+              <path d="M 5 80 Q 14 62 40 60 Q 66 62 75 80" fill="#1E3A5F" clip-path="url(#cp4)"/>
+            </svg>
+          </div>
+          <div class="member-name">Praveen Kumar Mahesh</div>
+          <div class="member-role">Lead Architect</div>
+          <p class="member-bio">Former CTO with 20+ years shaping enterprise software platforms.</p>
+          <div class="member-tags"><span class="tag">CTO</span><span class="tag">Enterprise</span></div>
+        </div>
+        <!-- Mentor 2 -->
+        <div class="team-card mentor-card">
+          <div class="avatar-wrap">
+            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" width="80" height="80">
+              <defs>
+                <clipPath id="cp5"><circle cx="40" cy="40" r="40"/></clipPath>
+                <linearGradient id="bg5" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3A1828"/><stop offset="100%" stop-color="#1E0A14"/></linearGradient>
+                <linearGradient id="sk5" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#F5C090"/><stop offset="100%" stop-color="#E09868"/></linearGradient>
+              </defs>
+              <circle cx="40" cy="40" r="40" fill="url(#bg5)"/>
+              <ellipse cx="40" cy="22" rx="12" ry="10" fill="#180800" clip-path="url(#cp5)"/>
+              <rect x="28" y="18" width="24" height="8" rx="4" fill="#180800" clip-path="url(#cp5)"/>
+              <path d="M 30 18 Q 40 10 50 18" stroke="#180800" stroke-width="5" fill="none" clip-path="url(#cp5)"/>
+              <ellipse cx="40" cy="35" rx="12" ry="14" fill="url(#sk5)" clip-path="url(#cp5)"/>
+              <circle cx="36" cy="32" r="1.5" fill="#2A1000"/>
+              <circle cx="44" cy="32" r="1.5" fill="#2A1000"/>
+              <circle cx="36.7" cy="31.3" r="0.6" fill="white"/>
+              <circle cx="44.7" cy="31.3" r="0.6" fill="white"/>
+              <path d="M 35 39 Q 40 43 45 39" stroke="#B06030" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+              <rect x="35" y="47" width="10" height="7" rx="2" fill="url(#sk5)" clip-path="url(#cp5)"/>
+              <path d="M 5 80 Q 14 62 40 60 Q 66 62 75 80" fill="#D04A40" clip-path="url(#cp5)"/>
+            </svg>
+          </div>
+          <div class="member-name">Anitha Nair</div>
+          <div class="member-role">Business Strategy</div>
+          <p class="member-bio">Serial entrepreneur and startup builder who has scaled multiple B2B ventures.</p>
+          <div class="member-tags"><span class="tag">Startups</span><span class="tag">B2B</span></div>
+        </div>
+        <!-- Mentor 3 -->
+        <div class="team-card mentor-card">
+          <div class="avatar-wrap">
+            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" width="80" height="80">
+              <defs>
+                <clipPath id="cp6"><circle cx="40" cy="40" r="40"/></clipPath>
+                <linearGradient id="bg6" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0A2A18"/><stop offset="100%" stop-color="#05140C"/></linearGradient>
+                <linearGradient id="sk6" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#D8B888"/><stop offset="100%" stop-color="#C09860"/></linearGradient>
+              </defs>
+              <circle cx="40" cy="40" r="40" fill="url(#bg6)"/>
+              <ellipse cx="40" cy="26" rx="16" ry="14" fill="#3A2800" clip-path="url(#cp6)"/>
+              <path d="M 24 28 Q 24 16 40 14 Q 56 16 56 28 Q 52 20 40 20 Q 28 20 24 28Z" fill="#3A2800" clip-path="url(#cp6)"/>
+              <ellipse cx="40" cy="36" rx="13" ry="14" fill="url(#sk6)" clip-path="url(#cp6)"/>
+              <circle cx="36" cy="33" r="1.5" fill="#2A1800"/>
+              <circle cx="44" cy="33" r="1.5" fill="#2A1800"/>
+              <circle cx="36.7" cy="32.3" r="0.6" fill="white"/>
+              <circle cx="44.7" cy="32.3" r="0.6" fill="white"/>
+              <path d="M 35 40 Q 40 44 45 40" stroke="#906030" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+              <rect x="35" y="48" width="10" height="7" rx="2" fill="url(#sk6)" clip-path="url(#cp6)"/>
+              <path d="M 5 80 Q 14 62 40 60 Q 66 62 75 80" fill="#166534" clip-path="url(#cp6)"/>
+            </svg>
+          </div>
+          <div class="member-name">Suresh Patel</div>
+          <div class="member-role">Product &amp; Design</div>
+          <p class="member-bio">Product leader who has shaped digital experiences used by millions of professionals.</p>
+          <div class="member-tags"><span class="tag">Product</span><span class="tag">UX</span></div>
+        </div>
+        <!-- Mentor 4 -->
+        <div class="team-card mentor-card">
+          <div class="avatar-wrap">
+            <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" width="80" height="80">
+              <defs>
+                <clipPath id="cp7"><circle cx="40" cy="40" r="40"/></clipPath>
+                <linearGradient id="bg7" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3A2200"/><stop offset="100%" stop-color="#1E1000"/></linearGradient>
+                <linearGradient id="sk7" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#9A6840"/><stop offset="100%" stop-color="#7A4820"/></linearGradient>
+              </defs>
+              <circle cx="40" cy="40" r="40" fill="url(#bg7)"/>
+              <ellipse cx="40" cy="25" rx="14" ry="20" fill="#0A0400" clip-path="url(#cp6)"/>
+              <ellipse cx="40" cy="36" rx="13" ry="14" fill="url(#sk7)" clip-path="url(#cp7)"/>
+              <rect x="26" y="24" width="7" height="22" rx="3" fill="#0A0400" clip-path="url(#cp7)"/>
+              <rect x="47" y="24" width="7" height="22" rx="3" fill="#0A0400" clip-path="url(#cp7)"/>
+              <ellipse cx="40" cy="20" rx="14" ry="10" fill="#0A0400" clip-path="url(#cp7)"/>
+              <circle cx="36" cy="33" r="1.5" fill="#1A0800"/>
+              <circle cx="44" cy="33" r="1.5" fill="#1A0800"/>
+              <circle cx="36.7" cy="32.3" r="0.6" fill="white"/>
+              <circle cx="44.7" cy="32.3" r="0.6" fill="white"/>
+              <path d="M 35 40 Q 40 44 45 40" stroke="#6A3810" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+              <rect x="35" y="48" width="10" height="7" rx="2" fill="url(#sk7)" clip-path="url(#cp7)"/>
+              <path d="M 5 80 Q 14 62 40 60 Q 66 62 75 80" fill="#C88800" clip-path="url(#cp7)"/>
+            </svg>
+          </div>
+          <div class="member-name">Dr. Kavitha Reddy</div>
+          <div class="member-role">Marketing &amp; Growth</div>
+          <p class="member-bio">Marketing strategist specialising in B2B SaaS growth and corporate brand building.</p>
+          <div class="member-tags"><span class="tag">Growth</span><span class="tag">B2B SaaS</span></div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
-<div class="neon-divider"></div>
-
 <!-- CONTACT -->
-<section id="ct-sw">
-  <div class="sec">
-    <div class="sec-tag cyan rv">// Contact</div>
-    <div class="ct-g">
-      <div>
-        <h2 class="ct-h rv">LET'S CONNECT.</h2>
-        <p class="ct-sub rv d1">Evaluating Eagle View for your team, exploring a partnership, or just saying hello — we're ready.</p>
-        <div class="ct-lks rv d2">
-          <a class="ct-lk" href="mailto:hello@newmantech.in">✉ hello@newmantech.in</a>
-          <span class="ct-lk">⬡ newmantech.in/eagleview</span>
-          <a class="ct-lk" href="https://github.com/manoj-mkn" target="_blank">◆ github.com/manoj-mkn</a>
+<section id="contact">
+  <div class="section">
+    <div class="fade-up">
+      <div class="eyebrow">Get In Touch</div>
+      <h2 class="section-h2">Let's Build Something <span>Together</span></h2>
+      <p class="section-lead">Whether you're interested in Eagle View, want to partner with us, or just want to say hello — we'd love to hear from you.</p>
+    </div>
+    <div class="contact-inner fade-up">
+      <div class="contact-info">
+        <p>Newman Tech is based in India and serves professionals worldwide. We're always open to conversations about our products, potential partnerships, and how we can help your team work better.</p>
+        <div class="contact-links">
+          <a class="contact-link" href="mailto:hello@newmantech.in">
+            <div class="contact-link-icon"><svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg></div>
+            <div><div class="contact-link-label">Email</div><div class="contact-link-value">hello@newmantech.in</div></div>
+          </a>
+          <a class="contact-link" href="https://newmantech.in" target="_blank">
+            <div class="contact-link-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></div>
+            <div><div class="contact-link-label">Website</div><div class="contact-link-value">newmantech.in</div></div>
+          </a>
+          <a class="contact-link" href="https://github.com/manoj-mkn/eagleview-site" target="_blank">
+            <div class="contact-link-icon"><svg viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></div>
+            <div><div class="contact-link-label">GitHub</div><div class="contact-link-value">github.com/manoj-mkn</div></div>
+          </a>
         </div>
       </div>
-      <form class="cf rv d1" onsubmit="fs(event)">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-          <div><label class="fl">Name</label><input class="fi" type="text" placeholder="Your name" required></div>
-          <div><label class="fl">Email</label><input class="fi" type="email" placeholder="you@email.com" required></div>
+      <form class="contact-form" onsubmit="handleForm(event)">
+        <div class="form-group">
+          <label class="form-label">Your Name</label>
+          <input class="form-input" type="text" placeholder="Rajesh Kumar" required/>
         </div>
-        <div><label class="fl">Message</label><textarea class="fta" placeholder="Your message..." required></textarea></div>
-        <button type="submit" class="f-btn" id="fb">▶ SEND TRANSMISSION</button>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input class="form-input" type="email" placeholder="rajesh@company.com" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Subject</label>
+          <input class="form-input" type="text" placeholder="Eagle View licensing / Partnership / Other"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Message</label>
+          <textarea class="form-textarea" placeholder="Tell us how we can help…" required></textarea>
+        </div>
+        <button type="submit" class="btn-submit" id="submit-btn">Send Message →</button>
       </form>
     </div>
   </div>
 </section>
 
+<!-- FOOTER -->
 <footer>
-  <span class="ft-b">Newman Technologies</span>
-  <span class="ft-c">© 2026 · INDIA · ALL RIGHTS RESERVED</span>
-  <div class="ft-ls"><a href="/privacy.html">Privacy</a><span>Download</span></div>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <a class="nav-logo" href="#hero" style="display:inline-flex;margin-bottom:4px">
+          <div class="nav-logo-mark"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:white"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div>
+          <span class="nav-logo-text" style="margin-left:10px">Newman<span>Tech</span></span>
+        </a>
+        <p>Building intelligent desktop software for modern professionals. Based in India, serving the world.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Product</div>
+        <div class="footer-links">
+          <a href="#products">Eagle View</a>
+          <a href="https://newmantech.in/eagleview.html" target="_blank">Download</a>
+          <a href="https://newmantech.in/#download" target="_blank">Release Notes</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Company</div>
+        <div class="footer-links">
+          <a href="#about">About Us</a>
+          <a href="#team">Our Team</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Legal</div>
+        <div class="footer-links">
+          <a href="https://newmantech.in/privacy.html" target="_blank">Privacy Policy</a>
+          <a href="#contact">Terms of Use</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 Newman Tech · All rights reserved · Made with ♥ in India</div>
+      <div class="footer-social">
+        <a class="social-btn" href="https://github.com/manoj-mkn/eagleview-site" target="_blank" title="GitHub">
+          <svg viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        </a>
+        <a class="social-btn" href="mailto:hello@newmantech.in" title="Email">
+          <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
 </footer>
 
 <script>
-// RETRO GRID ANIMATION
-(function(){
-  var c=document.getElementById('grid');
-  if(!c)return;
-  var ctx=c.getContext('2d');
-  var off=0;
-  function resize(){c.width=window.innerWidth;c.height=c.offsetHeight;}
-  resize();
-  window.addEventListener('resize',resize);
-  function draw(){
-    ctx.clearRect(0,0,c.width,c.height);
-    var W=c.width,H=c.height;
-    var vpx=W/2,vpy=0;
-    ctx.strokeStyle='rgba(0,255,255,0.55)';
-    ctx.lineWidth=0.8;
-    var nH=18;
-    for(var i=0;i<=nH;i++){
-      var t=((i/nH)+off/nH)%1;
-      var y=H*Math.pow(t,2);
-      var alpha=Math.pow(t,0.5)*0.7;
-      ctx.globalAlpha=alpha;
-      ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();
+/* ── Canvas hero background ── */
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+const orbs = [
+  {x:0.2,y:0.35,vx:0.00018,vy:0.00013,r:0.55,c1:'rgba(0,198,232,0.13)',c2:'rgba(0,198,232,0)'},
+  {x:0.78,y:0.55,vx:-0.00015,vy:0.00018,r:0.50,c1:'rgba(124,91,252,0.10)',c2:'rgba(124,91,252,0)'},
+  {x:0.45,y:0.85,vx:0.00020,vy:-0.00016,r:0.40,c1:'rgba(0,198,232,0.07)',c2:'rgba(0,198,232,0)'},
+];
+function drawBg(){
+  const W=canvas.offsetWidth, H=canvas.offsetHeight;
+  if(canvas.width!==W||canvas.height!==H){canvas.width=W;canvas.height=H}
+  ctx.clearRect(0,0,W,H);
+  orbs.forEach(o=>{
+    o.x+=o.vx; o.y+=o.vy;
+    if(o.x<-0.1||o.x>1.1)o.vx*=-1;
+    if(o.y<-0.1||o.y>1.1)o.vy*=-1;
+    const g=ctx.createRadialGradient(o.x*W,o.y*H,0,o.x*W,o.y*H,o.r*Math.min(W,H));
+    g.addColorStop(0,o.c1); g.addColorStop(1,o.c2);
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  });
+  requestAnimationFrame(drawBg);
+}
+drawBg();
+
+/* ── Theme toggle ── */
+function toggleTheme(){
+  const r=document.documentElement;
+  const cur=r.getAttribute('data-theme')||'dark';
+  r.setAttribute('data-theme',cur==='dark'?'light':'dark');
+}
+
+/* ── Mobile menu ── */
+function toggleMenu(){
+  const nl=document.querySelector('.nav-links');
+  if(!nl)return;
+  const open=nl.style.display==='flex';
+  nl.style.cssText=open?'':'display:flex;flex-direction:column;position:fixed;top:64px;left:0;right:0;background:var(--bg2);padding:20px 32px 28px;gap:20px;border-bottom:1px solid rgba(255,255,255,0.07);z-index:99';
+}
+
+/* ── Scroll fade-in ── */
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}});
+},{threshold:0.12});
+document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
+
+/* ── Contact form ── */
+function handleForm(e){
+  e.preventDefault();
+  const btn=document.getElementById('submit-btn');
+  btn.textContent='Message Sent ✓';
+  btn.style.background='#16a34a';
+  setTimeout(()=>{btn.textContent='Send Message →';btn.style.background='';e.target.reset()},3000);
+}
+
+/* ── Nav highlight on scroll ── */
+const sections=document.querySelectorAll('section[id],#hero');
+const navAs=document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll',()=>{
+  const sy=window.scrollY+80;
+  sections.forEach(s=>{
+    if(sy>=s.offsetTop&&sy<s.offsetTop+s.offsetHeight){
+      navAs.forEach(a=>{
+        a.style.color=a.getAttribute('href')==='#'+s.id?'var(--accent)':'';
+      });
     }
-    var nV=24;
-    ctx.globalAlpha=0.45;
-    for(var i=0;i<=nV;i++){
-      var bx=(i/nV)*W;
-      ctx.beginPath();ctx.moveTo(vpx,vpy);ctx.lineTo(bx,H);ctx.stroke();
-    }
-    ctx.globalAlpha=1;
-    off=(off+0.015)%1;
-    requestAnimationFrame(draw);
-  }
-  draw();
-})();
-
-// CLOCK
-function tick(){var n=new Date(),p=x=>String(x).padStart(2,'0');var el=document.getElementById('mclk');if(el)el.textContent=p(n.getHours())+':'+p(n.getMinutes());}
-setInterval(tick,1000);tick();
-
-// REVEAL on scroll
-var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});},{threshold:.1});
-document.querySelectorAll('.rv').forEach(function(el){io.observe(el);});
-
-// CONTACT FORM
-function fs(e){e.preventDefault();var b=document.getElementById('fb');b.textContent='▶ TRANSMISSION SENT ✓';b.style.borderColor='rgba(0,255,255,.7)';b.style.color='#00FFFF';setTimeout(()=>{b.textContent='▶ SEND TRANSMISSION';b.style.borderColor='';b.style.color='';e.target.reset();},3000);}
+  });
+},{passive:true});
 </script>
 </body>
 </html>
