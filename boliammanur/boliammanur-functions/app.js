@@ -94,16 +94,68 @@ syncSheetFilterCardCollapse();
 const sheetFilterCard = document.querySelector(".pills-inline");
 if (sheetFilterCard) new MutationObserver(syncSheetFilterCardCollapse).observe(sheetFilterCard, { childList: true, subtree: true, characterData: true });
 
+// #year-pills/#function-pills and #sheet-title's own text span all use
+// nowrap + horizontal scroll once compact (style.css) so their content
+// never wraps mid-line — but that means an overflowing one's tail end
+// gets sliced off flat at the card's edge instead of ending cleanly.
+// has-overflow toggles a CSS mask (style.css) that fades that edge into a
+// "more content, scroll for it" cue instead — only applied when there's
+// actually something to scroll to, so one that already fits (most year
+// lists, most function names) is left untouched.
+function syncPillRowOverflow() {
+  document.querySelectorAll(".sheet-filter-card .pill-row, .sheet-title-inner > span").forEach((row) => {
+    row.classList.toggle("has-overflow", row.scrollWidth > row.clientWidth + 1);
+  });
+}
+window.addEventListener("resize", syncPillRowOverflow);
+window.addEventListener("load", syncPillRowOverflow);
+if (document.fonts) document.fonts.ready.then(syncPillRowOverflow);
+syncPillRowOverflow();
+if (sheetFilterCard) new MutationObserver(syncPillRowOverflow).observe(sheetFilterCard, { childList: true, subtree: true, characterData: true });
+// nowrap only applies once body.is-scrolled (style.css) — a row that
+// fits fine while wrapped in the expanded state can still overflow once
+// switched to nowrap, so this needs re-checking on every is-scrolled
+// toggle too, not just on load/resize/content-change.
+new MutationObserver(syncPillRowOverflow).observe(document.body, { attributes: true, attributeFilter: ["class"] });
+
 // Same transform:scale() + margin-collapse technique as
 // syncSheetFilterCardCollapse above, for #sheet-title (the function
 // name/year heading + உறுப்பினர்கள் toggle button). SCALE here must match
 // body.is-scrolled #sheet-title's scale() in style.css.
 const SHEET_TITLE_COMPACT_SCALE = 0.7;
 function syncSheetTitleCollapse() {
-  const title = document.getElementById("sheet-title");
-  if (!title) return;
-  const collapse = -(title.offsetHeight * (1 - SHEET_TITLE_COMPACT_SCALE));
-  document.documentElement.style.setProperty("--sheet-title-margin-collapse", collapse + "px");
+  // Deferred one frame: .sheet-title-inner's width is calc(100%/0.7) of
+  // #sheet-title (style.css), and right when this runs off the
+  // updateSheetTitle() MutationObserver — synchronously, in the same
+  // microtask as the innerHTML change that triggered it — that percentage
+  // can still resolve against a not-yet-settled layout, measuring a
+  // taller-than-real offsetHeight (confirmed directly: called once inline
+  // it read 90px/-27px margin-collapse for a title that actually renders
+  // at 44px/-13.2px once layout has genuinely settled, calling it again
+  // moments later). Waiting a frame lets the browser finish laying out
+  // the new content before measuring it, same fix in spirit as the
+  // is-scrolled toggle immediately below being synchronous.
+  requestAnimationFrame(() => {
+    const title = document.getElementById("sheet-title");
+    if (!title) return;
+    // Must measure the SCROLLED-state layout height here, not the rest
+    // state's — this formula assumes scrolled is just a scaled-down copy
+    // of rest's own layout, which broke once body.is-scrolled #sheet-title
+    // (style.css) got its own flex-wrap:nowrap: rest can wrap to 2+ lines
+    // for a long function name, but scrolled is always forced to exactly
+    // one line, a structurally different (usually much shorter) box, not a
+    // simple 0.7x scale of the multi-line one. Using rest's height there
+    // over-subtracted the margin and pulled the table header up over the
+    // title. Toggling is-scrolled here (synchronously, no repaint happens
+    // between the two calls) measures the real scrolled-state height
+    // directly instead of assuming the ratio.
+    const wasScrolled = document.body.classList.contains("is-scrolled");
+    if (!wasScrolled) document.body.classList.add("is-scrolled");
+    const scrolledHeight = title.offsetHeight;
+    if (!wasScrolled) document.body.classList.remove("is-scrolled");
+    const collapse = -(scrolledHeight * (1 - SHEET_TITLE_COMPACT_SCALE));
+    document.documentElement.style.setProperty("--sheet-title-margin-collapse", collapse + "px");
+  });
 }
 window.addEventListener("resize", syncSheetTitleCollapse);
 window.addEventListener("load", syncSheetTitleCollapse);
@@ -114,6 +166,21 @@ syncSheetTitleCollapse();
 // year/function — same re-measure-on-content-change need as the pills card.
 const sheetTitleEl = document.getElementById("sheet-title");
 if (sheetTitleEl) new MutationObserver(syncSheetTitleCollapse).observe(sheetTitleEl, { childList: true, subtree: true, characterData: true });
+// Belt-and-suspenders on top of the MutationObserver+rAF above: measured
+// directly (not just theorized) that the very first post-mutation
+// measurement can still land on a transient, too-tall value that never
+// self-corrects on its own afterward — confirmed by re-calling
+// syncSheetTitleCollapse() manually well after the fact and getting a
+// smaller, stable number instead. Rather than chase the exact async cause
+// (font shaping/metrics finishing late is the leading suspect, but
+// document.fonts.ready is already wired above and didn't catch it),
+// ResizeObserver reacts to the actual outcome — #sheet-title's real
+// rendered size changing, whatever the reason — so it self-corrects
+// whenever that settles, instead of gambling on one specific timing hook
+// being the right one. margin-bottom (what this writes) doesn't affect
+// #sheet-title's own border-box size, so this can't retrigger itself.
+if (sheetTitleEl) new ResizeObserver(syncSheetTitleCollapse).observe(sheetTitleEl);
+if (sheetTitleEl) new MutationObserver(syncPillRowOverflow).observe(sheetTitleEl, { childList: true, subtree: true, characterData: true });
 
 // HEART LOGIC — do not change without asking (scrollY-based shrink +
 // wheel-delta-gated expand + a post-expand grace period + a re-armable
@@ -354,7 +421,12 @@ function renderFunctionPills() {
 function updateSheetTitle() {
   const f = functionsList.find((f) => f.id === selectedFunctionId);
   const title = f ? `${f.name} (${f.year})` : "Ledger Sheet";
-  $("sheet-title").innerHTML = `<span>${escapeHtml(title)}</span> <button type="button" id="toggle-members-btn" class="members-toggle active">உறுப்பினர்கள் - ${peopleForCurrentFunction().length}</button>`;
+  // Sets .sheet-title-inner's content, not #sheet-title's own — #sheet-
+  // title itself is a fixed, permanent outer box (style.css) that always
+  // exactly matches the spreadsheet's width, so its left edge never
+  // drifts; .sheet-title-inner is the part that actually scales/shrinks
+  // once compact.
+  $("sheet-title").querySelector(".sheet-title-inner").innerHTML = `<span>${escapeHtml(title)}</span> <button type="button" id="toggle-members-btn" class="members-toggle active">உறுப்பினர்கள் - ${peopleForCurrentFunction().length}</button>`;
   $("sheet-tbody-wrap").classList.remove("hidden");
   $("sheet-thead-wrap").classList.remove("hidden");
 }
@@ -494,7 +566,7 @@ function renderSheet() {
   const nameQ = $("filter-name").value.trim().toLowerCase();
   const nameEnQ = $("filter-name-en").value.trim().toLowerCase();
   const mobileQ = $("filter-mobile").value.trim().replace(/\s+/g, "").toLowerCase();
-  const santhaQ = $("filter-santha").value.trim();
+  const santhaQ = $("filter-santha").value;
   const asalQ = $("filter-asal").value.trim();
   const vattiQ = $("filter-vatti").value.trim();
   const thogaiQ = $("filter-thogai").value.trim();
@@ -506,7 +578,8 @@ function renderSheet() {
     if (nameQ && !(p.name || "").toLowerCase().includes(nameQ)) return false;
     if (nameEnQ && !(p.name_en || "").toLowerCase().includes(nameEnQ)) return false;
     if (mobileQ && !formatMobile(p.mobile).replace(/\s+/g, "").toLowerCase().includes(mobileQ)) return false;
-    if (santhaQ && !String(Number(e.santha)).includes(santhaQ)) return false;
+    if (santhaQ === "paid" && !e.santha_checked) return false;
+    if (santhaQ === "unpaid" && e.santha_checked) return false;
     if (asalQ && !String(Number(e.asal)).includes(asalQ)) return false;
     if (vattiQ && !String(Number(e.vatti)).includes(vattiQ)) return false;
     if (thogaiQ && !String(Number(e.thogai)).includes(thogaiQ)) return false;
@@ -566,7 +639,12 @@ function updateTotalsBanner(rows) {
 // Positions each totals-col exactly on top of its real table column by
 // measuring the actual rendered header cells, rather than guessing matching
 // CSS percentages (which drift out of sync whenever the table's own column
-// widths change).
+// widths change). The போளியம்மனூர் உறுப்பினர்கள் link button gets the same
+// treatment, pinned to the S.No. column's actual left edge instead of a
+// fixed screen-relative 16px — by explicit request, it should track the
+// spreadsheet's own left edge as the user scrolls it horizontally
+// (.sheet-tbody-wrap's own overflow-x:auto), not stay glued to the
+// viewport's edge regardless of scroll position.
 function alignTotalsBanner() {
   const headerRow = document.querySelector("table.sheet thead tr:first-child");
   if (!headerRow) return;
@@ -578,6 +656,11 @@ function alignTotalsBanner() {
     col.style.left = rect.left + "px";
     col.style.width = rect.width + "px";
   });
+  const linkBtn = document.querySelector(".totals-banner .header-link-btn");
+  const firstTh = ths[0];
+  if (linkBtn && firstTh) {
+    linkBtn.style.left = firstTh.getBoundingClientRect().left + "px";
+  }
 }
 window.addEventListener("resize", alignTotalsBanner);
 // #sheet-thead-wrap itself doesn't scroll horizontally (overflow:hidden —

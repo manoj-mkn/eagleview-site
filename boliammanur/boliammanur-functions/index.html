@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>போளியம்மனூர் திருப்பணி சங்கம்</title>
-<link rel="stylesheet" href="style.css?v=20260812b" />
+<link rel="stylesheet" href="style.css?v=20260812c" />
 </head>
 <body>
 
@@ -25,7 +25,7 @@
 <div id="app" class="hidden">
   <div class="sticky-top-stack">
     <header>
-      <h1><img src="logo-emblem-only.png" alt="" class="header-logo-main" />போளியம்மனூர் திருப்பணி சங்கம்</h1>
+      <h1><span class="header-logo-container"><img src="logo-emblem-only.png" alt="" class="header-logo-main" /></span><span class="header-title-text">போளியம்மனூர் திருப்பணி சங்கம்</span></h1>
     </header>
 
     <div class="sticky-top-inner">
@@ -44,7 +44,7 @@
         <p class="status" id="sheet-status"></p>
       </section>
 
-      <h2 id="sheet-title">Ledger Sheet</h2>
+      <h2 id="sheet-title"><span class="sheet-title-inner">Ledger Sheet</span></h2>
 
       <div class="sheet-thead-wrap" id="sheet-thead-wrap">
         <table class="sheet wide">
@@ -55,7 +55,14 @@
               <td><input type="text" id="filter-name" class="filter-input" placeholder="Filter" /></td>
               <td><input type="text" id="filter-name-en" class="filter-input" placeholder="Filter" /></td>
               <td><input type="text" id="filter-mobile" class="filter-input" placeholder="Filter" /></td>
-              <td><input type="text" id="filter-santha" class="filter-input" placeholder="Filter" /></td>
+              <td>
+                <label for="filter-santha" class="sr-only">Filter by சந்தா</label>
+                <select id="filter-santha" class="filter-input">
+                  <option value="">அனைத்தும்</option>
+                  <option value="paid">செலுத்தியவர்</option>
+                  <option value="unpaid">செலுத்தாதவர்</option>
+                </select>
+              </td>
               <td><input type="text" id="filter-asal" class="filter-input" placeholder="Filter" /></td>
               <td><input type="text" id="filter-vatti" class="filter-input" placeholder="Filter" /></td>
               <td><input type="text" id="filter-thogai" class="filter-input" placeholder="Filter" /></td>
@@ -127,6 +134,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js"></script>
 <script src="shared.js?v=20260811a"></script>
-<script src="app.js?v=20260812b"></script>
+<script src="app.js?v=20260812c"></script>
 </body>
 </html>

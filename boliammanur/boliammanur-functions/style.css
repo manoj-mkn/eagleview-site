@@ -186,6 +186,17 @@ header h1 {
    has the full name baked in), sized to fill the header banner instead of
    sitting as a small icon next to separate heading text. */
 .header-logo-main { height: 90px; width: auto; max-width: 100%; }
+/* Separate containers for the logo and title text, by explicit request —
+   each is its own flex item inside header h1 (already display:flex), so
+   they can be independently targeted/adjusted without touching the other. */
+.header-logo-container {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.header-title-text {
+  display: inline-block;
+}
 
 header p { margin: 0; color: rgba(255,255,255,0.85); font-size: 0.9rem; }
 
@@ -236,7 +247,12 @@ main {
 /* Moved out of <header> — the banner's own columns (see .totals-track) only
    start at சந்தா (col 5), so the space to their left is otherwise empty.
    Specificity here beats .header-link-btn's own mobile rule (position:static)
-   so this stays pinned to the banner's left edge at every screen width. */
+   so this stays positioned at every screen width. left:16px here is only a
+   fallback before JS's first paint — alignTotalsBanner() (app.js) sets it
+   dynamically to the S.No. column's actual on-screen left edge instead, by
+   explicit request: pinned to the SPREADSHEET's own left edge, so it moves
+   left/right in sync with .sheet-tbody-wrap's horizontal scroll rather than
+   staying glued to the viewport's edge regardless of scroll position. */
 .totals-banner .header-link-btn {
   position: absolute;
   left: 16px;
@@ -249,7 +265,7 @@ main {
 }
 
 @media (max-width: 600px) {
-  .totals-banner .header-link-btn { font-size: 0.75rem; padding: 6px 12px; left: 10px; }
+  .totals-banner .header-link-btn { font-size: 0.75rem; padding: 6px 12px; }
 }
 
 /* members.html only — its footer banner has no .totals-track (no ledger
@@ -345,20 +361,45 @@ main {
    stack's own background (var(--bg) on .sticky-top-stack) is what keeps
    scrolled-past table rows from showing through, same as the rest of the
    stack's children. */
+/* HEART LOGIC — do not change without asking (outer #sheet-title never
+   transforms/resizes; .sheet-title-inner below is the part that scales).
+   An earlier version put transform:scale() directly on #sheet-title
+   itself, sized to min(1252px,100%)/0.7 so the scaled-down result would
+   still visually fill the available width — that part worked, but it
+   also meant #sheet-title's own width no longer matched its siblings'
+   plain 1252px, so its margin:auto centering (below) computed a DIFFERENT
+   offset than .sheet-filter-card/.sheet-thead-wrap/.sheet-table-card get,
+   and the title's left edge drifted away from the spreadsheet's — visible
+   specifically on desktop once scrolled, confirmed by direct measurement
+   (margin-left computed to 0 instead of matching the siblings' ~74px,
+   because a box wider than its container can't be auto-centered normally).
+   Keeping #sheet-title itself fixed at plain width:1252px/max-width:100%,
+   identical to its siblings, guarantees its left edge is ALWAYS pixel-
+   identical to theirs, in every state, on every screen width — no
+   coincidence of matching numbers to maintain, structurally guaranteed
+   the same way .sticky-top-inner guarantees it for the others. */
 #sheet-title {
   font-size: 1.75rem;
   font-weight: 800;
   color: #c2410c;
   padding: 4px 0 4px 5px;
   margin: 12px auto 0;
-  /* Matches .sheet-filter-card/.sheet-thead-wrap/.sheet-table-card's own
-     width:1252px (see .sheet-thead-wrap's comment) — without this, this
-     row stretched to .sticky-top-inner's full ~1288px instead of the
-     table's 1252px, so the title/member-count pill could sit visibly past
-     the spreadsheet's right edge on wide screens. */
   width: 1252px;
   max-width: 100%;
   letter-spacing: -0.01em;
+  transition: margin-top 0.2s ease, margin-bottom 0.2s ease;
+}
+body.is-scrolled #sheet-title {
+  margin-top: 0;
+  margin-bottom: var(--sheet-title-margin-collapse, 0px);
+}
+/* Same transform:scale() treatment as header h1/.sheet-filter-card (see
+   their own HEART LOGIC comments) — not font-size, since this title's text
+   length varies (different function names) and could wrap, and animating
+   font-size on wrapping text causes a discrete, unsmoothable jump exactly
+   when it collapses from 2 lines to 1. SCALE here must match
+   syncSheetTitleCollapse's own constant in app.js. */
+.sheet-title-inner {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -367,23 +408,44 @@ main {
      title is left-aligned, not centered; scaling from center would shift
      its left edge sideways as it shrinks. */
   transform-origin: top left;
-  transition: transform 0.2s ease, margin-top 0.2s ease, margin-bottom 0.2s ease;
+  transition: transform 0.2s ease;
 }
-/* Same transform:scale() treatment as header h1/.sheet-filter-card (see
-   their own HEART LOGIC comments) — not font-size, since this title's text
-   length varies (different function names) and could wrap, and animating
-   font-size on wrapping text causes a discrete, unsmoothable jump exactly
-   when it collapses from 2 lines to 1. SCALE here must match
-   syncSheetTitleCollapse's own constant in app.js. */
-body.is-scrolled #sheet-title {
+body.is-scrolled .sheet-title-inner {
   transform: scale(0.7);
-  margin-top: 0;
-  margin-bottom: var(--sheet-title-margin-collapse, 0px);
-  /* padding-left here is inside the same box being scale(0.7)'d from its
-     top-left corner, so it renders 0.7x smaller than declared (see the
-     base rule's plain 5px, and this session's earlier padding-left:62px
-     case) — 5px / 0.7 keeps the visual gap at 5px in both states. */
-  padding-left: 7.14px;
+  /* transform:scale(0.7) shrinks what's RENDERED, but the box still
+     reserves its full pre-scale width in the layout — leaving real,
+     unused visual space to the right of the scaled content that the
+     overflow-x:auto scroll/fade below never accounts for (scrollWidth/
+     clientWidth are both measured in the pre-scale coordinate system,
+     unaffected by this element's own transform), so content that would
+     actually fit in that wasted space got faded/hidden instead. 100%/0.7
+     — relative to #sheet-title above, which (unlike this element) never
+     moves or resizes — makes this exactly wide enough that scaling by 0.7
+     lands the visible result flush with #sheet-title's own right edge,
+     not short of it, without disturbing #sheet-title's own position. */
+  width: calc(100% / 0.7);
+}
+/* Title+year stay on one row; the உறுப்பினர்கள் button can drop to its
+   own row below once compact if there's no room for both, by explicit
+   request — flex-wrap:wrap above is the base rule's own value, un-
+   overridden (an earlier version forced nowrap on the whole row, keeping
+   the button stuck alongside the title always). The title text itself
+   still never wraps mid-sentence — see the span rule below, which is
+   where nowrap + the horizontal swipe/scroll + fade-mask fallback live,
+   scoped to just the text instead of the whole row, for the rare case a
+   function name alone is too long for one line even with the button out
+   of the way. */
+body.is-scrolled .sheet-title-inner > span {
+  white-space: nowrap;
+  overflow-x: auto;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+body.is-scrolled .sheet-title-inner > span::-webkit-scrollbar { display: none; }
+body.is-scrolled .sheet-title-inner > span.has-overflow {
+  mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%);
 }
 
 .members-toggle {
@@ -532,8 +594,17 @@ th { color: var(--muted); font-weight: 600; }
      fixed height, the logo + long title together are wider than a phone
      viewport; header h1's flex row doesn't wrap or shrink on its own, so
      the combined content overflowed centered (bleeding off both left and
-     right edges), forcing real horizontal scroll on the whole page. */
-  .header-logo-main { height: 45px; }
+     right edges), forcing real horizontal scroll on the whole page.
+     Bumped from 45px to 75px, by explicit request — the title wraps to
+     two lines at this width, and 45px read as visibly small/undersized
+     next to that taller two-line block; this only touches the rest
+     (expand) state's mobile size, scoped by this same media query, so
+     desktop's own 90px (base rule above) is untouched. The shrunk/
+     scrolled state's mobile logo size isn't set independently — it's
+     derived from this value via body.is-scrolled header h1's own
+     transform:scale(0.6) — so it gets proportionally bigger too as a
+     side effect of this change, not a separate decision. */
+  .header-logo-main { height: 75px; }
   main { padding: 18px 12px 52px; gap: 16px; }
   .card { padding: 18px; }
   .totals-shine { font-size: 0.62rem; }
@@ -794,6 +865,31 @@ table.sheet tfoot td input:disabled { background: transparent; color: var(--mute
 
 .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 .pill-row:first-of-type { margin-top: 4px; }
+/* index.html's year/function rows, scrolled/compact state only, by
+   explicit request — expanded state keeps the plain wrap behavior above.
+   Same nowrap + horizontal swipe/scroll technique as members.html's
+   .members-filter-card .pill-row (see its own HEART LOGIC comment there
+   for the reasoning: wrapping splits a long pill onto its own line
+   unevenly on narrow screens). */
+body.is-scrolled .sheet-filter-card .pill-row {
+  flex-wrap: nowrap;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+body.is-scrolled .sheet-filter-card .pill-row::-webkit-scrollbar { display: none; }
+/* has-overflow set by syncPillRowOverflow (app.js) only when the row
+   actually has more content than fits — fades the trailing edge into a
+   "more content, scroll for it" cue instead of the last pill's rounded
+   shape getting sliced off flat at the card's edge. Scrolled state only,
+   same as the nowrap rule above — the JS sets/clears the class in both
+   states, but it's inert in the expanded state since no CSS here matches
+   without body.is-scrolled. */
+body.is-scrolled .sheet-filter-card .pill-row.has-overflow {
+  mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, black calc(100% - 28px), transparent 100%);
+}
 
 .pill {
   font: inherit;
