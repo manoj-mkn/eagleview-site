@@ -193,12 +193,23 @@ window.addEventListener(
 let freezeArmed = true;
 let freezeActive = false;
 let freezeHoldY = 0;
+// Tracks the last confirmed scroll position while genuinely un-frozen —
+// used instead of a live window.scrollY read inside beginFreeze(), since
+// a very fast/big gesture can let the compositor start an optimistic
+// scroll before our event handler even runs (see beginFreeze's own
+// comment); reading scrollY at that point would lock in the
+// already-leaked position instead of correcting back to the clean one.
+let freezeLastKnownScrollY = window.scrollY;
 const mainEl = document.querySelector("main");
 function beginFreeze() {
   if (!freezeArmed || freezeActive) return;
   freezeArmed = false;
   freezeActive = true;
-  freezeHoldY = window.scrollY;
+  freezeHoldY = freezeLastKnownScrollY;
+  // Correct any lead-in leak (see comment on freezeLastKnownScrollY above)
+  // before measuring <main>'s position, so the lock captures the clean
+  // pre-gesture layout, not a slightly-already-scrolled one.
+  if (window.scrollY !== freezeHoldY) window.scrollTo(0, freezeHoldY);
   const mainTop = mainEl.getBoundingClientRect().top;
   document.body.classList.add("is-scrolled");
   document.body.style.position = "fixed";
@@ -222,6 +233,7 @@ function beginFreeze() {
     mainEl.style.left = "";
     mainEl.style.right = "";
     window.scrollTo(0, freezeHoldY);
+    freezeLastKnownScrollY = freezeHoldY;
   }, 350);
 }
 function onWheelForFreeze(e) {
@@ -253,18 +265,19 @@ window.addEventListener("keydown", onKeyForFreeze);
 // Scrollbar-dragging fires none of the above — it's not a cancelable
 // input event, just a resulting "scroll". Catch it here: if scrollY moved
 // while still armed (nothing else caught it first), snap back to where it
-// was and begin the freeze from there instead.
-let freezeLastKnownScrollY = window.scrollY;
+// was and begin the freeze from there instead. Also keeps
+// freezeLastKnownScrollY (declared above, used by beginFreeze) current.
 window.addEventListener(
   "scroll",
   () => {
+    if (freezeActive) return;
     // Only a DOWNWARD drift counts as an uncaught scrollbar-drag needing a
     // freeze — an upward one is just as likely to be the natural scroll
     // that a wheel-over-header expand causes on its own (freezeArmed is
     // set true synchronously right before that scroll fires), and treating
     // that as a fresh down-attempt would immediately re-shrink what was
     // just expanded.
-    if (freezeArmed && !freezeActive && window.scrollY > freezeLastKnownScrollY) {
+    if (freezeArmed && window.scrollY > freezeLastKnownScrollY) {
       window.scrollTo(0, freezeLastKnownScrollY);
       beginFreeze();
     }

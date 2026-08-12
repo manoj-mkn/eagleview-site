@@ -621,22 +621,30 @@ body.is-scrolled .sheet-thead-wrap { margin-top: 0; }
   margin: 22px auto 0;
   transition: margin-top 0.2s ease, padding 0.2s ease;
 }
-body.is-scrolled .sheet-filter-card { margin-top: 0; padding: 10px 24px; }
+body.is-scrolled .sheet-filter-card { margin-top: 0; padding: 10px 0; }
 
 /* Same transform:scale() technique as .members-filter-card (see its own
    HEART LOGIC comment) — shrinks as one compositor-only unit instead of
    animating each pill's own padding/font-size — just scoped to this inner
    wrapper instead of .sheet-filter-card itself (see that rule's own
    comment for why). top left, not top center, since its content
-   (வருடம்/விழா rows) is left-aligned, not centered. */
+   (வருடம்/விழா rows) is left-aligned, not centered — EXCEPT once scrolled
+   (see body.is-scrolled override below), where the rows switch to
+   centered and the scale origin switches with them; scaling centered
+   content from a left origin would pull it visibly off-center (the right
+   side shrinks toward the left corner more than the left side does). */
 .pills-inline {
   transform-origin: top left;
   transition: transform 0.2s ease, margin-bottom 0.2s ease;
 }
 body.is-scrolled .pills-inline {
   transform: scale(0.85);
+  transform-origin: top center;
   margin-bottom: var(--sheet-filter-card-margin-collapse, 0px);
 }
+/* Rows center horizontally once compact, by explicit request — matches
+   removing .sheet-filter-card's left/right padding above. */
+body.is-scrolled .pill-line { justify-content: center; }
 /* வருடம்:/விழா: labels — dropped once compact, by explicit request; the
    pill buttons themselves already show the selected value, so the label
    is redundant once space is at a premium. */
