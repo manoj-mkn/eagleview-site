@@ -73,6 +73,10 @@ header {
      an accidental content-shift the browser needs to protect against. */
   overflow-anchor: none;
 }
+/* index.html only (.header-logo-main marks its header, same scoping
+   technique as the is-scrolled override below) — no left/right padding,
+   top/bottom 30px unchanged, by explicit request. */
+header:has(.header-logo-main) { padding-left: 0; padding-right: 0; }
 
 /* Shared by index.html and members.html — each page's own JS toggles
    body.is-scrolled once the page is scrolled a bit, shrinking the pinned
@@ -91,7 +95,7 @@ body.is-scrolled header { padding: 30px 16px; }
    scrolled than the shared 30px above, by explicit request — independent
    of the title's own height-driven shrink (h1's transform:scale() +
    negative margin-bottom above), which still applies on top of this. */
-body.is-scrolled header:has(.header-logo-main) { padding: 5px 16px; }
+body.is-scrolled header:has(.header-logo-main) { padding: 5px 0; }
 /* HEART LOGIC — do not change without asking (transform, not font-size).
    Deliberately NOT font-size here — shrinking font-size continuously changes
    how many words fit per line, and the exact moment the title's text
