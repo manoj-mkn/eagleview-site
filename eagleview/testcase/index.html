@@ -1314,12 +1314,14 @@ async function savePDFDirect(btn) {
 
       // Swap each native select for a div with identical class + selected text
       document.querySelectorAll('.meta-select').forEach(sel => {
+        const parent = sel.parentNode;
+        const next   = sel.nextSibling;
         const div = document.createElement('div');
         div.className = sel.className;
         div.style.cssText = 'display:inline-flex;align-items:center;';
         div.textContent = sel.options[sel.selectedIndex]?.text || sel.value || '';
-        sel.parentNode.replaceChild(div, sel);
-        selectReplacements.push({ div, sel });
+        parent.replaceChild(div, sel);
+        selectReplacements.push({ div, sel, parent, next });
       });
 
       if (tsEl) { tsEl.textContent = pdfTimestampText(); tsEl.style.display = 'block'; }
@@ -1341,8 +1343,12 @@ async function savePDFDirect(btn) {
       document.querySelectorAll('[data-pdf-hide]').forEach(el => {
         el.style.display = ''; delete el.dataset.pdfHide;
       });
-      selectReplacements.forEach(({ div, sel }) => {
-        if (div.parentNode) div.parentNode.replaceChild(sel, div);
+      selectReplacements.forEach(({ div, sel, parent, next }) => {
+        if (div.parentNode) {
+          div.parentNode.replaceChild(sel, div);
+        } else if (parent) {
+          parent.insertBefore(sel, next || null);
+        }
       });
       overrideStyle.remove();
     }
@@ -1359,8 +1365,8 @@ async function savePDFDirect(btn) {
     let rem = iH - pH;
     while (rem > 0) { y -= pH; pdf.addPage(); pdf.addImage(img, 'JPEG', 0, y, pW, iH); rem -= pH; }
 
-    const tester   = (document.getElementById('sel-tester').value   || 'Tester').replace(/\s+/g,'_');
-    const platform = (document.getElementById('sel-platform').value || 'Platform').replace(/\s+/g,'_');
+    const tester   = (document.getElementById('sel-tester')?.value   || 'Tester').replace(/\s+/g,'_');
+    const platform = (document.getElementById('sel-platform')?.value || 'Platform').replace(/\s+/g,'_');
     pdf.save(`EagleView_QA_v1.1.3_${platform}_${tester}.pdf`);
   } catch(e) {
     alert('PDF failed: ' + e.message);
