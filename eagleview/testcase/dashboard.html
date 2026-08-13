@@ -239,7 +239,7 @@ function getVersionRows() {
 function buildVersionTabs(rows) {
   const versions = getVersionsSorted(rows);
   const wrap = document.getElementById('version-tabs');
-  if (versions.length <= 1) { wrap.style.display = 'none'; return; }
+  if (versions.length === 0) { wrap.style.display = 'none'; return; }
   wrap.style.display = 'block';
   const tabs = versions.map(v =>
     `<button class="vtab" data-v="${esc(v)}" onclick="setVersion('${esc(v)}')">${esc(v)}</button>`
