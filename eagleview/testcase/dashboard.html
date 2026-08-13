@@ -47,7 +47,7 @@ main{max-width:1200px;margin:0 auto;padding:24px 16px 60px}
 .hdr-count{font-size:11px;font-weight:700;color:var(--text2);background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:1px 7px}
 
 /* ── TC bar rows ── */
-.tc-row{display:flex;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid var(--border)}
+.tc-row{display:flex;align-items:center;gap:10px;padding:9px 16px;border-bottom:1px solid var(--border);flex-wrap:wrap}
 .tc-row:last-child{border-bottom:none}
 .tc-row-id{font-size:10px;font-weight:700;color:var(--text2);font-family:'SF Mono',Consolas,monospace;min-width:48px;flex-shrink:0}
 .tc-bar-wrap{flex:1;height:14px;border-radius:4px;overflow:hidden;background:var(--bg3);display:flex;gap:1px}
@@ -57,6 +57,11 @@ main{max-width:1200px;margin:0 auto;padding:24px 16px 60px}
 .tc-bar-skip{background:var(--skip)}
 .tc-counts{display:flex;gap:10px;font-size:11px;font-weight:700;min-width:90px;flex-shrink:0}
 .cnt-pass{color:var(--pass)}.cnt-fail{color:var(--fail)}.cnt-skip{color:var(--skip)}
+.tc-question{display:none;width:100%;font-size:11px;color:var(--text2);line-height:1.5;padding:3px 0 4px 58px;font-style:italic}
+.questions-on .tc-question{display:block}
+.show-q-btn{margin-left:auto;padding:3px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text2);font-size:10px;font-weight:700;cursor:pointer;transition:all 0.15s;white-space:nowrap;letter-spacing:0.02em}
+.show-q-btn:hover{border-color:var(--accent);color:var(--accent)}
+.show-q-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
 
 /* ── Notes ── */
 .notes-group{border-bottom:1px solid var(--border)}
@@ -192,6 +197,9 @@ let selectedTesters = new Set();
 let currentVersion = CURRENT_VERSION;
 let userHidden = true;
 let userMap = {};
+let tcQuestions = {};
+let questionsLoaded = false;
+let questionsShown = false;
 
 function esc(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -362,6 +370,42 @@ async function loadData() {
   applyFilter();
 }
 
+async function toggleQuestions() {
+  const btn = document.getElementById('show-q-btn');
+  const section = document.getElementById('tc-results-section');
+  if (!btn || !section) return;
+
+  if (!questionsLoaded) {
+    btn.textContent = 'Loading…';
+    btn.disabled = true;
+    try {
+      const html = await fetch('https://newmantech.in/eagleview/testcase/').then(r => r.text());
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      doc.querySelectorAll('.tc[data-id]').forEach(tc => {
+        const id = tc.dataset.id;
+        const descEl = tc.querySelector('.tc-desc');
+        if (!descEl) return;
+        descEl.querySelectorAll('.note,.tc-btns').forEach(n => n.remove());
+        tcQuestions[id] = descEl.textContent.replace(/\s+/g, ' ').trim();
+      });
+      document.querySelectorAll('.tc-question[data-id]').forEach(el => {
+        el.textContent = tcQuestions[el.dataset.id] || '—';
+      });
+      questionsLoaded = true;
+    } catch(e) {
+      btn.textContent = 'Show Questions';
+      btn.disabled = false;
+      return;
+    }
+  }
+
+  questionsShown = !questionsShown;
+  section.classList.toggle('questions-on', questionsShown);
+  btn.textContent = questionsShown ? 'Hide Questions' : 'Show Questions';
+  btn.classList.toggle('active', questionsShown);
+  btn.disabled = false;
+}
+
 function renderDashboard(rows) {
   const n = rows.length;
 
@@ -416,6 +460,7 @@ function renderDashboard(rows) {
     });
     const tot = (pass + fail + skip) || 1;
     const pw = Math.round(pass/tot*100), fw = Math.round(fail/tot*100), sw = Math.round(skip/tot*100);
+    const qText = questionsLoaded ? esc(tcQuestions[id] || '—') : '';
     bars += `<div class="tc-row">
       <div class="tc-row-id">${esc(id)}</div>
       <div class="tc-bar-wrap">
@@ -428,6 +473,7 @@ function renderDashboard(rows) {
         <span class="cnt-skip">– ${skip}</span>
         <span class="cnt-fail">✗ ${fail}</span>
       </div>
+      <div class="tc-question" data-id="${esc(id)}">${qText}</div>
     </div>`;
   });
 
@@ -480,8 +526,8 @@ function renderDashboard(rows) {
   });
 
   document.getElementById('dashboard').innerHTML = stats + `
-    <div class="dash-section">
-      <div class="dash-section-hdr">TC Results <span class="hdr-count">${n} submission${n!==1?'s':''}</span></div>
+    <div class="dash-section ${questionsShown ? 'questions-on' : ''}" id="tc-results-section">
+      <div class="dash-section-hdr">TC Results <span class="hdr-count">${n} submission${n!==1?'s':''}</span><button class="show-q-btn ${questionsShown ? 'active' : ''}" id="show-q-btn" onclick="toggleQuestions()">${questionsShown ? 'Hide Questions' : 'Show Questions'}</button></div>
       ${bars}
     </div>
     <div class="dash-section">
