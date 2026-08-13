@@ -80,6 +80,14 @@ main{max-width:1200px;margin:0 auto;padding:24px 16px 60px}
 .badge-skip{background:var(--skip-bg);color:var(--skip)}
 .tester-name{font-weight:700;color:var(--text)}
 
+/* ── Version tabs ── */
+#version-tabs{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:16px;display:none}
+.vtab-label{font-size:10px;font-weight:800;color:var(--text2);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:10px}
+.vtab-row{display:flex;gap:8px;flex-wrap:wrap}
+.vtab{padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:var(--bg3);color:var(--text2);transition:all 0.15s;user-select:none}
+.vtab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.vtab:not(.active):hover{border-color:var(--accent);color:var(--accent)}
+
 /* ── Tester filter panel ── */
 #tester-panel{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:20px;display:none}
 .tp-label{font-size:10px;font-weight:800;color:var(--text2);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
@@ -157,6 +165,7 @@ main{max-width:1200px;margin:0 auto;padding:24px 16px 60px}
 <div id="pdf-timestamp"></div>
 <main>
   <div id="loading"><span class="spinner"></span>Loading QA data…</div>
+  <div id="version-tabs"></div>
   <div id="tester-panel">
     <div class="tp-label">
       Filter by Tester
@@ -178,6 +187,7 @@ const _sb = supabase.createClient(
 
 let allRows = [];
 let selectedTesters = new Set();
+let currentVersion = null;
 let userHidden = true;
 let userMap = {};
 
@@ -193,7 +203,7 @@ function maskName(name) {
 }
 function toggleUserHide() {
   userHidden = !userHidden;
-  buildTesterPanel(allRows);
+  buildTesterPanel(getVersionRows());
   applyFilter();
 }
 function toggleTheme() {
@@ -207,6 +217,49 @@ function sortTCIds(ids) {
     const nb = parseInt(b.replace(/\D/g,'')) || 0;
     return na - nb;
   });
+}
+
+function getVersionsSorted(rows) {
+  const vs = [...new Set(rows.map(r => r.version || 'Unknown'))];
+  return vs.sort((a, b) => {
+    const pa = (a.match(/\d+/g) || []).map(Number);
+    const pb = (b.match(/\d+/g) || []).map(Number);
+    for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+      const diff = (pb[i] || 0) - (pa[i] || 0);
+      if (diff !== 0) return diff;
+    }
+    return 0;
+  });
+}
+
+function getVersionRows() {
+  return currentVersion ? allRows.filter(r => r.version === currentVersion) : allRows;
+}
+
+function buildVersionTabs(rows) {
+  const versions = getVersionsSorted(rows);
+  const wrap = document.getElementById('version-tabs');
+  if (versions.length <= 1) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+  const tabs = versions.map(v =>
+    `<button class="vtab" data-v="${esc(v)}" onclick="setVersion('${esc(v)}')">${esc(v)}</button>`
+  ).join('');
+  wrap.innerHTML = `<div class="vtab-label">Version</div><div class="vtab-row">${tabs}<button class="vtab" data-v="__all__" onclick="setVersion(null)">All</button></div>`;
+}
+
+function updateVersionTabActive() {
+  document.querySelectorAll('.vtab').forEach(t => {
+    t.classList.toggle('active', currentVersion ? t.dataset.v === currentVersion : t.dataset.v === '__all__');
+  });
+  document.querySelector('.dash-version').textContent = currentVersion || 'All versions';
+}
+
+function setVersion(v) {
+  currentVersion = v;
+  updateVersionTabActive();
+  selectedTesters = new Set();
+  buildTesterPanel(getVersionRows());
+  applyFilter();
 }
 
 function buildTesterPanel(rows) {
@@ -231,7 +284,7 @@ function toggleTester(chip, name) {
   applyFilter();
 }
 function selectAll() {
-  allRows.forEach(r => selectedTesters.add(r.tester || 'Unknown'));
+  getVersionRows().forEach(r => selectedTesters.add(r.tester || 'Unknown'));
   document.querySelectorAll('.tester-chip').forEach(c => c.classList.add('active'));
   applyFilter();
 }
@@ -241,10 +294,12 @@ function selectNone() {
   applyFilter();
 }
 function applyFilter() {
-  const filtered = allRows.filter(r => selectedTesters.has(r.tester || 'Unknown'));
+  const vRows = getVersionRows();
+  const filtered = vRows.filter(r => selectedTesters.has(r.tester || 'Unknown'));
   const n = filtered.length;
+  const total = vRows.length;
   document.getElementById('dash-meta').textContent =
-    n + ' of ' + allRows.length + ' submission' + (allRows.length !== 1 ? 's' : '') + ' selected';
+    n + ' of ' + total + ' submission' + (total !== 1 ? 's' : '') + ' selected';
   if (n === 0) {
     document.getElementById('dashboard').innerHTML = '<div class="empty-msg">No submissions match the current filter.</div>';
     document.getElementById('dashboard').style.display = 'block';
@@ -278,11 +333,16 @@ async function loadData() {
   userMap = {};
   testerNames.forEach((t, i) => { userMap[t] = 'User' + (i + 1); });
 
-  buildTesterPanel(allRows);
+  buildVersionTabs(allRows);
+  const versions = getVersionsSorted(allRows);
+  currentVersion = versions.length > 0 ? versions[0] : null;
+  updateVersionTabActive();
+
+  buildTesterPanel(getVersionRows());
 
   const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   document.getElementById('dash-meta').textContent =
-    allRows.length + ' submission' + (allRows.length !== 1 ? 's' : '') + ' · Updated ' + now;
+    getVersionRows().length + ' submission' + (getVersionRows().length !== 1 ? 's' : '') + ' · Updated ' + now;
 
   if (allRows.length === 0) {
     document.getElementById('dashboard').innerHTML =
@@ -291,7 +351,7 @@ async function loadData() {
     return;
   }
 
-  renderDashboard(allRows);
+  applyFilter();
 }
 
 function renderDashboard(rows) {
