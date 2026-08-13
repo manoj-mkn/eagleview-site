@@ -1251,15 +1251,15 @@ body[data-submitted] #submit-banner{display:none!important}
 
 <script>
 function pdfTimestampText() {
-  const tester   = document.getElementById('sel-tester').value   || '—';
-  const platform = document.getElementById('sel-platform').value || '—';
-  const display  = document.getElementById('sel-display').value  || '—';
+  const tester   = document.getElementById('sel-tester')?.value   || '—';
+  const platform = document.getElementById('sel-platform')?.value || '—';
+  const display  = document.getElementById('sel-display')?.value  || '—';
   const when = new Date().toLocaleString('en-GB', {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
   return `Generated: ${when}  ·  Tester: ${tester}  ·  Platform: ${platform}  ·  Display: ${display}`;
 }
 function savePDF() {
-  const tester   = document.getElementById('sel-tester').value   || 'Unknown';
-  const platform = document.getElementById('sel-platform').value || 'Unknown';
+  const tester   = document.getElementById('sel-tester')?.value   || 'Unknown';
+  const platform = document.getElementById('sel-platform')?.value || 'Unknown';
   const ts = document.getElementById('pdf-timestamp');
   if (ts) ts.textContent = pdfTimestampText();
   const prev = document.title;
@@ -1381,9 +1381,9 @@ const BASE_KEY = 'ev-qa-v8|' + FILE_ID;
 let state = {};
 
 function getStoreKey() {
-  const t = document.getElementById('sel-tester').value;
-  const p = document.getElementById('sel-platform').value;
-  const d = document.getElementById('sel-display').value;
+  const t = document.getElementById('sel-tester')?.value;
+  const p = document.getElementById('sel-platform')?.value;
+  const d = document.getElementById('sel-display')?.value;
   if (!t || !p || !d) return null;
   return BASE_KEY + '|' + t + '|' + p + '|' + d;
 }
@@ -1423,9 +1423,9 @@ function applyCustomTester() {
 }
 
 function saveAsTestedFile(btn) {
-  const t = document.getElementById('sel-tester').value;
-  const p = document.getElementById('sel-platform').value;
-  const d = document.getElementById('sel-display').value;
+  const t = document.getElementById('sel-tester')?.value;
+  const p = document.getElementById('sel-platform')?.value;
+  const d = document.getElementById('sel-display')?.value;
   if (!t || !p || !d) return;
 
   // Unlock the form — no file download, same as feedback form
@@ -1463,8 +1463,8 @@ function onMetaChange() {
     el.classList.toggle('has-value', !!el.value && el.value !== '__custom__');
   });
   const t = sel.value;
-  const p = document.getElementById('sel-platform').value;
-  const d = document.getElementById('sel-display').value;
+  const p = document.getElementById('sel-platform')?.value;
+  const d = document.getElementById('sel-display')?.value;
   const wrap = document.getElementById('meta-badge-wrap');
   const floppy = document.getElementById('btn-floppy');
   const nudge = document.getElementById('save-nudge');
@@ -1520,7 +1520,7 @@ function tagTCsByPlatform() {
 }
 
 function applyPlatformFilter() {
-  const platform = document.getElementById('sel-platform').value;
+  const platform = document.getElementById('sel-platform')?.value;
   tagTCsByPlatform();
   document.querySelectorAll('.tc').forEach(tc => {
     const pg = tc.dataset.platformGroup || 'all';
@@ -1712,9 +1712,9 @@ function toggleAllSections() {
 
 function clearAll() {
   if (!getStoreKey()) { alert('Select Tester, Platform, and Display first.'); return; }
-  const t = document.getElementById('sel-tester').value;
-  const p = document.getElementById('sel-platform').value;
-  const d = document.getElementById('sel-display').value;
+  const t = document.getElementById('sel-tester')?.value;
+  const p = document.getElementById('sel-platform')?.value;
+  const d = document.getElementById('sel-display')?.value;
   if (!confirm('Clear all results for ' + t + ' / ' + p + ' / ' + d + '? This cannot be undone.')) return;
   state = {};
   save();
@@ -1751,9 +1751,9 @@ function zoomIn()  { if (zoomLevel < ZOOM_MAX) { zoomLevel += ZOOM_STEP; applyZo
 function zoomOut() { if (zoomLevel > ZOOM_MIN) { zoomLevel -= ZOOM_STEP; applyZoom(); } }
 
 function exportCSV() {
-  const tester   = document.getElementById('sel-tester').value   || 'Unknown';
-  const platform = document.getElementById('sel-platform').value || 'Unknown';
-  const display  = document.getElementById('sel-display').value  || 'Unknown';
+  const tester   = document.getElementById('sel-tester')?.value   || 'Unknown';
+  const platform = document.getElementById('sel-platform')?.value || 'Unknown';
+  const display  = document.getElementById('sel-display')?.value  || 'Unknown';
   const meta = [
     ['Tester', tester],
     ['Platform', platform],
@@ -1838,9 +1838,9 @@ function showToast(msg, color) {
 
 async function submitToSupabase() {
   if (document.body.dataset.submitted) return;
-  const tester   = document.getElementById('sel-tester').value;
-  const platform = document.getElementById('sel-platform').value;
-  const display  = document.getElementById('sel-display').value;
+  const tester   = document.getElementById('sel-tester')?.value;
+  const platform = document.getElementById('sel-platform')?.value;
+  const display  = document.getElementById('sel-display')?.value;
   const answers = {}, notes = {};
   document.querySelectorAll('.tc').forEach(tc => {
     const id = tc.dataset.id;
