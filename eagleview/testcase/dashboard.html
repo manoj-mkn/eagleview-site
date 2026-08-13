@@ -185,9 +185,11 @@ const _sb = supabase.createClient(
   'sb_publishable_98NHJeyCD8JtPK0Njhdidw_NAWgJjy4'
 );
 
+const CURRENT_VERSION = 'v1.1.3';
+
 let allRows = [];
 let selectedTesters = new Set();
-let currentVersion = null;
+let currentVersion = CURRENT_VERSION;
 let userHidden = true;
 let userMap = {};
 
@@ -238,8 +240,8 @@ function getVersionRows() {
 
 function buildVersionTabs(rows) {
   const versions = getVersionsSorted(rows);
+  if (!versions.includes(CURRENT_VERSION)) versions.unshift(CURRENT_VERSION);
   const wrap = document.getElementById('version-tabs');
-  if (versions.length === 0) { wrap.style.display = 'none'; return; }
   wrap.style.display = 'block';
   const tabs = versions.map(v =>
     `<button class="vtab" data-v="${esc(v)}" onclick="setVersion('${esc(v)}')">${esc(v)}</button>`
@@ -295,6 +297,13 @@ function selectNone() {
 }
 function applyFilter() {
   const vRows = getVersionRows();
+  if (vRows.length === 0) {
+    document.getElementById('dash-meta').textContent = '0 submissions';
+    document.getElementById('dashboard').innerHTML =
+      '<div class="empty-msg">No submissions yet for ' + esc(currentVersion || 'this version') + '.<br>Complete the QA checklist to get started.</div>';
+    document.getElementById('dashboard').style.display = 'block';
+    return;
+  }
   const filtered = vRows.filter(r => selectedTesters.has(r.tester || 'Unknown'));
   const n = filtered.length;
   const total = vRows.length;
@@ -334,8 +343,7 @@ async function loadData() {
   testerNames.forEach((t, i) => { userMap[t] = 'User' + (i + 1); });
 
   buildVersionTabs(allRows);
-  const versions = getVersionsSorted(allRows);
-  currentVersion = versions.length > 0 ? versions[0] : null;
+  currentVersion = CURRENT_VERSION;
   updateVersionTabActive();
 
   buildTesterPanel(getVersionRows());
