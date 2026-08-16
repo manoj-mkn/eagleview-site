@@ -147,6 +147,10 @@ body[data-saved] #saved-hint{display:block;animation:saved-hint-life 10.5s ease 
 /* Hide floppy + nudge in the saved testing file */
 body[data-saved] .floppy-btn{display:none!important}
 body[data-saved] #save-nudge{display:none!important}
+/* Hide filter+prereq area until floppy is saved or dev mode unlocked */
+.filter-area{display:none!important}
+body[data-saved] .filter-area,
+body.dev-unlocked .filter-area{display:flex!important}
 /* Frozen dropdowns in saved file — CSS-only, lock icon replaces dropdown arrow */
 body[data-saved] .meta-select{
   pointer-events:none!important;cursor:default!important;user-select:none;
@@ -430,7 +434,7 @@ body[data-submitted] #submit-banner{display:none!important}
         </svg>
       </button>
       <span id="save-nudge"></span>
-      <div style="margin-left:auto;display:flex;align-items:center;gap:5px;flex-shrink:0;padding-left:6px">
+      <div class="filter-area" style="margin-left:auto;display:flex;align-items:center;gap:5px;flex-shrink:0;padding-left:6px">
         <button class="prereq-btn" onclick="openPrereq()">Prerequisites</button>
         <span style="width:1px;height:14px;background:var(--border);display:inline-block;margin:0 3px;vertical-align:middle;flex-shrink:0"></span>
         <span class="meta-label">Filter:</span>
@@ -1805,6 +1809,7 @@ function exportCSV() {
 
 function unlockTesting() {
   document.body.classList.remove('pre-save','file-saved');
+  document.body.classList.add('dev-unlocked');
   const tag = document.getElementById('testing-mode-tag');
   if (tag) { tag.textContent = '— Manoj Kumar M on testing mode'; tag.classList.add('visible'); }
 }
