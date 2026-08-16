@@ -65,6 +65,7 @@ main{max-width:1200px;margin:0 auto;padding:24px 16px 60px}
 .tc-row.row-q-on .tc-question{display:block}
 .tc-notes{display:none;width:100%;padding:4px 0 6px 58px}
 .tc-row.row-notes-on .tc-notes{display:block}
+.notes-on .tc-notes{display:block}
 .tc-note-item{font-size:11px;border-left:2px solid var(--accent);padding-left:8px;margin-bottom:5px}
 .tc-note-item:last-child{margin-bottom:0}
 .tc-note-meta{font-size:10px;font-weight:700;color:var(--text2);margin-bottom:2px}
@@ -207,6 +208,7 @@ let userMap = {};
 let tcQuestions = {};
 let questionsLoaded = false;
 let questionsShown = false;
+let notesShown = false;
 
 function esc(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -442,6 +444,16 @@ async function toggleRowQuestion(btn) {
   btn.disabled = false;
 }
 
+function toggleAllNotes() {
+  const btn = document.getElementById('show-notes-btn');
+  const section = document.getElementById('tc-results-section');
+  if (!btn || !section) return;
+  notesShown = !notesShown;
+  section.classList.toggle('notes-on', notesShown);
+  btn.textContent = notesShown ? 'Hide Notes' : 'Show Notes';
+  btn.classList.toggle('active', notesShown);
+}
+
 function toggleRowNotes(btn) {
   const row = btn.closest('.tc-row');
   if (!row) return;
@@ -581,8 +593,8 @@ function renderDashboard(rows) {
   });
 
   document.getElementById('dashboard').innerHTML = stats + `
-    <div class="dash-section ${questionsShown ? 'questions-on' : ''}" id="tc-results-section">
-      <div class="dash-section-hdr">TC Results <span class="hdr-count">${n} submission${n!==1?'s':''}</span><button class="show-q-btn ${questionsShown ? 'active' : ''}" id="show-q-btn" onclick="toggleQuestions()">${questionsShown ? 'Hide Questions' : 'Show Questions'}</button></div>
+    <div class="dash-section ${questionsShown ? 'questions-on' : ''} ${notesShown ? 'notes-on' : ''}" id="tc-results-section">
+      <div class="dash-section-hdr">TC Results <span class="hdr-count">${n} submission${n!==1?'s':''}</span><button class="show-q-btn ${questionsShown ? 'active' : ''}" id="show-q-btn" onclick="toggleQuestions()">${questionsShown ? 'Hide Questions' : 'Show Questions'}</button><button class="show-q-btn ${notesShown ? 'active' : ''}" id="show-notes-btn" onclick="toggleAllNotes()">${notesShown ? 'Hide Notes' : 'Show Notes'}</button></div>
       ${bars}
     </div>
     <div class="dash-section">
