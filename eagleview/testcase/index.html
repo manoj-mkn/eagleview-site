@@ -7,6 +7,9 @@
 <style>
 /* ── Tester Meta Dropdowns ── */
 .meta-row{display:flex;align-items:center;gap:4px;flex-wrap:nowrap;margin-top:5px;padding-top:5px;border-top:1px solid var(--border);overflow-x:auto}
+.meta-group{display:inline-flex;flex-direction:column;align-items:flex-start;gap:2px;flex-shrink:0}
+.meta-group-inner{display:flex;align-items:center;gap:4px}
+.step-tag{font-size:9px;font-weight:700;color:var(--accent);letter-spacing:0.06em;text-transform:uppercase;padding-left:2px;white-space:nowrap}
 .meta-label{font-size:10px;font-weight:700;color:var(--text2);white-space:nowrap;flex-shrink:0}
 .meta-select{
   padding:3px 20px 3px 7px;
@@ -373,35 +376,50 @@ body[data-submitted] #submit-banner{display:none!important}
     </div>
     <!-- ── Meta selectors ── -->
     <div class="meta-row">
-      <span class="meta-label">Tester:</span>
-      <select id="sel-tester" class="meta-select" onchange="onMetaChange()">
-        <option value="">— Tester —</option>
-        <option value="Manoj Kumar M">Manoj Kumar M</option>
-        <option value="Sowbharani Raman">Sowbharani Raman</option>
-        <option value="Deepthi">Deepthi</option>
-        <option value="Vishal">Vishal</option>
-        <option value="Kanishka">Kanishka</option>
-        <option value="__custom__">✏ Add custom…</option>
-      </select>
-      <input id="custom-tester" type="text" placeholder="Type name, press Enter"
-        onkeydown="if(event.key==='Enter')applyCustomTester()"
-        onblur="applyCustomTester()">
+      <div class="meta-group">
+        <div class="meta-group-inner">
+          <span class="meta-label">Tester:</span>
+          <select id="sel-tester" class="meta-select" onchange="onMetaChange()">
+            <option value="">— Tester —</option>
+            <option value="Manoj Kumar M">Manoj Kumar M</option>
+            <option value="Sowbharani Raman">Sowbharani Raman</option>
+            <option value="Deepthi">Deepthi</option>
+            <option value="Vishal">Vishal</option>
+            <option value="Kanishka">Kanishka</option>
+            <option value="__custom__">✏ Add custom…</option>
+          </select>
+          <input id="custom-tester" type="text" placeholder="Type name, press Enter"
+            onkeydown="if(event.key==='Enter')applyCustomTester()"
+            onblur="applyCustomTester()">
+        </div>
+        <span class="step-tag">Step 1</span>
+      </div>
       <span class="meta-sep">·</span>
-      <span class="meta-label">Platform:</span>
-      <select id="sel-platform" class="meta-select" onchange="onMetaChange()">
-        <option value="">— Platform —</option>
-        <option value="Mac Intel">Mac Intel</option>
-        <option value="Mac Silicon">Mac Silicon</option>
-        <option value="Windows 10">Windows 10</option>
-        <option value="Windows 11">Windows 11</option>
-      </select>
+      <div class="meta-group">
+        <div class="meta-group-inner">
+          <span class="meta-label">Platform:</span>
+          <select id="sel-platform" class="meta-select" onchange="onMetaChange()">
+            <option value="">— Platform —</option>
+            <option value="Mac Intel">Mac Intel</option>
+            <option value="Mac Silicon">Mac Silicon</option>
+            <option value="Windows 10">Windows 10</option>
+            <option value="Windows 11">Windows 11</option>
+          </select>
+        </div>
+        <span class="step-tag">Step 2</span>
+      </div>
       <span class="meta-sep">·</span>
-      <span class="meta-label">Display:</span>
-      <select id="sel-display" class="meta-select" onchange="onMetaChange()">
-        <option value="">— Display —</option>
-        <option value="Normal Display">Normal Display</option>
-        <option value="Touch Screen">Touch Screen</option>
-      </select>
+      <div class="meta-group">
+        <div class="meta-group-inner">
+          <span class="meta-label">Display:</span>
+          <select id="sel-display" class="meta-select" onchange="onMetaChange()">
+            <option value="">— Display —</option>
+            <option value="Normal Display">Normal Display</option>
+            <option value="Touch Screen">Touch Screen</option>
+          </select>
+        </div>
+        <span class="step-tag">Step 3</span>
+      </div>
       <span id="meta-badge-wrap"></span>
       <button id="btn-floppy" class="floppy-btn" onclick="saveAsTestedFile(this)" title="Select Tester, Platform &amp; Display first" disabled>
         <svg viewBox="0 0 14 14" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
