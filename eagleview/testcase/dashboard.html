@@ -62,6 +62,13 @@ main{max-width:1200px;margin:0 auto;padding:24px 16px 60px}
 .show-q-btn{margin-left:auto;padding:3px 10px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--text2);font-size:10px;font-weight:700;cursor:pointer;transition:all 0.15s;white-space:nowrap;letter-spacing:0.02em}
 .show-q-btn:hover{border-color:var(--accent);color:var(--accent)}
 .show-q-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.tc-row.row-q-on .tc-question{display:block}
+.tc-notes{display:none;width:100%;padding:4px 0 6px 58px}
+.tc-row.row-notes-on .tc-notes{display:block}
+.tc-note-item{font-size:11px;border-left:2px solid var(--accent);padding-left:8px;margin-bottom:5px}
+.tc-note-item:last-child{margin-bottom:0}
+.tc-note-meta{font-size:10px;font-weight:700;color:var(--text2);margin-bottom:2px}
+.tc-note-text{font-size:11px;color:var(--text);line-height:1.5;white-space:pre-wrap}
 
 /* ── Notes ── */
 .notes-group{border-bottom:1px solid var(--border)}
@@ -370,6 +377,20 @@ async function loadData() {
   applyFilter();
 }
 
+async function loadQuestions() {
+  if (questionsLoaded) return;
+  const html = await fetch('https://newmantech.in/eagleview/testcase/').then(r => r.text());
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  doc.querySelectorAll('.tc[data-id]').forEach(tc => {
+    const id = tc.dataset.id;
+    const descEl = tc.querySelector('.tc-desc');
+    if (!descEl) return;
+    descEl.querySelectorAll('.note,.tc-btns').forEach(n => n.remove());
+    tcQuestions[id] = descEl.textContent.replace(/\s+/g, ' ').trim();
+  });
+  questionsLoaded = true;
+}
+
 async function toggleQuestions() {
   const btn = document.getElementById('show-q-btn');
   const section = document.getElementById('tc-results-section');
@@ -379,19 +400,10 @@ async function toggleQuestions() {
     btn.textContent = 'Loading…';
     btn.disabled = true;
     try {
-      const html = await fetch('https://newmantech.in/eagleview/testcase/').then(r => r.text());
-      const doc = new DOMParser().parseFromString(html, 'text/html');
-      doc.querySelectorAll('.tc[data-id]').forEach(tc => {
-        const id = tc.dataset.id;
-        const descEl = tc.querySelector('.tc-desc');
-        if (!descEl) return;
-        descEl.querySelectorAll('.note,.tc-btns').forEach(n => n.remove());
-        tcQuestions[id] = descEl.textContent.replace(/\s+/g, ' ').trim();
-      });
+      await loadQuestions();
       document.querySelectorAll('.tc-question[data-id]').forEach(el => {
         el.textContent = tcQuestions[el.dataset.id] || '—';
       });
-      questionsLoaded = true;
     } catch(e) {
       btn.textContent = 'Show Questions';
       btn.disabled = false;
@@ -404,6 +416,38 @@ async function toggleQuestions() {
   btn.textContent = questionsShown ? 'Hide Questions' : 'Show Questions';
   btn.classList.toggle('active', questionsShown);
   btn.disabled = false;
+}
+
+async function toggleRowQuestion(btn) {
+  const row = btn.closest('.tc-row');
+  if (!row) return;
+
+  if (!questionsLoaded) {
+    btn.textContent = '…';
+    btn.disabled = true;
+    try {
+      await loadQuestions();
+      const qEl = row.querySelector('.tc-question[data-id]');
+      if (qEl) qEl.textContent = tcQuestions[qEl.dataset.id] || '—';
+    } catch(e) {
+      btn.textContent = 'Q';
+      btn.disabled = false;
+      return;
+    }
+  }
+
+  const isOn = row.classList.toggle('row-q-on');
+  btn.classList.toggle('active', isOn);
+  btn.textContent = isOn ? 'Hide' : 'Q';
+  btn.disabled = false;
+}
+
+function toggleRowNotes(btn) {
+  const row = btn.closest('.tc-row');
+  if (!row) return;
+  const isOn = row.classList.toggle('row-notes-on');
+  btn.classList.toggle('active', isOn);
+  btn.textContent = isOn ? 'Hide Notes' : `Notes (${btn.dataset.count})`;
 }
 
 function renderDashboard(rows) {
@@ -448,6 +492,16 @@ function renderDashboard(rows) {
     </div>
   </div>`;
 
+  /* ── Notes by TC (built first so bar rows can embed inline notes) ── */
+  const notesByTC = {};
+  rows.forEach(r => {
+    Object.entries(r.notes || {}).forEach(([id, txt]) => {
+      if (!txt?.trim()) return;
+      if (!notesByTC[id]) notesByTC[id] = [];
+      notesByTC[id].push({ tester: r.tester, platform: r.platform, submitted_at: r.submitted_at, text: txt });
+    });
+  });
+
   /* ── TC bar rows ── */
   let bars = '';
   tcIds.forEach(id => {
@@ -461,6 +515,12 @@ function renderDashboard(rows) {
     const tot = (pass + fail + skip) || 1;
     const pw = Math.round(pass/tot*100), fw = Math.round(fail/tot*100), sw = Math.round(skip/tot*100);
     const qText = questionsLoaded ? esc(tcQuestions[id] || '—') : '';
+    const tcNoteEntries = notesByTC[id] || [];
+    const rowNotesHtml = tcNoteEntries.map(e =>
+      `<div class="tc-note-item">` +
+      `<div class="tc-note-meta">${esc(maskName(e.tester||'Unknown'))} · ${esc(e.platform||'—')} · ${fmtDate(e.submitted_at)}</div>` +
+      `<div class="tc-note-text">${esc(e.text)}</div>` +
+      `</div>`).join('');
     bars += `<div class="tc-row">
       <div class="tc-row-id">${esc(id)}</div>
       <div class="tc-bar-wrap">
@@ -473,19 +533,14 @@ function renderDashboard(rows) {
         <span class="cnt-skip">– ${skip}</span>
         <span class="cnt-fail">✗ ${fail}</span>
       </div>
+      <button class="show-q-btn row-q-btn" onclick="toggleRowQuestion(this)">Q</button>
+      ${tcNoteEntries.length ? `<button class="show-q-btn row-notes-btn" data-count="${tcNoteEntries.length}" onclick="toggleRowNotes(this)">Notes (${tcNoteEntries.length})</button>` : ''}
       <div class="tc-question" data-id="${esc(id)}">${qText}</div>
+      ${tcNoteEntries.length ? `<div class="tc-notes">${rowNotesHtml}</div>` : ''}
     </div>`;
   });
 
   /* ── Notes ── */
-  const notesByTC = {};
-  rows.forEach(r => {
-    Object.entries(r.notes || {}).forEach(([id, txt]) => {
-      if (!txt?.trim()) return;
-      if (!notesByTC[id]) notesByTC[id] = [];
-      notesByTC[id].push({ tester: r.tester, platform: r.platform, submitted_at: r.submitted_at, text: txt });
-    });
-  });
   const noteIds = sortTCIds(Object.keys(notesByTC));
   let noteSections = '';
   if (noteIds.length === 0) {
