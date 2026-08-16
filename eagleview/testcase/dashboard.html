@@ -308,7 +308,7 @@ function applyFilter() {
   if (vRows.length === 0) {
     document.getElementById('dash-meta').textContent = '0 submissions';
     document.getElementById('dashboard').innerHTML =
-      '<div class="empty-msg">No submissions yet for ' + esc(currentVersion || 'this version') + '.<br>Complete the QA checklist to get started.</div>';
+      '<div class="empty-msg">No submissions yet for ' + esc(currentVersion || 'this version') + '.<br>Complete the test cases to get started.</div>';
     document.getElementById('dashboard').style.display = 'block';
     return;
   }
@@ -362,7 +362,7 @@ async function loadData() {
 
   if (allRows.length === 0) {
     document.getElementById('dashboard').innerHTML =
-      '<div class="empty-msg">No submissions yet. Complete the QA checklist to get started.</div>';
+      '<div class="empty-msg">No submissions yet. Complete the test cases to get started.</div>';
     document.getElementById('dashboard').style.display = 'block';
     return;
   }
