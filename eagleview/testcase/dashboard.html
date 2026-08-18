@@ -515,9 +515,22 @@ async function toggleAck(cb) {
     return;
   }
   const devKey = tcId + '__' + noteKey;
+  const wasChecked = !!(devStatus[devKey] && devStatus[devKey][field]);
   if (!devStatus[devKey]) devStatus[devKey] = {};
   devStatus[devKey][field] = checked;
   if (label) label.classList.toggle('checked', checked);
+  if (checked !== wasChecked) bumpDevCounter(field, checked ? 1 : -1);
+}
+
+// Adjusts the "Corrected: X / Y" / "Tested & Working: X / Y" stat cards in place —
+// only the checked count (X) ever changes from a toggle, never the total (Y), so this
+// avoids re-rendering the whole dashboard for a single checkbox click.
+function bumpDevCounter(field, delta) {
+  const el = document.getElementById(field === 'tested_ok' ? 'dev-tested-count' : 'dev-corrected-count');
+  if (!el) return;
+  const [checkedStr, totalStr] = el.textContent.split('/');
+  const checkedNum = (parseInt(checkedStr, 10) || 0) + delta;
+  el.textContent = checkedNum + ' / ' + (totalStr || '0').trim();
 }
 
 function renderDashboard(rows) {
@@ -543,25 +556,6 @@ function renderDashboard(rows) {
   const topPlat    = Object.entries(platforms).sort((a, b) => b[1] - a[1])[0]?.[0] || '—';
   const platCount  = Object.keys(platforms).length;
 
-  const stats = `<div class="stat-row">
-    <div class="stat-card">
-      <div class="stat-value">${n}</div>
-      <div class="stat-label">Total Submissions</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value" style="color:var(--pass)">${passRate}</div>
-      <div class="stat-label">Overall Pass Rate</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value">${platCount}</div>
-      <div class="stat-label">Platforms Tested</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-value" style="font-size:${topPlat.length > 10 ? '13px' : '18px'};padding-top:6px">${esc(topPlat)}</div>
-      <div class="stat-label">Top Platform</div>
-    </div>
-  </div>`;
-
   /* ── Notes by TC (built first so bar rows can embed inline notes) ── */
   const notesByTC = {};
   rows.forEach(r => {
@@ -574,6 +568,9 @@ function renderDashboard(rows) {
 
   /* ── TC bar rows ── */
   let bars = '';
+  // Running totals for the "Corrected" / "Tested & Working" stat cards below — counts
+  // every individual checkbox rendered (per-note ones count separately), not just rows.
+  let totalCorrected = 0, checkedCorrected = 0, totalTested = 0, checkedTested = 0;
   tcIds.forEach(id => {
     let pass = 0, fail = 0, skip = 0;
     rows.forEach(r => {
@@ -592,6 +589,8 @@ function renderDashboard(rows) {
     const rowNotesHtml = tcNoteEntries.map(e => {
       const noteKey = `${e.tester||''}__${e.platform||''}__${e.submitted_at||''}`;
       const noteChecked = !!(devStatus[`${id}__${noteKey}`] && devStatus[`${id}__${noteKey}`].corrected);
+      totalCorrected++;
+      if (noteChecked) checkedCorrected++;
       return `<div class="tc-note-item">` +
         `<div class="tc-note-meta">${esc(maskName(e.tester||'Unknown'))} · ${esc(e.platform||'—')} · ${fmtDate(e.submitted_at)}</div>` +
         `<div class="tc-note-text">${esc(e.text)}</div>` +
@@ -611,9 +610,13 @@ function renderDashboard(rows) {
       let rowAckHtml = '';
       if (tcNoteEntries.length === 0) {
         const rowAckChecked = !!rowDevStatus.corrected;
+        totalCorrected++;
+        if (rowAckChecked) checkedCorrected++;
         rowAckHtml = `<label class="tc-status-check${rowAckChecked ? ' checked' : ''}"><input type="checkbox" ${rowAckChecked ? 'checked' : ''} data-tc="${esc(id)}" data-note="" data-field="corrected" onchange="toggleAck(this)"/> I've corrected this in the app</label>`;
       }
       const testedChecked = !!rowDevStatus.tested_ok;
+      totalTested++;
+      if (testedChecked) checkedTested++;
       statusChecksHtml = `<div class="tc-status-checks">
         ${rowAckHtml}
         <label class="tc-status-check${testedChecked ? ' checked' : ''}"><input type="checkbox" ${testedChecked ? 'checked' : ''} data-tc="${esc(id)}" data-note="" data-field="tested_ok" onchange="toggleAck(this)"/> Tested and working well</label>
@@ -639,6 +642,33 @@ function renderDashboard(rows) {
       ${statusChecksHtml}
     </div>`;
   });
+
+  const stats = `<div class="stat-row">
+    <div class="stat-card">
+      <div class="stat-value">${n}</div>
+      <div class="stat-label">Total Submissions</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--pass)">${passRate}</div>
+      <div class="stat-label">Overall Pass Rate</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">${platCount}</div>
+      <div class="stat-label">Platforms Tested</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="font-size:${topPlat.length > 10 ? '13px' : '18px'};padding-top:6px">${esc(topPlat)}</div>
+      <div class="stat-label">Top Platform</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="dev-corrected-count">${checkedCorrected} / ${totalCorrected}</div>
+      <div class="stat-label">Corrected</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="dev-tested-count">${checkedTested} / ${totalTested}</div>
+      <div class="stat-label">Tested &amp; Working</div>
+    </div>
+  </div>`;
 
   /* ── Notes ── */
   const noteIds = sortTCIds(Object.keys(notesByTC));
