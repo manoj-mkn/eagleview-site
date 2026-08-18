@@ -75,6 +75,15 @@ main{max-width:1200px;margin:0 auto;padding:24px 16px 60px}
 .tc-note-meta{font-size:10px;font-weight:700;color:var(--text2);margin-bottom:2px}
 .tc-note-text{font-size:11px;color:var(--text);line-height:1.5;white-space:pre-wrap}
 
+/* ── Dev-response checkboxes (local to this browser only — see toggleAck()) ── */
+.tc-ack-check{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:var(--text2);margin-top:5px;cursor:pointer;user-select:none}
+.tc-ack-check input{accent-color:var(--accent);cursor:pointer;width:13px;height:13px;flex-shrink:0}
+.tc-ack-check.checked{color:var(--pass)}
+.tc-status-checks{display:flex;gap:14px;flex-wrap:wrap;width:100%;padding:6px 0 2px 58px;font-size:10px}
+.tc-status-check{display:flex;align-items:center;gap:5px;font-weight:700;color:var(--text2);cursor:pointer;user-select:none}
+.tc-status-check input{accent-color:var(--accent);cursor:pointer;width:13px;height:13px;flex-shrink:0}
+.tc-status-check.checked{color:var(--pass)}
+
 /* ── Notes ── */
 .notes-group{border-bottom:1px solid var(--border)}
 .notes-group:last-child{border-bottom:none}
@@ -213,6 +222,7 @@ let tcQuestions = {};
 let questionsLoaded = false;
 let questionsShown = false;
 let notesShown = false;
+let devStatus = {}; // keyed by `${tc_id}__${note_key}` -> { corrected, tested_ok }, from eagleview_qa_dev_status
 
 function esc(s) {
   return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -338,15 +348,28 @@ function applyFilter() {
   }
 }
 
+async function loadDevStatus() {
+  const { data, error } = await _sb.from('eagleview_qa_dev_status').select('*');
+  if (error) {
+    console.error('[dev-status] failed to load:', error.message);
+    devStatus = {};
+    return;
+  }
+  devStatus = {};
+  (data || []).forEach(row => {
+    devStatus[row.tc_id + '__' + (row.note_key || '')] = { corrected: !!row.corrected, tested_ok: !!row.tested_ok };
+  });
+}
+
 async function loadData() {
   document.getElementById('loading').innerHTML = '<span class="spinner"></span>Loading…';
   document.getElementById('loading').style.display = 'block';
   document.getElementById('dashboard').style.display = 'none';
 
-  const { data, error } = await _sb
-    .from('eagleview_qa')
-    .select('*')
-    .order('submitted_at', { ascending: false });
+  const [{ data, error }] = await Promise.all([
+    _sb.from('eagleview_qa').select('*').order('submitted_at', { ascending: false }),
+    loadDevStatus()
+  ]);
 
   document.getElementById('loading').style.display = 'none';
   if (error) {
@@ -466,6 +489,37 @@ function toggleRowNotes(btn) {
   btn.textContent = isOn ? 'Hide Notes' : `Notes (${btn.dataset.count})`;
 }
 
+// Dev-response checkboxes ("I've corrected this in the app" / "Tested and working
+// well") — saved to eagleview_qa_dev_status (same public-anon-key trust model as
+// eagleview_qa submissions, this page has no login either way). Synced across
+// devices/browsers, unlike the earlier localStorage-only version.
+async function toggleAck(cb) {
+  const tcId = cb.dataset.tc;
+  const noteKey = cb.dataset.note || '';
+  const field = cb.dataset.field; // 'corrected' or 'tested_ok'
+  if (!tcId || !field) return;
+  const checked = cb.checked;
+  const label = cb.closest('label');
+
+  cb.disabled = true;
+  const payload = { tc_id: tcId, note_key: noteKey, updated_at: new Date().toISOString() };
+  payload[field] = checked;
+  const { error } = await _sb
+    .from('eagleview_qa_dev_status')
+    .upsert(payload, { onConflict: 'tc_id,note_key' });
+  cb.disabled = false;
+
+  if (error) {
+    console.error('[dev-status] failed to save:', error.message);
+    cb.checked = !checked; // revert the UI since the save didn't actually happen
+    return;
+  }
+  const devKey = tcId + '__' + noteKey;
+  if (!devStatus[devKey]) devStatus[devKey] = {};
+  devStatus[devKey][field] = checked;
+  if (label) label.classList.toggle('checked', checked);
+}
+
 function renderDashboard(rows) {
   const n = rows.length;
 
@@ -532,11 +586,40 @@ function renderDashboard(rows) {
     const pw = Math.round(pass/tot*100), fw = Math.round(fail/tot*100), sw = Math.round(skip/tot*100);
     const qText = questionsLoaded ? esc(tcQuestions[id] || '—') : '';
     const tcNoteEntries = notesByTC[id] || [];
-    const rowNotesHtml = tcNoteEntries.map(e =>
-      `<div class="tc-note-item">` +
-      `<div class="tc-note-meta">${esc(maskName(e.tester||'Unknown'))} · ${esc(e.platform||'—')} · ${fmtDate(e.submitted_at)}</div>` +
-      `<div class="tc-note-text">${esc(e.text)}</div>` +
-      `</div>`).join('');
+
+    // One "I've corrected this in the app" checkbox per individual note (each note is
+    // a separate tester's separate submission, so each gets acknowledged separately).
+    const rowNotesHtml = tcNoteEntries.map(e => {
+      const noteKey = `${e.tester||''}__${e.platform||''}__${e.submitted_at||''}`;
+      const noteChecked = !!(devStatus[`${id}__${noteKey}`] && devStatus[`${id}__${noteKey}`].corrected);
+      return `<div class="tc-note-item">` +
+        `<div class="tc-note-meta">${esc(maskName(e.tester||'Unknown'))} · ${esc(e.platform||'—')} · ${fmtDate(e.submitted_at)}</div>` +
+        `<div class="tc-note-text">${esc(e.text)}</div>` +
+        `<label class="tc-ack-check${noteChecked ? ' checked' : ''}"><input type="checkbox" ${noteChecked ? 'checked' : ''} data-tc="${esc(id)}" data-note="${esc(noteKey)}" data-field="corrected" onchange="toggleAck(this)"/> I've corrected this in the app</label>` +
+        `</div>`;
+    }).join('');
+
+    // Row-level status checkboxes — only for TCs with something to respond to (a fail,
+    // or notes). The acknowledgment checkbox only appears here (once for the whole row)
+    // when there's a fail but zero notes — when notes exist, acknowledgment happens per
+    // note above instead, so it isn't duplicated. "Tested and working well" is always a
+    // single row-level flag regardless of notes, stored under note_key ''.
+    const hasIssue = fail > 0 || tcNoteEntries.length > 0;
+    const rowDevStatus = devStatus[`${id}__`] || {};
+    let statusChecksHtml = '';
+    if (hasIssue) {
+      let rowAckHtml = '';
+      if (tcNoteEntries.length === 0) {
+        const rowAckChecked = !!rowDevStatus.corrected;
+        rowAckHtml = `<label class="tc-status-check${rowAckChecked ? ' checked' : ''}"><input type="checkbox" ${rowAckChecked ? 'checked' : ''} data-tc="${esc(id)}" data-note="" data-field="corrected" onchange="toggleAck(this)"/> I've corrected this in the app</label>`;
+      }
+      const testedChecked = !!rowDevStatus.tested_ok;
+      statusChecksHtml = `<div class="tc-status-checks">
+        ${rowAckHtml}
+        <label class="tc-status-check${testedChecked ? ' checked' : ''}"><input type="checkbox" ${testedChecked ? 'checked' : ''} data-tc="${esc(id)}" data-note="" data-field="tested_ok" onchange="toggleAck(this)"/> Tested and working well</label>
+      </div>`;
+    }
+
     bars += `<div class="tc-row">
       <div class="tc-row-id">${esc(id)}</div>
       <div class="tc-bar-wrap">
@@ -553,6 +636,7 @@ function renderDashboard(rows) {
       <button class="show-q-btn row-notes-btn" ${tcNoteEntries.length ? `data-count="${tcNoteEntries.length}" onclick="toggleRowNotes(this)"` : 'disabled'}>Notes${tcNoteEntries.length ? ` (${tcNoteEntries.length})` : ''}</button>
       <div class="tc-question" data-id="${esc(id)}">${qText}</div>
       ${tcNoteEntries.length ? `<div class="tc-notes">${rowNotesHtml}</div>` : ''}
+      ${statusChecksHtml}
     </div>`;
   });
 
