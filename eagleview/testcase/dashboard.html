@@ -40,6 +40,9 @@ main{max-width:1200px;margin:0 auto;padding:24px 16px 60px}
 .stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px 16px}
 .stat-value{font-size:30px;font-weight:900;color:var(--accent);line-height:1}
 .stat-label{font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.6px;margin-top:7px}
+.stat-card-pie{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px}
+.pie-donut{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pie-donut-center{width:40px;height:40px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:var(--pass)}
 
 /* ── Section card ── */
 .dash-section{background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:20px}
@@ -543,16 +546,21 @@ function renderDashboard(rows) {
 
   /* ── Stat cards ── */
   const platforms = {};
-  let totalPass = 0, totalAnswered = 0;
+  let totalPass = 0, totalFail = 0, totalSkip = 0, totalAnswered = 0;
   rows.forEach(r => {
     const p = r.platform || 'Unknown';
     platforms[p] = (platforms[p] || 0) + 1;
     Object.values(r.answers || {}).forEach(v => {
       totalAnswered++;
       if (v === 'pass') totalPass++;
+      else if (v === 'fail') totalFail++;
+      else if (v === 'skip') totalSkip++;
     });
   });
   const passRate   = totalAnswered > 0 ? Math.round(totalPass / totalAnswered * 100) + '%' : '—';
+  // Donut chart stops for the pass-rate card, same pass/skip/fail colors as the TC bars.
+  const passDeg = totalAnswered > 0 ? totalPass / totalAnswered * 360 : 0;
+  const skipDeg = totalAnswered > 0 ? passDeg + (totalSkip / totalAnswered * 360) : 0;
   const topPlat    = Object.entries(platforms).sort((a, b) => b[1] - a[1])[0]?.[0] || '—';
   const platCount  = Object.keys(platforms).length;
 
@@ -648,8 +656,10 @@ function renderDashboard(rows) {
       <div class="stat-value">${n}</div>
       <div class="stat-label">Total Submissions</div>
     </div>
-    <div class="stat-card">
-      <div class="stat-value" style="color:var(--pass)">${passRate}</div>
+    <div class="stat-card stat-card-pie">
+      <div class="pie-donut" style="background:conic-gradient(var(--pass) 0deg ${passDeg}deg, var(--skip) ${passDeg}deg ${skipDeg}deg, var(--fail) ${skipDeg}deg 360deg)" title="Pass ${totalPass} · N/A ${totalSkip} · Fail ${totalFail}">
+        <div class="pie-donut-center">${passRate}</div>
+      </div>
       <div class="stat-label">Overall Pass Rate</div>
     </div>
     <div class="stat-card">
