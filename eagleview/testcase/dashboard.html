@@ -433,15 +433,19 @@ async function toggleQuestions() {
     btn.disabled = true;
     try {
       await loadQuestions();
-      document.querySelectorAll('.tc-question[data-id]').forEach(el => {
-        el.textContent = tcQuestions[el.dataset.id] || '—';
-      });
     } catch(e) {
       btn.textContent = 'Show Questions';
       btn.disabled = false;
       return;
     }
   }
+
+  // Always re-populate, not just on the fetch that first set questionsLoaded — otherwise
+  // rows whose text was never written (e.g. a per-row Q click already flipped the flag
+  // without touching every row) stay permanently blank once toggled visible.
+  document.querySelectorAll('.tc-question[data-id]').forEach(el => {
+    el.textContent = tcQuestions[el.dataset.id] || '—';
+  });
 
   questionsShown = !questionsShown;
   section.classList.toggle('questions-on', questionsShown);
@@ -459,14 +463,18 @@ async function toggleRowQuestion(btn) {
     btn.disabled = true;
     try {
       await loadQuestions();
-      const qEl = row.querySelector('.tc-question[data-id]');
-      if (qEl) qEl.textContent = tcQuestions[qEl.dataset.id] || '—';
     } catch(e) {
       btn.textContent = 'Q';
       btn.disabled = false;
       return;
     }
   }
+
+  // Always re-populate this row's text, even when some other row's click already flipped
+  // questionsLoaded to true — that flag only tracks whether the fetch happened, not whether
+  // THIS row's DOM element got its text written.
+  const qEl = row.querySelector('.tc-question[data-id]');
+  if (qEl) qEl.textContent = tcQuestions[qEl.dataset.id] || '—';
 
   const isOn = row.classList.toggle('row-q-on');
   btn.classList.toggle('active', isOn);
