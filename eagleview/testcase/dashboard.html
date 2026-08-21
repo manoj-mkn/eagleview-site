@@ -184,7 +184,7 @@ main{max-width:1200px;margin:0 auto;padding:24px 16px 60px}
     <div class="dash-meta" id="dash-meta">Loading…</div>
     <button class="hdr-btn nav-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Top</button>
     <button class="hdr-btn nav-btn" onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})">↓ Bottom</button>
-    <button class="hdr-btn nav-btn" onclick="document.getElementById('section-remarks')?.scrollIntoView({behavior:'smooth',block:'start'})">📌 Remarks</button>
+    <button class="hdr-btn nav-btn" onclick="document.getElementById('section-actions')?.scrollIntoView({behavior:'smooth',block:'start'})">📌 Actions</button>
     <span class="nav-divider"></span>
     <button class="hdr-btn" onclick="savePDF()">⬇ Save as PDF</button>
     <button class="hdr-btn" onclick="savePDFDirect(this)">⬇ Direct PDF</button>
@@ -636,12 +636,27 @@ function renderDashboard(rows) {
       else if (v === 'skip') totalSkip++;
     });
   });
-  const passRate   = totalAnswered > 0 ? Math.round(totalPass / totalAnswered * 100) + '%' : '—';
-  // Donut chart stops for the pass-rate card, same pass/skip/fail colors as the TC bars.
-  const passDeg = totalAnswered > 0 ? totalPass / totalAnswered * 360 : 0;
-  const skipDeg = totalAnswered > 0 ? passDeg + (totalSkip / totalAnswered * 360) : 0;
   const topPlat    = Object.entries(platforms).sort((a, b) => b[1] - a[1])[0]?.[0] || '—';
   const platCount  = Object.keys(platforms).length;
+
+  // Before-fix / after-fix two-ring donut — earliest submission = before, latest = after.
+  // N/A answers are excluded from both rings; only pass vs fail.
+  const sortedByTime = [...rows].sort((a,b)=>(a.submitted_at||'').localeCompare(b.submitted_at||''));
+  function ringStats(r){let p=0,f=0;Object.values(r?.answers||{}).forEach(v=>{if(v==='pass')p++;else if(v==='fail')f++;});const tot=p+f;return{p,f,pct:tot>0?Math.round(p/tot*100):0};}
+  const bfSt=ringStats(sortedByTime[0]);
+  const afSt=ringStats(sortedByTime[sortedByTime.length-1]);
+  const outerC=+(2*Math.PI*40).toFixed(1), innerC=+(2*Math.PI*27).toFixed(1);
+  const twoRingSvg=`<svg width="80" height="80" viewBox="0 0 100 100">
+    <title>Before fix: ${bfSt.pct}% (${bfSt.p}✓ ${bfSt.f}✗) · After fix: ${afSt.pct}% (${afSt.p}✓ ${afSt.f}✗)</title>
+    <g transform="rotate(-90 50 50)">
+      <circle cx="50" cy="50" r="40" fill="none" stroke="var(--fail)" stroke-width="9" opacity="0.28"/>
+      <circle cx="50" cy="50" r="40" fill="none" stroke="var(--pass)" stroke-width="9" stroke-dasharray="${(afSt.pct/100*outerC).toFixed(1)} ${outerC}"/>
+      <circle cx="50" cy="50" r="27" fill="none" stroke="var(--fail)" stroke-width="9" opacity="0.28"/>
+      <circle cx="50" cy="50" r="27" fill="none" stroke="var(--pass)" stroke-width="9" stroke-dasharray="${(bfSt.pct/100*innerC).toFixed(1)} ${innerC}"/>
+    </g>
+    <text x="50" y="46" text-anchor="middle" font-size="13" font-weight="900" fill="var(--pass)" font-family="inherit">${afSt.pct}%</text>
+    <text x="50" y="57" text-anchor="middle" font-size="7" fill="var(--text2)" font-family="inherit">after</text>
+  </svg>`;
 
   /* ── Notes by TC (built first so bar rows can embed inline notes) ── */
   const notesByTC = {};
@@ -660,6 +675,7 @@ function renderDashboard(rows) {
   // Running totals for the "Corrected" / "Tested & Working" stat cards below — counts
   // every individual checkbox rendered (per-note ones count separately), not just rows.
   let totalCorrected = 0, checkedCorrected = 0, totalTested = 0, checkedTested = 0;
+  const failByTC = {};
   tcIds.forEach(id => {
     let pass = 0, fail = 0, skip = 0;
     rows.forEach(r => {
@@ -668,6 +684,7 @@ function renderDashboard(rows) {
       else if (v === 'fail') fail++;
       else if (v === 'skip') skip++;
     });
+    if (fail > 0) failByTC[id] = fail;
     const tot = (pass + fail + skip) || 1;
     const pw = Math.round(pass/tot*100), fw = Math.round(fail/tot*100), sw = Math.round(skip/tot*100);
     const qText = questionsLoadedFor[barsVkey] ? esc(barsQMap[id] || '—') : '';
@@ -738,10 +755,8 @@ function renderDashboard(rows) {
       <div class="stat-label">Total Submissions</div>
     </div>
     <div class="stat-card stat-card-pie">
-      <div class="pie-donut" style="background:conic-gradient(var(--pass) 0deg ${passDeg}deg, var(--skip) ${passDeg}deg ${skipDeg}deg, var(--fail) ${skipDeg}deg 360deg)" title="Pass ${totalPass} · N/A ${totalSkip} · Fail ${totalFail}">
-        <div class="pie-donut-center">${passRate}</div>
-      </div>
-      <div class="stat-label">Overall Pass Rate</div>
+      ${twoRingSvg}
+      <div class="stat-label">Pass Rate</div>
     </div>
     <div class="stat-card">
       <div class="stat-value">${platCount}</div>
@@ -761,14 +776,15 @@ function renderDashboard(rows) {
     </div>
   </div>`;
 
-  /* ── Notes ── */
-  const noteIds = sortTCIds(Object.keys(notesByTC));
-  let noteSections = '';
-  if (noteIds.length === 0) {
-    noteSections = '<div style="padding:12px 16px;font-size:12px;color:var(--text2)">No remarks recorded yet.</div>';
+  /* ── Actions (all fail TCs + TCs with remarks) ── */
+  const actionIds = sortTCIds([...new Set([...Object.keys(failByTC), ...Object.keys(notesByTC)])]);
+  let actionSections = '';
+  if (actionIds.length === 0) {
+    actionSections = '<div style="padding:12px 16px;font-size:12px;color:var(--text2)">No actions recorded yet.</div>';
   } else {
-    noteIds.forEach(id => {
-      const entries = notesByTC[id];
+    actionIds.forEach(id => {
+      const entries = notesByTC[id] || [];
+      const failCount = failByTC[id] || 0;
       const items = entries.map(e => {
         const noteKey = `${e.tester||''}__${e.platform||''}__${e.submitted_at||''}`;
         const noteChecked = !!(devStatus[`${id}__${noteKey}`] && devStatus[`${id}__${noteKey}`].corrected);
@@ -778,14 +794,24 @@ function renderDashboard(rows) {
           <label class="tc-ack-check${noteChecked ? ' checked' : ''}"><input type="checkbox" ${noteChecked ? 'checked' : ''} data-tc="${esc(id)}" data-note="${esc(noteKey)}" data-field="corrected" onchange="toggleAck(this)"/> I've corrected this in the app</label>
         </div>`;
       }).join('');
+      // Bare-fail block: fail with no remarks — show fail count + row-level corrected checkbox
+      let bareFailHtml = '';
+      if (entries.length === 0 && failCount > 0) {
+        const rowAckChecked = !!(devStatus[`${id}__`] && devStatus[`${id}__`].corrected);
+        bareFailHtml = `<div class="note-block">
+          <div class="note-meta" style="color:var(--fail)">✗ ${failCount} fail${failCount>1?'s':''} — no remark added</div>
+          <label class="tc-ack-check${rowAckChecked ? ' checked' : ''}"><input type="checkbox" ${rowAckChecked ? 'checked' : ''} data-tc="${esc(id)}" data-note="" data-field="corrected" onchange="toggleAck(this)"/> I've corrected this in the app</label>
+        </div>`;
+      }
       const noteQ = barsQMap[id] ? esc(barsQMap[id]) : '';
       const testedChecked = !!(devStatus[`${id}__`] && devStatus[`${id}__`].tested_ok);
-      noteSections += `<div class="notes-group">
+      actionSections += `<div class="notes-group">
         <div class="notes-group-hdr">
-          <div class="notes-group-hdr-top">${esc(id)} <span class="hdr-count">${entries.length}</span></div>
+          <div class="notes-group-hdr-top">${esc(id)} ${entries.length ? `<span class="hdr-count">${entries.length}</span>` : `<span class="hdr-count" style="background:var(--fail-bg);color:var(--fail)">✗ ${failCount}</span>`}</div>
           ${noteQ ? `<div class="notes-group-q">${noteQ}</div>` : ''}
         </div>
         ${items}
+        ${bareFailHtml}
         <div class="note-block note-block-tested">
           <label class="tc-ack-check${testedChecked ? ' checked' : ''}"><input type="checkbox" ${testedChecked ? 'checked' : ''} data-tc="${esc(id)}" data-note="" data-field="tested_ok" onchange="toggleAck(this)"/> Tested and working well</label>
         </div>
@@ -823,12 +849,12 @@ function renderDashboard(rows) {
 
   document.getElementById('dashboard').innerHTML = `
     <div class="dash-section ${questionsShown ? 'questions-on' : ''} ${notesShown ? 'notes-on' : ''}" id="tc-results-section">
-      <div class="dash-section-hdr">TC Results <span class="hdr-count">${n} submission${n!==1?'s':''}</span><div class="hdr-btn-group"><button class="show-q-btn ${questionsShown ? 'active' : ''}" id="show-q-btn" onclick="toggleQuestions()">${questionsShown ? 'Hide Questions' : 'Show Questions'}</button><button class="show-q-btn ${notesShown ? 'active' : ''}" id="show-notes-btn" onclick="toggleAllNotes()">${notesShown ? 'Hide Remarks' : 'Show Remarks'}</button></div></div>
+      <div class="dash-section-hdr">TC Results <span class="hdr-count">${n} submission${n!==1?'s':''}</span><div class="hdr-btn-group"><button class="show-q-btn ${questionsShown ? 'active' : ''}" id="show-q-btn" onclick="toggleQuestions()">${questionsShown ? 'Hide Questions' : 'Show Questions'}</button><button class="show-q-btn ${notesShown ? 'active' : ''}" id="show-notes-btn" onclick="toggleAllNotes()">${notesShown ? 'Hide Actions' : 'Show Actions'}</button></div></div>
       ${bars}
     </div>
-    <div class="dash-section" id="section-remarks">
-      <div class="dash-section-hdr">Remarks</div>
-      ${noteSections}
+    <div class="dash-section" id="section-actions">
+      <div class="dash-section-hdr">Actions</div>
+      ${actionSections}
     </div>
     <div class="dash-section" id="section-all-submissions">
       <div class="dash-section-hdr">All Submissions <span class="hdr-count">${n}</span></div>
