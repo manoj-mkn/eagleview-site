@@ -171,7 +171,7 @@ main{max-width:1200px;margin:0 auto;padding:24px 16px 60px}
 <div id="header">
   <div id="header-inner">
     <div class="dash-title">Eagle View — Test Case Dashboard</div>
-    <span class="dash-version">v1.1.4</span>
+    <span class="dash-version">v1.1.5</span>
     <div class="dash-meta" id="dash-meta">Loading…</div>
     <button class="hdr-btn" onclick="savePDF()">⬇ Save as PDF</button>
     <button class="hdr-btn" onclick="savePDFDirect(this)">⬇ Direct PDF</button>
@@ -214,15 +214,19 @@ const _sb = supabase.createClient(
   'sb_publishable_98NHJeyCD8JtPK0Njhdidw_NAWgJjy4'
 );
 
-const CURRENT_VERSION = 'v1.1.4';
+const CURRENT_VERSION = 'v1.1.5';
 
 let allRows = [];
 let selectedTesters = new Set();
 let currentVersion = CURRENT_VERSION;
 let userHidden = true;
 let userMap = {};
-let tcQuestions = {};
-let questionsLoaded = false;
+// Keyed by version string, e.g. tcQuestionsByVersion['v1.1.4']['TC-085']. Old versions load
+// from their frozen eagleview/testcase/archive/{version}.html snapshot instead of the live
+// page, so a TC deleted from a later version doesn't blank out its label on older results —
+// see questionsUrlFor() / loadQuestions() below.
+let tcQuestionsByVersion = {};
+let questionsLoadedFor = {};
 let questionsShown = false;
 let notesShown = false;
 let devStatus = {}; // keyed by `${tc_id}__${note_key}` -> { corrected, tested_ok }, from eagleview_qa_dev_status
@@ -290,12 +294,24 @@ function updateVersionTabActive() {
   document.querySelector('.dash-version').textContent = currentVersion || 'All versions';
 }
 
-function setVersion(v) {
+async function setVersion(v) {
   currentVersion = v;
   updateVersionTabActive();
   selectedTesters = new Set();
   buildTesterPanel(getVersionRows());
   applyFilter();
+
+  // Questions panel was already open when the version tab changed — the bars just
+  // rendered above with blank question text if this version's map isn't cached yet.
+  // Load it now and backfill the same way toggleQuestions() does.
+  if (questionsShown) {
+    const vkey = questionsVersionKey();
+    if (!questionsLoadedFor[vkey]) await loadQuestions(vkey);
+    const qMap = tcQuestionsByVersion[vkey] || {};
+    document.querySelectorAll('.tc-question[data-id]').forEach(el => {
+      el.textContent = qMap[el.dataset.id] || '—';
+    });
+  }
 }
 
 function buildTesterPanel(rows) {
@@ -409,18 +425,44 @@ async function loadData() {
   applyFilter();
 }
 
-async function loadQuestions() {
-  if (questionsLoaded) return;
-  const html = await fetch('https://newmantech.in/eagleview/testcase/').then(r => r.text());
+// The version whose question text should back the current view. "All" (currentVersion
+// === null) mixes rows from every version, so there's no single correct source — falls
+// back to CURRENT_VERSION's text, same as the page always showed before per-version
+// archives existed.
+function questionsVersionKey() {
+  return currentVersion || CURRENT_VERSION;
+}
+
+function questionsUrlFor(version) {
+  return version === CURRENT_VERSION
+    ? 'https://newmantech.in/eagleview/testcase/'
+    : `https://newmantech.in/eagleview/testcase/archive/${version}.html`;
+}
+
+async function loadQuestions(version) {
+  if (questionsLoadedFor[version]) return;
+  let html;
+  try {
+    html = await fetch(questionsUrlFor(version)).then(r => {
+      if (!r.ok) throw new Error('no archive for ' + version);
+      return r.text();
+    });
+  } catch (e) {
+    // No archive exists for this version (e.g. it predates the archive-on-replace
+    // process) — fall back to the live page rather than showing nothing at all.
+    html = await fetch('https://newmantech.in/eagleview/testcase/').then(r => r.text());
+  }
   const doc = new DOMParser().parseFromString(html, 'text/html');
+  const map = {};
   doc.querySelectorAll('.tc[data-id]').forEach(tc => {
     const id = tc.dataset.id;
     const descEl = tc.querySelector('.tc-desc');
     if (!descEl) return;
     descEl.querySelectorAll('.note,.tc-btns').forEach(n => n.remove());
-    tcQuestions[id] = descEl.textContent.replace(/\s+/g, ' ').trim();
+    map[id] = descEl.textContent.replace(/\s+/g, ' ').trim();
   });
-  questionsLoaded = true;
+  tcQuestionsByVersion[version] = map;
+  questionsLoadedFor[version] = true;
 }
 
 async function toggleQuestions() {
@@ -428,11 +470,12 @@ async function toggleQuestions() {
   const section = document.getElementById('tc-results-section');
   if (!btn || !section) return;
 
-  if (!questionsLoaded) {
+  const vkey = questionsVersionKey();
+  if (!questionsLoadedFor[vkey]) {
     btn.textContent = 'Loading…';
     btn.disabled = true;
     try {
-      await loadQuestions();
+      await loadQuestions(vkey);
     } catch(e) {
       btn.textContent = 'Show Questions';
       btn.disabled = false;
@@ -440,11 +483,12 @@ async function toggleQuestions() {
     }
   }
 
-  // Always re-populate, not just on the fetch that first set questionsLoaded — otherwise
-  // rows whose text was never written (e.g. a per-row Q click already flipped the flag
-  // without touching every row) stay permanently blank once toggled visible.
+  // Always re-populate, not just on the fetch that first set questionsLoadedFor[vkey] —
+  // otherwise rows whose text was never written (e.g. a per-row Q click already flipped
+  // the flag without touching every row) stay permanently blank once toggled visible.
+  const qMap = tcQuestionsByVersion[vkey] || {};
   document.querySelectorAll('.tc-question[data-id]').forEach(el => {
-    el.textContent = tcQuestions[el.dataset.id] || '—';
+    el.textContent = qMap[el.dataset.id] || '—';
   });
 
   questionsShown = !questionsShown;
@@ -458,11 +502,12 @@ async function toggleRowQuestion(btn) {
   const row = btn.closest('.tc-row');
   if (!row) return;
 
-  if (!questionsLoaded) {
+  const vkey = questionsVersionKey();
+  if (!questionsLoadedFor[vkey]) {
     btn.textContent = '…';
     btn.disabled = true;
     try {
-      await loadQuestions();
+      await loadQuestions(vkey);
     } catch(e) {
       btn.textContent = 'Q';
       btn.disabled = false;
@@ -471,10 +516,10 @@ async function toggleRowQuestion(btn) {
   }
 
   // Always re-populate this row's text, even when some other row's click already flipped
-  // questionsLoaded to true — that flag only tracks whether the fetch happened, not whether
-  // THIS row's DOM element got its text written.
+  // questionsLoadedFor[vkey] to true — that flag only tracks whether the fetch happened,
+  // not whether THIS row's DOM element got its text written.
   const qEl = row.querySelector('.tc-question[data-id]');
-  if (qEl) qEl.textContent = tcQuestions[qEl.dataset.id] || '—';
+  if (qEl) qEl.textContent = (tcQuestionsByVersion[vkey] || {})[qEl.dataset.id] || '—';
 
   const isOn = row.classList.toggle('row-q-on');
   btn.classList.toggle('active', isOn);
@@ -584,6 +629,8 @@ function renderDashboard(rows) {
 
   /* ── TC bar rows ── */
   let bars = '';
+  const barsVkey = questionsVersionKey();
+  const barsQMap = tcQuestionsByVersion[barsVkey] || {};
   // Running totals for the "Corrected" / "Tested & Working" stat cards below — counts
   // every individual checkbox rendered (per-note ones count separately), not just rows.
   let totalCorrected = 0, checkedCorrected = 0, totalTested = 0, checkedTested = 0;
@@ -597,7 +644,7 @@ function renderDashboard(rows) {
     });
     const tot = (pass + fail + skip) || 1;
     const pw = Math.round(pass/tot*100), fw = Math.round(fail/tot*100), sw = Math.round(skip/tot*100);
-    const qText = questionsLoaded ? esc(tcQuestions[id] || '—') : '';
+    const qText = questionsLoadedFor[barsVkey] ? esc(barsQMap[id] || '—') : '';
     const tcNoteEntries = notesByTC[id] || [];
 
     // One "I've corrected this in the app" checkbox per individual note (each note is
