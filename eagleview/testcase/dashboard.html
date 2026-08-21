@@ -31,13 +31,18 @@ body{min-height:100vh}
 .dash-version{font-size:11px;font-weight:700;color:var(--text2);background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:2px 7px;white-space:nowrap;flex-shrink:0}
 .hdr-btn{padding:5px 13px;border:1px solid var(--border);border-radius:6px;background:var(--bg3);color:var(--text2);font-size:11px;font-weight:600;cursor:pointer;transition:all 0.15s;white-space:nowrap}
 .hdr-btn:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+.nav-divider{width:1px;height:20px;background:var(--border);flex-shrink:0;align-self:center}
 
 /* ── Main ── */
 main{max-width:1200px;margin:0 auto;padding:24px 16px 60px}
 
+/* ── Stat bar (sticky below header) ── */
+#stat-bar{position:sticky;z-index:99;background:var(--bg);border-bottom:1px solid var(--border);padding:12px 16px;display:none}
+#stat-bar-inner{max-width:1200px;margin:0 auto}
+
 /* ── Stat cards ── */
-.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:24px}
-.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px 16px}
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:0}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:12px 16px}
 .stat-value{font-size:30px;font-weight:900;color:var(--accent);line-height:1}
 .stat-label{font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.6px;margin-top:7px}
 .stat-card-pie{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px}
@@ -88,11 +93,14 @@ main{max-width:1200px;margin:0 auto;padding:24px 16px 60px}
 .tc-status-check.checked{color:var(--pass)}
 
 /* ── Notes ── */
-.notes-group{border-bottom:1px solid var(--border)}
-.notes-group:last-child{border-bottom:none}
-.notes-group-hdr{padding:8px 16px;font-size:11px;font-weight:800;color:var(--accent);background:rgba(232,119,34,0.05);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.notes-group{border:1px solid var(--border);border-radius:8px;margin:10px 12px;overflow:hidden}
+.notes-group:last-child{margin-bottom:12px}
+.notes-group-hdr{padding:8px 16px 4px;font-size:11px;font-weight:800;color:var(--accent);background:rgba(232,119,34,0.05);border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:3px}
+.notes-group-hdr-top{display:flex;align-items:center;gap:8px}
+.notes-group-q{font-size:11px;font-weight:400;color:var(--text2);padding-bottom:4px;line-height:1.4}
 .note-block{padding:10px 16px;border-bottom:1px solid var(--border)}
 .note-block:last-child{border-bottom:none}
+.note-block-tested{background:rgba(0,0,0,0.02)}
 .note-meta{font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px}
 .note-text{font-size:12px;color:var(--text);line-height:1.6;padding-left:10px;border-left:2px solid var(--accent);white-space:pre-wrap}
 
@@ -142,6 +150,7 @@ main{max-width:1200px;margin:0 auto;padding:24px 16px 60px}
 #pdf-timestamp{display:none;font-size:11px;color:var(--text2);text-align:center;padding:6px 16px;margin:0 0 8px}
 @media print{
   #header{display:none!important}
+  #stat-bar{position:static!important;border:none!important;box-shadow:none!important}
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
   body{background:white!important}
   #pdf-timestamp{display:block!important}
@@ -173,6 +182,10 @@ main{max-width:1200px;margin:0 auto;padding:24px 16px 60px}
     <div class="dash-title">Eagle View — Test Case Dashboard</div>
     <span class="dash-version">v1.1.5</span>
     <div class="dash-meta" id="dash-meta">Loading…</div>
+    <button class="hdr-btn nav-btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ Top</button>
+    <button class="hdr-btn nav-btn" onclick="window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})">↓ Bottom</button>
+    <button class="hdr-btn nav-btn" onclick="document.getElementById('section-remarks')?.scrollIntoView({behavior:'smooth',block:'start'})">📌 Remarks</button>
+    <span class="nav-divider"></span>
     <button class="hdr-btn" onclick="savePDF()">⬇ Save as PDF</button>
     <button class="hdr-btn" onclick="savePDFDirect(this)">⬇ Direct PDF</button>
     <button class="hdr-btn" onclick="toggleTheme()">☀ / ☾</button>
@@ -192,6 +205,7 @@ main{max-width:1200px;margin:0 auto;padding:24px 16px 60px}
 </div>
 
 <div id="pdf-timestamp"></div>
+<div id="stat-bar"><div id="stat-bar-inner"></div></div>
 <main>
   <div id="loading"><span class="spinner"></span>Loading QA data…</div>
   <div id="version-tabs"></div>
@@ -345,9 +359,10 @@ function selectNone() {
   document.querySelectorAll('.tester-chip').forEach(c => c.classList.remove('active'));
   applyFilter();
 }
-function applyFilter() {
+async function applyFilter() {
   const vRows = getVersionRows();
   if (vRows.length === 0) {
+    document.getElementById('stat-bar').style.display = 'none';
     document.getElementById('dash-meta').textContent = '0 submissions';
     document.getElementById('dashboard').innerHTML =
       '<div class="empty-msg">No submissions yet for ' + esc(currentVersion || 'this version') + '.<br>Complete the test cases to get started.</div>';
@@ -360,9 +375,13 @@ function applyFilter() {
   document.getElementById('dash-meta').textContent =
     n + ' of ' + total + ' submission' + (total !== 1 ? 's' : '') + ' selected';
   if (n === 0) {
+    document.getElementById('stat-bar').style.display = 'none';
     document.getElementById('dashboard').innerHTML = '<div class="empty-msg">No submissions match the current filter.</div>';
     document.getElementById('dashboard').style.display = 'block';
   } else {
+    // Pre-load questions so Remarks section always shows TC descriptions
+    const vkey = questionsVersionKey();
+    if (!questionsLoadedFor[vkey]) await loadQuestions(vkey);
     renderDashboard(filtered);
   }
 }
@@ -533,7 +552,7 @@ function toggleAllNotes() {
   if (!btn || !section) return;
   notesShown = !notesShown;
   section.classList.toggle('notes-on', notesShown);
-  btn.textContent = notesShown ? 'Hide Notes' : 'Show Notes';
+  btn.textContent = notesShown ? 'Hide Remarks' : 'Show Remarks';
   btn.classList.toggle('active', notesShown);
 }
 
@@ -542,7 +561,7 @@ function toggleRowNotes(btn) {
   if (!row) return;
   const isOn = row.classList.toggle('row-notes-on');
   btn.classList.toggle('active', isOn);
-  btn.textContent = isOn ? 'Hide Notes' : `Notes (${btn.dataset.count})`;
+  btn.textContent = isOn ? 'Hide Remark' : `Remark (${btn.dataset.count})`;
 }
 
 // Dev-response checkboxes ("I've corrected this in the app" / "Tested and working
@@ -574,7 +593,14 @@ async function toggleAck(cb) {
   const wasChecked = !!(devStatus[devKey] && devStatus[devKey][field]);
   if (!devStatus[devKey]) devStatus[devKey] = {};
   devStatus[devKey][field] = checked;
-  if (label) label.classList.toggle('checked', checked);
+  // Mirror state to all matching checkboxes (TC Results + Remarks sections stay in sync)
+  document.querySelectorAll(
+    `input[type="checkbox"][data-tc="${CSS.escape(tcId)}"][data-note="${CSS.escape(noteKey)}"][data-field="${CSS.escape(field)}"]`
+  ).forEach(mirror => {
+    mirror.checked = checked;
+    const ml = mirror.closest('label');
+    if (ml) ml.classList.toggle('checked', checked);
+  });
   if (checked !== wasChecked) bumpDevCounter(field, checked ? 1 : -1);
 }
 
@@ -699,7 +725,7 @@ function renderDashboard(rows) {
         <span class="cnt-fail">✗ ${fail}</span>
       </div>
       <button class="show-q-btn row-q-btn" onclick="toggleRowQuestion(this)">Q</button>
-      <button class="show-q-btn row-notes-btn" ${tcNoteEntries.length ? `data-count="${tcNoteEntries.length}" onclick="toggleRowNotes(this)"` : 'disabled'}>Notes${tcNoteEntries.length ? ` (${tcNoteEntries.length})` : ''}</button>
+      <button class="show-q-btn row-notes-btn" ${tcNoteEntries.length ? `data-count="${tcNoteEntries.length}" onclick="toggleRowNotes(this)"` : 'disabled'}>Remark${tcNoteEntries.length ? ` (${tcNoteEntries.length})` : ''}</button>
       <div class="tc-question" data-id="${esc(id)}">${qText}</div>
       ${tcNoteEntries.length ? `<div class="tc-notes">${rowNotesHtml}</div>` : ''}
       ${statusChecksHtml}
@@ -739,17 +765,30 @@ function renderDashboard(rows) {
   const noteIds = sortTCIds(Object.keys(notesByTC));
   let noteSections = '';
   if (noteIds.length === 0) {
-    noteSections = '<div style="padding:12px 16px;font-size:12px;color:var(--text2)">No notes recorded yet.</div>';
+    noteSections = '<div style="padding:12px 16px;font-size:12px;color:var(--text2)">No remarks recorded yet.</div>';
   } else {
     noteIds.forEach(id => {
       const entries = notesByTC[id];
-      const items = entries.map(e => `<div class="note-block">
-        <div class="note-meta">${esc(maskName(e.tester||'Unknown'))} · ${esc(e.platform||'—')} · ${fmtDate(e.submitted_at)}</div>
-        <div class="note-text">${esc(e.text)}</div>
-      </div>`).join('');
+      const items = entries.map(e => {
+        const noteKey = `${e.tester||''}__${e.platform||''}__${e.submitted_at||''}`;
+        const noteChecked = !!(devStatus[`${id}__${noteKey}`] && devStatus[`${id}__${noteKey}`].corrected);
+        return `<div class="note-block">
+          <div class="note-meta">${esc(maskName(e.tester||'Unknown'))} · ${esc(e.platform||'—')} · ${fmtDate(e.submitted_at)}</div>
+          <div class="note-text">${esc(e.text)}</div>
+          <label class="tc-ack-check${noteChecked ? ' checked' : ''}"><input type="checkbox" ${noteChecked ? 'checked' : ''} data-tc="${esc(id)}" data-note="${esc(noteKey)}" data-field="corrected" onchange="toggleAck(this)"/> I've corrected this in the app</label>
+        </div>`;
+      }).join('');
+      const noteQ = barsQMap[id] ? esc(barsQMap[id]) : '';
+      const testedChecked = !!(devStatus[`${id}__`] && devStatus[`${id}__`].tested_ok);
       noteSections += `<div class="notes-group">
-        <div class="notes-group-hdr">${esc(id)} <span class="hdr-count">${entries.length}</span></div>
+        <div class="notes-group-hdr">
+          <div class="notes-group-hdr-top">${esc(id)} <span class="hdr-count">${entries.length}</span></div>
+          ${noteQ ? `<div class="notes-group-q">${noteQ}</div>` : ''}
+        </div>
         ${items}
+        <div class="note-block note-block-tested">
+          <label class="tc-ack-check${testedChecked ? ' checked' : ''}"><input type="checkbox" ${testedChecked ? 'checked' : ''} data-tc="${esc(id)}" data-note="" data-field="tested_ok" onchange="toggleAck(this)"/> Tested and working well</label>
+        </div>
       </div>`;
     });
   }
@@ -775,13 +814,20 @@ function renderDashboard(rows) {
     </tr>`;
   });
 
-  document.getElementById('dashboard').innerHTML = stats + `
+  // Pin stat bar below header
+  const statBar = document.getElementById('stat-bar');
+  const statBarInner = document.getElementById('stat-bar-inner');
+  statBarInner.innerHTML = stats;
+  statBar.style.top = document.getElementById('header').offsetHeight + 'px';
+  statBar.style.display = 'block';
+
+  document.getElementById('dashboard').innerHTML = `
     <div class="dash-section ${questionsShown ? 'questions-on' : ''} ${notesShown ? 'notes-on' : ''}" id="tc-results-section">
-      <div class="dash-section-hdr">TC Results <span class="hdr-count">${n} submission${n!==1?'s':''}</span><div class="hdr-btn-group"><button class="show-q-btn ${questionsShown ? 'active' : ''}" id="show-q-btn" onclick="toggleQuestions()">${questionsShown ? 'Hide Questions' : 'Show Questions'}</button><button class="show-q-btn ${notesShown ? 'active' : ''}" id="show-notes-btn" onclick="toggleAllNotes()">${notesShown ? 'Hide Notes' : 'Show Notes'}</button></div></div>
+      <div class="dash-section-hdr">TC Results <span class="hdr-count">${n} submission${n!==1?'s':''}</span><div class="hdr-btn-group"><button class="show-q-btn ${questionsShown ? 'active' : ''}" id="show-q-btn" onclick="toggleQuestions()">${questionsShown ? 'Hide Questions' : 'Show Questions'}</button><button class="show-q-btn ${notesShown ? 'active' : ''}" id="show-notes-btn" onclick="toggleAllNotes()">${notesShown ? 'Hide Remarks' : 'Show Remarks'}</button></div></div>
       ${bars}
     </div>
-    <div class="dash-section">
-      <div class="dash-section-hdr">Notes</div>
+    <div class="dash-section" id="section-remarks">
+      <div class="dash-section-hdr">Remarks</div>
       ${noteSections}
     </div>
     <div class="dash-section" id="section-all-submissions">
