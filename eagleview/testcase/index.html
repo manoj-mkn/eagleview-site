@@ -1551,6 +1551,7 @@ function saveAsTestedFile(btn) {
   document.body.classList.remove('pre-save');
   document.body.setAttribute('data-saved', '1');
   updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 
   // Flash floppy green + switch nudge to green
   btn.classList.add('saved');
