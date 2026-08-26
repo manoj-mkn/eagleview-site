@@ -36,6 +36,7 @@ h1{font-size:26px;font-weight:700;color:#1A1A2E;margin-bottom:6px;line-height:1.
 .inp{width:100%;background:rgba(255,255,255,.7);border:1.5px solid rgba(0,0,0,.1);border-radius:10px;padding:12px 15px;font-size:13px;color:#1A1A2E;font-family:inherit;outline:none;margin-bottom:10px;transition:border-color .2s;backdrop-filter:blur(4px);}
 .inp:focus{border-color:#E87722;background:rgba(255,255,255,.9);}
 .inp::placeholder{color:#C0C0D0;}
+.inp[readonly]{background:rgba(255,255,255,.35);color:#5A5A7A;cursor:default;border-color:rgba(0,0,0,.06);}
 .mid-ok{display:none;align-items:center;gap:7px;font-size:12px;color:#666;margin-bottom:10px;}
 .mid-dot{width:7px;height:7px;border-radius:50%;background:#00C070;flex-shrink:0;}
 .mid-ok strong{color:#00A060;font-weight:500;}
@@ -83,7 +84,7 @@ h1{font-size:26px;font-weight:700;color:#1A1A2E;margin-bottom:6px;line-height:1.
 <script>
 var EDGE_URL='https://cmmafuddsgritdmltxcr.supabase.co/functions/v1/activate-license';
 var _plan=365,_mid='';
-(function(){var p=new URLSearchParams(window.location.search),mid=(p.get('mid')||'').trim(),email=(p.get('email')||'').trim();if(mid){_mid=mid;var ok=document.getElementById('buyMidOk'),mn=document.getElementById('buyMidManual');if(ok)ok.style.display='flex';if(mn)mn.style.display='none';}if(email){var el=document.getElementById('buyEmail');if(el)el.value=email;}})();
+(function(){var p=new URLSearchParams(window.location.search),mid=(p.get('mid')||'').trim(),email=(p.get('email')||'').trim();if(mid){_mid=mid;var ok=document.getElementById('buyMidOk'),mn=document.getElementById('buyMidManual');if(ok)ok.style.display='flex';if(mn)mn.style.display='none';}if(email){var el=document.getElementById('buyEmail');if(el){el.value=email;el.readOnly=true;}}})();
 function selectPlan(d){_plan=d;document.querySelectorAll('[data-days]').forEach(function(el){el.classList.toggle('sel',parseInt(el.dataset.days,10)===d);});}
 function showErr(m){var el=document.getElementById('buyErr');el.textContent=m;el.style.display='block';}
 function startPayment(){var email=(document.getElementById('buyEmail').value||'').trim().toLowerCase(),mid=_mid||(document.getElementById('buyMachineId')?(document.getElementById('buyMachineId').value||'').trim():'');document.getElementById('buyErr').style.display='none';if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showErr('Enter a valid email address.');return;}if(!mid){showErr('Paste your Machine ID from Eagle View.');return;}var btn=document.getElementById('buyBtn');btn.disabled=true;btn.textContent='Opening…';fetch(EDGE_URL+'?action=create-payment-link',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,machine_id:mid,license_days:_plan})}).then(function(r){return r.json();}).then(function(data){if(data.payment_link_url){window.location.href=data.payment_link_url;}else{showErr(data.error||'Try again.');btn.disabled=false;btn.textContent='Pay now →';}}).catch(function(){showErr('Network error.');btn.disabled=false;btn.textContent='Pay now →';});}
