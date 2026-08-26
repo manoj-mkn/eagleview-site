@@ -234,17 +234,26 @@ serve(async (req) => {
       return json({ ok: true })
     }
 
+    // ── validateAdminKey: calls Supabase auth admin API — only service role key passes ──
+    async function validateAdminKey(key: string): Promise<boolean> {
+      if (!key) return false
+      const r = await fetch(`${SUPABASE_URL}/auth/v1/admin/users?page=1&per_page=1`, {
+        headers: { 'Authorization': `Bearer ${key}`, 'apikey': key },
+      })
+      return r.ok
+    }
+
     // ── ping-admin (validates service key before admin tool grants access) ──────
     if (action === 'ping-admin') {
       const { admin_key } = body
-      if (!admin_key || admin_key.trim() !== SUPABASE_SERVICE_KEY.trim()) return json({ error: 'Unauthorized' }, 401)
+      if (!await validateAdminKey(admin_key)) return json({ error: 'Unauthorized' }, 401)
       return json({ ok: true })
     }
 
     // ── admin-issue-key (local admin tool only — auth via service key) ───────────
     if (action === 'admin-issue-key') {
       const { email, machine_id, license_days, admin_key } = body
-      if (!admin_key || admin_key.trim() !== SUPABASE_SERVICE_KEY.trim()) return json({ error: 'Unauthorized' }, 401)
+      if (!await validateAdminKey(admin_key)) return json({ error: 'Unauthorized' }, 401)
       if (!email || !machine_id || !license_days) return json({ error: 'Missing fields' }, 400)
       const days = Math.max(1, Math.min(3650, Number(license_days)))
       const key = await generateLicenseKey(email.trim().toLowerCase(), machine_id.trim(), days)
