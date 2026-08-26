@@ -234,6 +234,13 @@ serve(async (req) => {
       return json({ ok: true })
     }
 
+    // ── ping-admin (validates service key before admin tool grants access) ──────
+    if (action === 'ping-admin') {
+      const { admin_key } = body
+      if (!admin_key || admin_key.trim() !== SUPABASE_SERVICE_KEY.trim()) return json({ error: 'Unauthorized' }, 401)
+      return json({ ok: true })
+    }
+
     // ── admin-issue-key (local admin tool only — auth via service key) ───────────
     if (action === 'admin-issue-key') {
       const { email, machine_id, license_days, admin_key } = body
