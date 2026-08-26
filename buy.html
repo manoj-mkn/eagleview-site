@@ -3,166 +3,464 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Eagle View — Buy a License</title>
+<title>Eagle View — Get a License</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet"/>
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#07100F;color:#F0FFFE;}
+/* ── Single-theme dark — Eagle View's world is always dark ── */
+:root {
+  --bg:           #050E0B;
+  --surface:      #0B1814;
+  --surface-2:    #0F2019;
+  --border:       rgba(255,255,255,0.07);
+  --orange:       #E87722;
+  --orange-lt:    #F5A040;
+  --orange-dk:    #8C3D00;
+  --text:         #EBF8F5;
+  --text-2:       #6B9690;
+  --text-3:       #2E5550;
+  --green:        #00C9A0;
+  --err:          #FF6B7A;
+}
 
-/* ── Layout ── */
-body{display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:48px 20px 64px;}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
 
-/* ── Header ── */
-.ev-logo{display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:40px;}
-.ev-icon{width:52px;height:52px;background:linear-gradient(135deg,#7A3200 0%,#B85400 40%,#E87722 80%,#F5A040 100%);border-radius:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 32px rgba(232,119,34,.35);}
-.ev-wordmark{font-size:13px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.55);}
+body {
+  background: var(--bg);
+  background-image: radial-gradient(ellipse 80% 44% at 50% -8%, rgba(184,84,0,.13) 0%, transparent 70%);
+  color: var(--text);
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 56px 24px 80px;
+}
+
+/* ── Wordmark ── */
+.wordmark {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 56px;
+  animation: fu .4s ease both;
+}
+.wordmark-icon {
+  width: 38px; height: 38px;
+  background: linear-gradient(145deg, #7A3200, #E87722);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 22px rgba(232,119,34,.28);
+  flex-shrink: 0;
+}
+.wordmark-name {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
 
 /* ── Headline ── */
-.ev-title{font-size:clamp(22px,5vw,30px);font-weight:800;text-align:center;color:#F0FFFE;margin-bottom:8px;line-height:1.2;}
-.ev-sub{font-size:13px;color:#5A8A87;text-align:center;margin-bottom:36px;line-height:1.6;}
+.headline-block {
+  text-align: center;
+  margin-bottom: 52px;
+  max-width: 480px;
+  animation: fu .4s .07s ease both;
+}
+h1 {
+  font-family: 'DM Serif Display', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(30px, 6vw, 44px);
+  font-weight: 400;
+  line-height: 1.12;
+  letter-spacing: -.015em;
+  color: var(--text);
+  text-wrap: balance;
+  margin-bottom: 13px;
+}
+h1 em {
+  font-style: normal;
+  background: linear-gradient(95deg, var(--orange) 20%, var(--orange-lt) 80%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.sub {
+  font-size: 13px;
+  color: var(--text-2);
+}
+.sub span { margin: 0 5px; color: var(--text-3); }
 
-/* ── Plan cards ── */
-.plans{display:flex;gap:12px;width:100%;max-width:520px;margin-bottom:24px;}
-.plan{flex:1;background:#0D1E1B;border:1.5px solid #1A3530;border-radius:14px;padding:22px 14px 18px;cursor:pointer;transition:border-color .18s,background .18s,box-shadow .18s;text-align:center;font-family:inherit;position:relative;outline:none;}
-.plan:hover{background:#101F1C;border-color:#336B66;}
-.plan.sel{background:rgba(232,119,34,.1);border-color:#E87722;box-shadow:0 0 0 1px rgba(232,119,34,.25);}
-.plan-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:linear-gradient(90deg,#B85400,#E87722);color:#fff;border-radius:20px;padding:3px 10px;white-space:nowrap;}
-.plan-dur{font-size:15px;font-weight:700;color:#C8E8E5;margin-bottom:8px;}
-.plan.sel .plan-dur{color:#F5A040;}
-.plan-price{font-size:26px;font-weight:800;color:#F0FFFE;margin-bottom:4px;line-height:1;}
-.plan.sel .plan-price{color:#E87722;}
-.plan-note{font-size:10px;color:#3A6460;line-height:1.4;}
-.plan.sel .plan-note{color:#7A5A30;}
+/* ── Section label ── */
+.sec-label {
+  width: 100%;
+  max-width: 520px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 12px;
+  animation: fu .38s .13s ease both;
+}
 
-/* ── Form card ── */
-.card{width:100%;max-width:520px;background:#0D1E1B;border:1px solid #1A3530;border-radius:16px;padding:28px;}
-.features{list-style:none;display:flex;flex-direction:column;gap:9px;margin-bottom:24px;}
-.features li{font-size:13px;color:#A8D4D1;display:flex;align-items:center;gap:9px;}
-.features li::before{content:'✓';color:#E87722;font-weight:700;flex-shrink:0;font-size:12px;}
-.form{display:flex;flex-direction:column;gap:12px;}
-.inp{width:100%;background:#070F0D;border:1px solid #1A3530;border-radius:9px;padding:11px 14px;font-size:13px;color:#F0FFFE;outline:none;transition:border-color .18s;font-family:inherit;}
-.inp:focus{border-color:#E87722;}
-.inp::placeholder{color:#2A4A46;}
-.mid-ok{font-size:11px;color:#5A8A87;padding:0 2px;display:flex;align-items:center;gap:6px;}
-.mid-ok strong{color:#E87722;}
-.hint{font-size:11px;color:#3A6460;padding:0 2px;line-height:1.55;}
-.hint strong{color:#5A8A87;}
-.err{font-size:12px;color:#FF6B7A;display:none;}
-.pay-btn{width:100%;padding:14px;background:linear-gradient(135deg,#7A3200 0%,#B85400 45%,#E87722 100%);color:#fff;font-size:14px;font-weight:700;border:none;border-radius:9px;cursor:pointer;letter-spacing:.02em;transition:opacity .18s;font-family:inherit;box-shadow:0 4px 20px rgba(232,119,34,.3);}
-.pay-btn:hover{opacity:.88;}
-.pay-btn:disabled{opacity:.4;cursor:not-allowed;}
-.secure-note{font-size:11px;color:#2A4A46;text-align:center;margin-top:12px;line-height:1.5;}
+/* ── Plan rows ── */
+.plans {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: 100%;
+  max-width: 520px;
+  margin-bottom: 32px;
+}
+
+.plan {
+  display: flex;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  padding: 18px 20px;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  text-align: left;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  outline: none;
+  transition: border-color .18s, background .18s, box-shadow .18s;
+}
+
+/* left accent bar */
+.plan::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--orange);
+  border-radius: 0;
+  transform: scaleY(0);
+  transform-origin: center;
+  transition: transform .22s cubic-bezier(.4,0,.2,1);
+}
+.plan.sel::before { transform: scaleY(1); }
+.plan:hover:not(.sel) { border-color: rgba(255,255,255,.13); background: var(--surface-2); }
+.plan.sel {
+  border-color: rgba(232,119,34,.32);
+  background: rgba(232,119,34,.07);
+  box-shadow: 0 0 0 1px rgba(232,119,34,.1);
+}
+.plan:focus-visible { box-shadow: 0 0 0 2px var(--orange); }
+
+.plan-left { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+.plan-dur { font-size: 15px; font-weight: 600; color: var(--text); }
+.plan.sel .plan-dur { color: var(--orange-lt); }
+.plan-desc { font-size: 12px; color: var(--text-2); }
+
+.badge {
+  display: inline-flex; align-items: center;
+  font-size: 9px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase;
+  color: var(--orange-lt);
+  background: rgba(232,119,34,.14);
+  border: 1px solid rgba(232,119,34,.28);
+  border-radius: 4px;
+  padding: 2px 7px;
+  margin-left: 9px;
+  vertical-align: middle;
+}
+
+.plan-right { display: flex; flex-direction: column; align-items: flex-end; gap: 1px; margin-right: 16px; }
+.plan-price {
+  font-size: 21px; font-weight: 700;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -.02em;
+}
+.plan.sel .plan-price { color: var(--orange); }
+.plan-period { font-size: 11px; color: var(--text-3); }
+
+/* radio */
+.radio {
+  width: 18px; height: 18px;
+  border: 1.5px solid var(--text-3);
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color .18s;
+}
+.plan.sel .radio { border-color: var(--orange); }
+.radio::after {
+  content: '';
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--orange);
+  opacity: 0;
+  transform: scale(0);
+  transition: opacity .18s, transform .2s cubic-bezier(.34,1.56,.64,1);
+}
+.plan.sel .radio::after { opacity: 1; transform: scale(1); }
+
+.plans .plan:nth-child(1) { animation: fu .34s .17s ease both; }
+.plans .plan:nth-child(2) { animation: fu .34s .22s ease both; }
+.plans .plan:nth-child(3) { animation: fu .34s .27s ease both; }
+
+/* ── Checkout card ── */
+.checkout {
+  width: 100%;
+  max-width: 520px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 26px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: fu .4s .32s ease both;
+}
+.checkout-label {
+  font-size: 10px; font-weight: 600;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--text-3);
+}
+.inp {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 15px;
+  font-size: 14px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  outline: none;
+  transition: border-color .18s;
+}
+.inp:focus { border-color: rgba(232,119,34,.45); }
+.inp::placeholder { color: var(--text-3); }
+
+.mid-ok {
+  display: none;
+  align-items: center;
+  gap: 9px;
+  font-size: 12px;
+  color: var(--text-2);
+}
+.mid-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  flex-shrink: 0;
+  box-shadow: 0 0 8px rgba(0,201,160,.45);
+}
+.mid-ok strong { color: var(--green); font-weight: 500; }
+
+.hint { font-size: 12px; color: var(--text-3); line-height: 1.55; }
+.hint strong { color: var(--text-2); font-weight: 500; }
+
+.err { display: none; font-size: 12px; color: var(--err); }
+
+.pay-btn {
+  width: 100%;
+  padding: 15px;
+  background: linear-gradient(135deg, var(--orange-dk) 0%, #C85000 45%, var(--orange) 100%);
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 9px;
+  cursor: pointer;
+  letter-spacing: .01em;
+  box-shadow: 0 6px 28px rgba(200,80,0,.3);
+  position: relative;
+  overflow: hidden;
+  transition: opacity .18s, transform .18s;
+}
+.pay-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.09), transparent);
+  transform: translateX(-100%);
+  transition: transform .55s ease;
+}
+.pay-btn:hover::after { transform: translateX(100%); }
+.pay-btn:hover { opacity: .9; transform: translateY(-1px); }
+.pay-btn:active { transform: translateY(0); }
+.pay-btn:disabled { opacity: .38; cursor: not-allowed; transform: none; }
+.pay-btn:disabled::after { display: none; }
+
+.trust {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-size: 11px;
+  color: var(--text-3);
+}
 
 /* ── Success ── */
-.success{display:none;text-align:center;padding:12px 0 4px;}
-.success-icon{font-size:44px;margin-bottom:14px;}
-.success-title{font-size:18px;font-weight:700;color:#E87722;margin-bottom:8px;}
-.success-msg{font-size:13px;color:#7AB8B5;line-height:1.65;}
+.success {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  padding: 6px 0;
+}
+.success-ring {
+  width: 54px; height: 54px;
+  border-radius: 50%;
+  border: 1.5px solid var(--green);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 24px rgba(0,201,160,.2);
+}
+.success-title { font-size: 17px; font-weight: 600; color: var(--green); }
+.success-msg { font-size: 13px; color: var(--text-2); line-height: 1.65; max-width: 320px; }
 
 /* ── Footer ── */
-.ev-footer{margin-top:40px;font-size:11px;color:#1A3530;text-align:center;}
-.ev-footer a{color:#2A4A46;text-decoration:none;}
-.ev-footer a:hover{color:#5A8A87;}
+.footer {
+  margin-top: 44px;
+  display: flex;
+  gap: 20px;
+  font-size: 11px;
+  animation: fu .4s .42s ease both;
+}
+.footer a { color: var(--text-3); text-decoration: none; transition: color .15s; }
+.footer a:hover { color: var(--text-2); }
 
-/* ── Responsive ── */
-@media(max-width:520px){
-  .plans{flex-direction:column;gap:8px;}
-  .plan{padding:14px 16px;display:flex;align-items:center;gap:14px;text-align:left;border-radius:11px;}
-  .plan-badge{position:static;transform:none;order:-1;margin-right:auto;}
-  .plan-dur,.plan-price,.plan-note{margin-bottom:0;}
-  .plan-note{display:none;}
-  .card{padding:20px;}
-  body{padding:32px 16px 48px;}
+/* ── Animation ── */
+@keyframes fu {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition-duration: .01ms !important; }
+}
+@media (max-width: 540px) {
+  body { padding: 36px 16px 60px; }
+  h1 { font-size: 28px; }
+  .plan { padding: 14px 16px; }
+  .checkout { padding: 20px; }
 }
 </style>
 </head>
 <body>
 
-<div class="ev-logo">
-  <div class="ev-icon">
-    <svg width="30" height="30" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+<div class="wordmark">
+  <div class="wordmark-icon">
+    <svg width="20" height="20" viewBox="0 0 100 100">
       <polygon points="50,8 67,40 50,35 33,40" fill="white"/>
-      <polygon points="50,35 10,25 20,50 38,50" fill="white" opacity="0.9"/>
-      <polygon points="50,35 90,25 80,50 62,50" fill="white" opacity="0.9"/>
-      <polygon points="38,50 20,60 30,72 50,65" fill="white" opacity="0.8"/>
-      <polygon points="62,50 80,60 70,72 50,65" fill="white" opacity="0.8"/>
-      <polygon points="50,65 44,85 50,80 56,85" fill="white" opacity="0.75"/>
+      <polygon points="50,35 10,25 20,50 38,50" fill="white" opacity=".9"/>
+      <polygon points="50,35 90,25 80,50 62,50" fill="white" opacity=".9"/>
+      <polygon points="38,50 20,60 30,72 50,65" fill="white" opacity=".8"/>
+      <polygon points="62,50 80,60 70,72 50,65" fill="white" opacity=".8"/>
+      <polygon points="50,65 44,85 50,80 56,85" fill="white" opacity=".75"/>
     </svg>
   </div>
-  <span class="ev-wordmark">Eagle View</span>
+  <span class="wordmark-name">Eagle View</span>
 </div>
 
-<h1 class="ev-title">Choose your plan</h1>
-<p class="ev-sub">One-time payment &nbsp;·&nbsp; No subscription &nbsp;·&nbsp; Mac &amp; Windows</p>
+<div class="headline-block">
+  <h1>One payment.<br><em>Everything</em>, always on.</h1>
+  <p class="sub">No subscription<span>·</span>Mac &amp; Windows<span>·</span>Key to your inbox</p>
+</div>
 
-<!-- Plan cards -->
+<div class="sec-label">Choose your plan</div>
+
 <div class="plans">
   <button class="plan" data-days="40" onclick="selectPlan(40)">
-    <div class="plan-dur">40 Days</div>
-    <div class="plan-price">₹1</div>
-    <div class="plan-note">Short-term access</div>
+    <div class="plan-left">
+      <div class="plan-dur">40 Days</div>
+      <div class="plan-desc">Try it out, no long commitment</div>
+    </div>
+    <div class="plan-right">
+      <div class="plan-price">₹1</div>
+      <div class="plan-period">one-time</div>
+    </div>
+    <div class="radio"></div>
   </button>
+
   <button class="plan" data-days="180" onclick="selectPlan(180)">
-    <div class="plan-badge">Popular</div>
-    <div class="plan-dur">6 Months</div>
-    <div class="plan-price">₹1</div>
-    <div class="plan-note">Half-year access</div>
+    <div class="plan-left">
+      <div class="plan-dur">6 Months <span class="badge">Popular</span></div>
+      <div class="plan-desc">Half a year of uninterrupted access</div>
+    </div>
+    <div class="plan-right">
+      <div class="plan-price">₹1</div>
+      <div class="plan-period">one-time</div>
+    </div>
+    <div class="radio"></div>
   </button>
+
   <button class="plan sel" data-days="365" onclick="selectPlan(365)">
-    <div class="plan-badge">Best value</div>
-    <div class="plan-dur">1 Year</div>
-    <div class="plan-price">₹1</div>
-    <div class="plan-note">Full-year access</div>
+    <div class="plan-left">
+      <div class="plan-dur">1 Year <span class="badge">Best value</span></div>
+      <div class="plan-desc">Full-year access, all updates included</div>
+    </div>
+    <div class="plan-right">
+      <div class="plan-price">₹1</div>
+      <div class="plan-period">one-time</div>
+    </div>
+    <div class="radio"></div>
   </button>
 </div>
 
-<!-- Form card -->
-<div class="card">
-  <ul class="features">
-    <li>Outlook + Gmail — mail, meetings, to-do</li>
-    <li>Jira, Azure DevOps, Slack, Teams</li>
-    <li>World clock, Timesheet, Peakon, Notes</li>
-    <li>All future updates included</li>
-  </ul>
+<div class="checkout">
+  <div class="checkout-label">Your details</div>
 
-  <div class="form" id="buyForm">
-    <input class="inp" id="buyEmail" type="email" placeholder="Your email address" autocomplete="email"/>
+  <div id="buyForm" style="display:flex;flex-direction:column;gap:14px;">
+    <input class="inp" id="buyEmail" type="email" placeholder="your@email.com" autocomplete="email"/>
 
-    <!-- Shown when machine ID comes from the app via ?mid= -->
-    <div class="mid-ok" id="buyMidOk" style="display:none">
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#E87722" stroke-width="1.4"/><path d="M5 8l2 2 4-4" stroke="#E87722" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="mid-ok" id="buyMidOk">
+      <div class="mid-dot"></div>
       <span>Machine ID detected — <strong>key will be bound to this device</strong></span>
     </div>
 
-    <!-- Shown when visiting directly (no ?mid=) -->
-    <div id="buyMidManual">
+    <div id="buyMidManual" style="display:flex;flex-direction:column;gap:8px;">
       <input class="inp" id="buyMachineId" type="text" placeholder="Paste Machine ID from Eagle View" autocomplete="off" spellcheck="false"/>
-      <p class="hint" style="margin-top:-2px">Open Eagle View → ⓘ About → <strong>Copy Machine ID</strong></p>
+      <p class="hint">Open Eagle View → ⓘ About → <strong>Copy Machine ID</strong>, then paste it above.</p>
     </div>
 
     <div class="err" id="buyErr"></div>
+
     <button class="pay-btn" id="buyBtn" onclick="startPayment()">Pay now →</button>
-    <p class="secure-note">🔒 Payment secured by Razorpay &nbsp;·&nbsp; Key delivered to your email</p>
+
+    <div class="trust">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none">
+        <rect x="3" y="7" width="10" height="8" rx="1.5" stroke="#2E5550" stroke-width="1.4"/>
+        <path d="M5.5 7V5a2.5 2.5 0 015 0v2" stroke="#2E5550" stroke-width="1.4" stroke-linecap="round"/>
+      </svg>
+      Secured by Razorpay &nbsp;·&nbsp; Machine-bound key
+    </div>
   </div>
 
   <div class="success" id="buySuccess">
-    <div class="success-icon">✉️</div>
-    <div class="success-title">Check your email</div>
+    <div class="success-ring">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+        <path d="M5 12l4.5 4.5L19 7" stroke="#00C9A0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="success-title">Check your inbox</div>
     <div class="success-msg">Your Eagle View license key is on its way.<br>Open Eagle View → <strong>Activate License</strong> → paste the key.</div>
   </div>
 </div>
 
-<p class="ev-footer">
-  © 2026 Eagle View &nbsp;·&nbsp;
-  <a href="https://newmantech.in/eagleview.html">Product page</a> &nbsp;·&nbsp;
+<div class="footer">
+  <a href="https://newmantech.in/eagleview.html">Product</a>
   <a href="https://newmantech.in/privacy.html">Privacy</a>
-</p>
+  <a href="mailto:manojkmahesh@gmail.com">Support</a>
+</div>
 
 <script>
 var EDGE_URL = 'https://cmmafuddsgritdmltxcr.supabase.co/functions/v1/activate-license';
 var _plan = 365;
 var _mid  = '';
 
-// Read ?mid= from URL on load
 ;(function(){
   var p = new URLSearchParams(window.location.search);
   var mid = (p.get('mid') || '').trim();
@@ -190,8 +488,12 @@ function startPayment() {
   var mid   = _mid || (document.getElementById('buyMachineId') ? (document.getElementById('buyMachineId').value || '').trim() : '');
   document.getElementById('buyErr').style.display = 'none';
 
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showErr('Please enter a valid email address.'); return; }
-  if (!mid) { showErr('Please paste your Machine ID from Eagle View → ⓘ About → Copy Machine ID.'); return; }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    showErr('Enter a valid email address.'); return;
+  }
+  if (!mid) {
+    showErr('Paste your Machine ID — open Eagle View → ⓘ About → Copy Machine ID.'); return;
+  }
 
   var btn = document.getElementById('buyBtn');
   btn.disabled = true; btn.textContent = 'Opening payment…';
@@ -206,7 +508,7 @@ function startPayment() {
     if (data.payment_link_url) {
       window.location.href = data.payment_link_url;
     } else {
-      showErr(data.error || 'Could not open payment. Please try again.');
+      showErr(data.error || 'Could not open payment. Try again.');
       btn.disabled = false; btn.textContent = 'Pay now →';
     }
   })
