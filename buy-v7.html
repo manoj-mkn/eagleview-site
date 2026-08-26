@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Eagle View — License</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;900&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+/* SWISS/BAUHAUS — white, strict grid, red accent, Barlow Condensed */
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#FFFFFF;color:#101010;font-family:'Barlow',system-ui,sans-serif;min-height:100vh;}
+.header{display:flex;align-items:stretch;border-bottom:3px solid #101010;}
+.header-brand{display:flex;align-items:center;gap:10px;padding:18px 28px;border-right:3px solid #101010;}
+.header-icon{width:36px;height:36px;background:#E41E20;display:flex;align-items:center;justify-content:center;}
+.header-name{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#101010;}
+.header-tagline{display:flex;align-items:center;padding:0 28px;font-size:11px;font-weight:300;letter-spacing:.12em;color:#888;text-transform:uppercase;flex:1;}
+.header-lang{padding:18px 28px;border-left:3px solid #101010;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:.1em;color:#888;display:flex;align-items:center;}
+.main{display:grid;grid-template-columns:5fr 4fr;max-width:1000px;margin:0 auto;min-height:calc(100vh - 75px);}
+.col-left{padding:56px 48px;border-right:1px solid #E0E0E0;}
+.col-right{padding:56px 40px;background:#FAFAFA;}
+.eyebrow{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#E41E20;margin-bottom:12px;}
+h1{font-family:'Barlow Condensed',sans-serif;font-size:clamp(52px,8vw,84px);font-weight:900;line-height:.9;letter-spacing:-.01em;text-transform:uppercase;color:#101010;margin-bottom:24px;}
+h1 span{color:#E41E20;}
+.sub{font-size:13px;font-weight:300;color:#666;letter-spacing:.04em;line-height:1.6;margin-bottom:48px;max-width:380px;}
+.plan-grid{display:flex;flex-direction:column;gap:0;}
+.plan{display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:16px;padding:18px 0;border-bottom:1px solid #E0E0E0;cursor:pointer;transition:background .12s;}
+.plan:first-child{border-top:1px solid #E0E0E0;}
+.plan:hover{background:#F5F5F5;margin:0 -48px;padding:18px 48px;}
+.plan.sel{background:#FFF5F5;margin:0 -48px;padding:18px 48px;}
+.plan-num{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;color:#CCC;letter-spacing:.1em;width:28px;}
+.plan.sel .plan-num{color:#E41E20;}
+.plan-dur{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#101010;}
+.plan.sel .plan-dur{color:#E41E20;}
+.plan-desc{font-size:12px;font-weight:300;color:#999;margin-top:1px;}
+.badge{font-size:8px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;background:#E41E20;color:#fff;padding:2px 7px;margin-left:8px;vertical-align:middle;}
+.plan-price{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:700;color:#101010;white-space:nowrap;}
+.plan.sel .plan-price{color:#E41E20;}
+.check-sq{width:22px;height:22px;border:2px solid #CCC;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .12s,background .12s;}
+.plan.sel .check-sq{border-color:#E41E20;background:#E41E20;}
+.check-sq::after{content:'';width:10px;height:6px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) scale(0);transition:transform .15s;}
+.plan.sel .check-sq::after{transform:rotate(-45deg) scale(1);}
+.section-title{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#888;margin-bottom:24px;border-bottom:1px solid #E0E0E0;padding-bottom:10px;}
+.inp{width:100%;background:#fff;border:2px solid #E0E0E0;padding:12px 14px;font-size:13px;font-weight:400;font-family:'Barlow',sans-serif;color:#101010;outline:none;margin-bottom:12px;transition:border-color .15s;}
+.inp:focus{border-color:#E41E20;}
+.inp::placeholder{color:#CCC;}
+.mid-ok{display:none;align-items:center;gap:7px;font-size:12px;font-weight:500;letter-spacing:.06em;color:#101010;margin-bottom:12px;}
+.mid-ok-dot{width:8px;height:8px;background:#00AA55;flex-shrink:0;}
+.hint{font-size:11px;font-weight:300;color:#999;margin-bottom:12px;line-height:1.6;letter-spacing:.04em;}
+.hint strong{font-weight:500;color:#666;}
+.err{display:none;font-size:12px;font-weight:500;color:#E41E20;margin-bottom:12px;letter-spacing:.04em;}
+.pay-btn{width:100%;padding:16px;background:#E41E20;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;border:none;cursor:pointer;transition:background .15s;}
+.pay-btn:hover{background:#C01010;}
+.pay-btn:disabled{opacity:.4;cursor:not-allowed;}
+.trust{font-size:10px;font-weight:300;letter-spacing:.12em;color:#AAA;text-align:center;margin-top:14px;text-transform:uppercase;}
+.success{display:none;flex-direction:column;align-items:center;gap:12px;text-align:center;}
+.success-icon{width:48px;height:48px;background:#E41E20;display:flex;align-items:center;justify-content:center;}
+.success-title{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:.08em;color:#101010;}
+.success-msg{font-size:12px;font-weight:300;color:#888;line-height:1.8;letter-spacing:.04em;}
+.footer{grid-column:1/-1;border-top:1px solid #E0E0E0;padding:16px 48px;display:flex;gap:24px;max-width:1000px;margin:0 auto;width:100%;}
+.footer a{font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#CCC;text-decoration:none;}
+.footer a:hover{color:#E41E20;}
+@media(max-width:700px){.main{grid-template-columns:1fr;}.col-left{border-right:none;border-bottom:1px solid #E0E0E0;padding:32px 24px;}.col-right{padding:32px 24px;background:#fff;}.plan:hover,.plan.sel{margin:0 -24px;padding:18px 24px;}.header-lang{display:none;}.header-tagline{display:none;}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-brand">
+    <div class="header-icon"><svg width="18" height="18" viewBox="0 0 100 100"><polygon points="50,8 67,40 50,35 33,40" fill="#fff"/><polygon points="50,35 10,25 20,50 38,50" fill="#fff" opacity=".9"/><polygon points="50,35 90,25 80,50 62,50" fill="#fff" opacity=".9"/><polygon points="38,50 20,60 30,72 50,65" fill="#fff" opacity=".8"/><polygon points="62,50 80,60 70,72 50,65" fill="#fff" opacity=".8"/><polygon points="50,65 44,85 50,80 56,85" fill="#fff" opacity=".75"/></svg></div>
+    <span class="header-name">Eagle View</span>
+  </div>
+  <div class="header-tagline">One-time license · Mac &amp; Windows</div>
+  <div class="header-lang">EN</div>
+</div>
+<div style="max-width:1000px;margin:0 auto;">
+<div class="main">
+  <div class="col-left">
+    <div class="eyebrow">License acquisition</div>
+    <h1>Choose<br>your<br><span>plan.</span></h1>
+    <p class="sub">One payment. No recurring charges. Your license key arrives in your inbox and works on your machine only.</p>
+    <div class="plan-grid">
+      <div class="plan" data-days="40" onclick="selectPlan(40)"><span class="plan-num">01</span><div><div class="plan-dur">40 Days</div><div class="plan-desc">Short access, no commitment</div></div><div class="plan-price">₹1</div><div class="check-sq"></div></div>
+      <div class="plan" data-days="180" onclick="selectPlan(180)"><span class="plan-num">02</span><div><div class="plan-dur">6 Months <span class="badge">Popular</span></div><div class="plan-desc">Half a year of access</div></div><div class="plan-price">₹1</div><div class="check-sq"></div></div>
+      <div class="plan sel" data-days="365" onclick="selectPlan(365)"><span class="plan-num">03</span><div><div class="plan-dur">1 Year <span class="badge">Best</span></div><div class="plan-desc">Full year, all updates</div></div><div class="plan-price">₹1</div><div class="check-sq"></div></div>
+    </div>
+  </div>
+  <div class="col-right">
+    <div class="section-title">Complete purchase</div>
+    <div id="buyForm">
+      <input class="inp" id="buyEmail" type="email" placeholder="your@email.com" autocomplete="email"/>
+      <div class="mid-ok" id="buyMidOk"><div class="mid-ok-dot"></div><span>Machine ID detected</span></div>
+      <div id="buyMidManual"><input class="inp" id="buyMachineId" type="text" placeholder="Paste Machine ID" autocomplete="off" spellcheck="false"/><p class="hint">Eagle View → ⓘ About → <strong>Copy Machine ID</strong></p></div>
+      <div class="err" id="buyErr"></div>
+      <button class="pay-btn" id="buyBtn" onclick="startPayment()">Pay now →</button>
+      <div class="trust">Secured by Razorpay · Machine-bound key</div>
+    </div>
+    <div class="success" id="buySuccess"><div class="success-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 12l4.5 4.5L19 7" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="success-title">Inbox incoming</div><div class="success-msg">Key is on its way.<br>Eagle View → Activate License.</div></div>
+  </div>
+</div>
+<div class="footer"><a href="https://newmantech.in/eagleview.html">Product</a><a href="https://newmantech.in/privacy.html">Privacy</a><a href="mailto:manojkmahesh@gmail.com">Support</a></div>
+</div>
+<script>
+var EDGE_URL='https://cmmafuddsgritdmltxcr.supabase.co/functions/v1/activate-license';
+var _plan=365,_mid='';
+(function(){var p=new URLSearchParams(window.location.search),mid=(p.get('mid')||'').trim(),email=(p.get('email')||'').trim();if(mid){_mid=mid;var ok=document.getElementById('buyMidOk'),mn=document.getElementById('buyMidManual');if(ok)ok.style.display='flex';if(mn)mn.style.display='none';}if(email){var el=document.getElementById('buyEmail');if(el)el.value=email;}})();
+function selectPlan(d){_plan=d;document.querySelectorAll('[data-days]').forEach(function(el){el.classList.toggle('sel',parseInt(el.dataset.days,10)===d);});}
+function showErr(m){var el=document.getElementById('buyErr');el.textContent=m;el.style.display='block';}
+function startPayment(){var email=(document.getElementById('buyEmail').value||'').trim().toLowerCase(),mid=_mid||(document.getElementById('buyMachineId')?(document.getElementById('buyMachineId').value||'').trim():'');document.getElementById('buyErr').style.display='none';if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showErr('Enter a valid email address.');return;}if(!mid){showErr('Paste your Machine ID from Eagle View.');return;}var btn=document.getElementById('buyBtn');btn.disabled=true;btn.textContent='Opening payment…';fetch(EDGE_URL+'?action=create-payment-link',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,machine_id:mid,license_days:_plan})}).then(function(r){return r.json();}).then(function(data){if(data.payment_link_url){window.location.href=data.payment_link_url;}else{showErr(data.error||'Try again.');btn.disabled=false;btn.textContent='Pay now →';}}).catch(function(){showErr('Network error.');btn.disabled=false;btn.textContent='Pay now →';});}
+</script>
+</body></html>
