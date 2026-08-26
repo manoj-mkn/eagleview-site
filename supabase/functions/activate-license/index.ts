@@ -238,15 +238,24 @@ serve(async (req) => {
     if (action === 'register-trial') {
       const { email, machine_id } = body
       if (!email || !machine_id) return json({ error: 'Missing fields' }, 400)
+      const payload = { email: email.trim().toLowerCase(), machine_id: machine_id.trim() }
+      const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+        'apikey': SUPABASE_SERVICE_KEY,
+        'Prefer': 'return=minimal',
+      }
+      // unique users — ignore if same machine already recorded (keep first email)
       await fetch(`${SUPABASE_URL}/rest/v1/trial_users`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
-          'apikey': SUPABASE_SERVICE_KEY,
-          'Prefer': 'resolution=merge-duplicates,return=minimal',
-        },
-        body: JSON.stringify({ email: email.trim().toLowerCase(), machine_id: machine_id.trim() }),
+        headers: { ...headers, 'Prefer': 'resolution=ignore-duplicates,return=minimal' },
+        body: JSON.stringify(payload),
+      })
+      // full history — every attempt logged, no dedup
+      await fetch(`${SUPABASE_URL}/rest/v1/trial_attempts`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(payload),
       })
       return json({ ok: true })
     }
