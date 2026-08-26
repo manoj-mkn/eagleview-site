@@ -463,11 +463,16 @@ var _mid  = '';
 
 ;(function(){
   var p = new URLSearchParams(window.location.search);
-  var mid = (p.get('mid') || '').trim();
+  var mid   = (p.get('mid')   || '').trim();
+  var email = (p.get('email') || '').trim();
   if (mid) {
     _mid = mid;
     document.getElementById('buyMidOk').style.display = 'flex';
     document.getElementById('buyMidManual').style.display = 'none';
+  }
+  if (email) {
+    var el = document.getElementById('buyEmail');
+    if (el) el.value = email;
   }
 })();
 
