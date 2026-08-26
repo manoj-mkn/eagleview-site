@@ -20,7 +20,7 @@ const ALLOWED_PLANS           = new Set([40, 180, 365, 730])
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'content-type, x-razorpay-signature',
+  'Access-Control-Allow-Headers': 'content-type, x-razorpay-signature, authorization',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 }
 
