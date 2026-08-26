@@ -429,7 +429,7 @@
 <!-- Hero -->
 <div class="hero">
   <h1>Privacy Policy for <span>Eagle View</span></h1>
-  <p class="hero-meta">Effective Date: July 11, 2026 &nbsp;·&nbsp; Version 1.0 &nbsp;·&nbsp; NewMan Tech, India</p>
+  <p class="hero-meta">Effective Date: August 26, 2026 &nbsp;·&nbsp; Version 1.1 &nbsp;·&nbsp; NewMan Tech, India</p>
   <div class="compliance-badges">
     <span class="badge">GDPR Compliant</span>
     <span class="badge">CCPA Compliant</span>
@@ -443,8 +443,8 @@
 <div class="local-callout">
   <div class="local-callout-inner">
     <div class="icon">🔒</div>
-    <strong>Your data never leaves your device.</strong>
-    <p>Eagle View processes all email, calendar, and task data entirely on your local machine. NewMan Tech does not operate any servers that receive, store, or transmit your personal data. Zero data collection by us.</p>
+    <strong>Your email, calendar, and task data never leaves your device.</strong>
+    <p>Eagle View processes all email, calendar, and task data entirely on your local machine — it is never sent to our servers. A separate licensing system securely processes your email address and a device hardware identifier solely to generate and validate your license key. See Section 5 for details.</p>
   </div>
 </div>
 
@@ -533,11 +533,26 @@
             <td>Restore user preferences across app restarts</td>
             <td>Yes — local settings file on your device</td>
           </tr>
+          <tr>
+            <td><strong>Email address</strong> <span class="flag flag-dpdp">License</span></td>
+            <td>Email address provided during license purchase or activation</td>
+            <td>Generate and deliver license key; identify license holder</td>
+            <td>Yes — stored on our licensing server (Supabase)</td>
+          </tr>
+          <tr>
+            <td><strong>Device hardware identifier</strong> <span class="flag flag-dpdp">License</span></td>
+            <td>Hardware UUID of the machine on which Eagle View is installed (read from OS)</td>
+            <td>Bind the license key to a specific device; prevent unauthorised use on other machines</td>
+            <td>Yes — stored on our licensing server (Supabase)</td>
+          </tr>
         </tbody>
       </table>
 
       <div class="highlight">
         <strong>Email content is never accessed.</strong> Eagle View reads only metadata (sender, subject, time). The body of your emails is not read, stored, or transmitted under any circumstances.
+      </div>
+      <div class="highlight" style="margin-top:0.75rem;">
+        <strong>License data is minimal and purpose-limited.</strong> The email address and device hardware identifier collected during licensing are used exclusively for license validation. They are never used for marketing, analytics, or any purpose beyond license enforcement.
       </div>
     </section>
 
@@ -557,6 +572,8 @@
           <tr><td>Reading calendar events</td><td>Art. 6(1)(b) — Contract performance</td><td>Core feature of the Application</td></tr>
           <tr><td>Storing OAuth tokens locally</td><td>Art. 6(1)(b) — Contract performance</td><td>Maintain authenticated session</td></tr>
           <tr><td>Storing user preferences</td><td>Art. 6(1)(b) — Contract performance</td><td>Restore app settings</td></tr>
+          <tr><td>License key generation &amp; validation</td><td>Art. 6(1)(b) — Contract performance</td><td>Generate a machine-bound key on purchase; validate it on activation</td></tr>
+          <tr><td>Payment processing</td><td>Art. 6(1)(b) — Contract performance</td><td>Process license purchase via Razorpay</td></tr>
         </tbody>
       </table>
       <p>We do not use your data for advertising, analytics, profiling, machine learning training, or any purpose beyond delivering the functionality you explicitly requested.</p>
@@ -618,6 +635,31 @@
           </tr>
         </tbody>
       </table>
+      <h3>Licensing &amp; Payment Services</h3>
+      <table class="data-table">
+        <thead><tr><th>Provider</th><th>Purpose</th><th>Data Shared With Provider</th><th>Their Privacy Policy</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Supabase Inc.</strong></td>
+            <td>License server — stores and validates license records</td>
+            <td>Email address, device hardware identifier, license key, purchase timestamp</td>
+            <td>Supabase Privacy Policy</td>
+          </tr>
+          <tr>
+            <td><strong>Razorpay Software Pvt. Ltd.</strong></td>
+            <td>Payment processing for license purchases</td>
+            <td>Email address, payment details (handled directly by Razorpay — NewMan Tech does not receive or store card data)</td>
+            <td>Razorpay Privacy Policy</td>
+          </tr>
+          <tr>
+            <td><strong>Resend Inc.</strong></td>
+            <td>Transactional email delivery (license key emails)</td>
+            <td>Recipient email address, license key</td>
+            <td>Resend Privacy Policy</td>
+          </tr>
+        </tbody>
+      </table>
+
       <p>NewMan Tech is not responsible for the privacy practices of Microsoft or Google. Eagle View's use of data obtained from these APIs is limited to displaying information within the Application and is not used for any secondary purposes.</p>
       <p>Eagle View's use and transfer to any other app of information received from Google APIs adheres to the <strong>Google API Services User Data Policy</strong>, including the Limited Use requirements.</p>
     </section>
@@ -635,9 +677,10 @@
           <tr><td>Email &amp; calendar data (in-memory)</td><td>Duration of app session only</td><td>Automatically cleared on app close</td></tr>
           <tr><td>OAuth tokens</td><td>Until logout or uninstall</td><td>Settings → Log Out; or delete settings file</td></tr>
           <tr><td>App preferences &amp; notes</td><td>Until uninstall</td><td>Delete settings file or uninstall app</td></tr>
+          <tr><td>License records (email address, device identifier, license key)</td><td>Duration of license + 1 year for dispute resolution</td><td>Contact privacy@newmantech.in to request deletion</td></tr>
         </tbody>
       </table>
-      <p>NewMan Tech retains no copies of your data. There is no data on our servers to delete or export on your behalf.</p>
+      <p>For email, calendar, and task data: NewMan Tech retains no copies on our servers. For license records (email address and device identifier): these are retained on our licensing server for the duration described above and deleted upon request.</p>
     </section>
 
     <!-- 7. Your Rights -->
@@ -739,5 +782,5 @@
 
 <footer class="doc-footer">
   <p>© 2026 NewMan Tech. All rights reserved. &nbsp;·&nbsp; <a href="#">Privacy Policy</a> &nbsp;·&nbsp; <a href="#">Terms of Service</a> &nbsp;·&nbsp; <a href="mailto:privacy@newmantech.in">Contact</a></p>
-  <p style="margin-top:0.5rem; opacity:0.6;">Eagle View is a product of NewMan Tech. This document was last updated on July 11, 2026.</p>
+  <p style="margin-top:0.5rem; opacity:0.6;">Eagle View is a product of NewMan Tech. This document was last updated on August 26, 2026. Version 1.1 — added license data disclosures (device identifier, Supabase, Razorpay, Resend).</p>
 </footer>
