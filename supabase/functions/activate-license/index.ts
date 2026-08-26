@@ -234,6 +234,18 @@ serve(async (req) => {
       return json({ ok: true })
     }
 
+    // ── admin-issue-key (local admin tool only — auth via service key) ───────────
+    if (action === 'admin-issue-key') {
+      const authHeader = req.headers.get('Authorization') || ''
+      if (authHeader.replace('Bearer ', '') !== SUPABASE_SERVICE_KEY) return json({ error: 'Unauthorized' }, 401)
+      const { email, machine_id, license_days } = body
+      if (!email || !machine_id || !license_days) return json({ error: 'Missing fields' }, 400)
+      const days = Math.max(1, Math.min(3650, Number(license_days)))
+      const key = await generateLicenseKey(email.trim().toLowerCase(), machine_id.trim(), days)
+      await sendLicenseEmail(email.trim().toLowerCase(), key, days)
+      return json({ ok: true, key })
+    }
+
     // ── register-trial (called by the app when user enters trial mode) ──────────
     if (action === 'register-trial') {
       const { email, machine_id } = body
