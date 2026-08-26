@@ -237,7 +237,7 @@ serve(async (req) => {
     // ── admin-issue-key (local admin tool only — auth via service key) ───────────
     if (action === 'admin-issue-key') {
       const { email, machine_id, license_days, admin_key } = body
-      if (!admin_key || admin_key !== SUPABASE_SERVICE_KEY) return json({ error: 'Unauthorized' }, 401)
+      if (!admin_key || admin_key.trim() !== SUPABASE_SERVICE_KEY.trim()) return json({ error: 'Unauthorized' }, 401)
       if (!email || !machine_id || !license_days) return json({ error: 'Missing fields' }, 400)
       const days = Math.max(1, Math.min(3650, Number(license_days)))
       const key = await generateLicenseKey(email.trim().toLowerCase(), machine_id.trim(), days)
