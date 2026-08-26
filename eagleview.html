@@ -309,24 +309,32 @@ footer{padding:38px 64px;display:flex;align-items:center;justify-content:space-b
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition-duration:.01ms!important;}}
 /* ── Buy / Payment section ── */
 .buysec{padding:80px 24px;background:#07100F;}
-.buywrap{max-width:480px;margin:0 auto;text-align:center;}
+.buywrap{max-width:560px;margin:0 auto;text-align:center;}
 .buyey{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#00E5FF;margin-bottom:16px;}
 .buyh{font-size:clamp(26px,5vw,36px);font-weight:700;color:#F0FFFE;margin-bottom:10px;line-height:1.2;}
-.buysub{font-size:14px;color:#7AB8B5;margin-bottom:32px;line-height:1.6;}
-.buycard{background:#0D1E1B;border:1px solid #1A3530;border-radius:16px;padding:32px;text-align:left;}
-.buyprice{font-size:42px;font-weight:800;color:#00E5FF;margin-bottom:4px;}
-.buyprice span{font-size:18px;font-weight:400;color:#7AB8B5;margin-left:4px;}
-.buyperiod{font-size:12px;color:#5A8A87;margin-bottom:24px;}
-.buyfeatures{list-style:none;padding:0;margin:0 0 28px;display:flex;flex-direction:column;gap:10px;}
+.buysub{font-size:14px;color:#7AB8B5;margin-bottom:28px;line-height:1.6;}
+.buyplans{display:flex;gap:12px;margin-bottom:20px;}
+.buyplan{flex:1;background:#0A1714;border:1.5px solid #1A3530;border-radius:12px;padding:20px 10px;cursor:pointer;transition:border-color .18s,background .18s;text-align:center;font-family:inherit;}
+.buyplan:hover{background:#0D1E1B;border-color:#336B66;}
+.buyplan.sel{background:#071F1C;border-color:#00E5FF;box-shadow:0 0 0 1px rgba(0,229,255,.15);}
+.buyplan-badge{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#050E0D;background:#00E5FF;border-radius:20px;padding:2px 8px;display:inline-block;margin-bottom:8px;}
+.buyplan-dur{font-size:14px;font-weight:700;color:#C8E8E5;margin-bottom:6px;}
+.buyplan.sel .buyplan-dur{color:#00E5FF;}
+.buyplan-price{font-size:22px;font-weight:800;color:#F0FFFE;margin-bottom:2px;}
+.buyplan.sel .buyplan-price{color:#00E5FF;}
+.buyplan-sub{font-size:10px;color:#3A6460;}
+.buycard{background:#0D1E1B;border:1px solid #1A3530;border-radius:16px;padding:28px 32px;text-align:left;}
+.buyfeatures{list-style:none;padding:0;margin:0 0 24px;display:flex;flex-direction:column;gap:9px;}
 .buyfeatures li{font-size:13px;color:#A8D4D1;display:flex;align-items:center;gap:8px;}
 .buyfeatures li::before{content:'✓';color:#00E5FF;font-weight:700;flex-shrink:0;}
 .buyform{display:flex;flex-direction:column;gap:12px;margin-bottom:20px;}
 .buyinput{width:100%;box-sizing:border-box;background:#0A1714;border:1px solid #1A3530;border-radius:8px;padding:11px 14px;font-size:13px;color:#F0FFFE;outline:none;transition:border-color .2s;}
 .buyinput:focus{border-color:#00E5FF;}
 .buyinput::placeholder{color:#3A6460;}
-.buyhint{font-size:11px;color:#5A8A87;margin-top:-6px;padding:0 2px;}
-.buyhint a{color:#00E5FF;text-decoration:none;}
-.buybtn{width:100%;padding:13px;background:#00E5FF;color:#050E0D;font-size:14px;font-weight:700;border:none;border-radius:8px;cursor:pointer;transition:opacity .2s;}
+.buyhint{font-size:11px;color:#5A8A87;margin-top:-4px;padding:0 2px;line-height:1.5;}
+.buymidok{font-size:11px;color:#00E5FF;margin-top:-4px;padding:0 2px;}
+.buymidok span{color:#5A8A87;}
+.buybtn{width:100%;padding:13px;background:#00E5FF;color:#050E0D;font-size:14px;font-weight:700;border:none;border-radius:8px;cursor:pointer;transition:opacity .2s;letter-spacing:.01em;}
 .buybtn:hover{opacity:.88;}
 .buybtn:disabled{opacity:.4;cursor:not-allowed;}
 .buysuccess{display:none;text-align:center;padding:20px 0;}
@@ -334,7 +342,7 @@ footer{padding:38px 64px;display:flex;align-items:center;justify-content:space-b
 .buysuccess-title{font-size:18px;font-weight:700;color:#00E5FF;margin-bottom:8px;}
 .buysuccess-msg{font-size:13px;color:#7AB8B5;line-height:1.6;}
 .buyerr{font-size:12px;color:#FF6B7A;display:none;margin-top:-6px;}
-@media(max-width:600px){.buysec{padding:56px 16px;}.buycard{padding:24px;}}
+@media(max-width:600px){.buysec{padding:56px 16px;}.buycard{padding:20px;}.buyplans{flex-direction:column;gap:8px;}.buyplan{padding:14px 16px;display:flex;align-items:center;gap:14px;text-align:left;}.buyplan-badge{margin-bottom:0;order:-1;}.buyplan-dur,.buyplan-price{margin-bottom:0;}.buyplan-sub{display:none;}}
 </style>
 </head>
 <body>
@@ -494,28 +502,50 @@ footer{padding:38px 64px;display:flex;align-items:center;justify-content:space-b
 <section class="buysec" id="buy">
   <div class="buywrap">
     <div class="buyey">License</div>
-    <h2 class="buyh">Unlock Eagle View</h2>
+    <h2 class="buyh">Choose your plan</h2>
     <p class="buysub">One-time payment. No subscription. Works on Mac and Windows.</p>
+
+    <div class="buyplans">
+      <button class="buyplan" data-days="40" onclick="selectBuyPlan(40)">
+        <div class="buyplan-dur">40 Days</div>
+        <div class="buyplan-price">₹1</div>
+        <div class="buyplan-sub">Short-term access</div>
+      </button>
+      <button class="buyplan" data-days="180" onclick="selectBuyPlan(180)">
+        <div class="buyplan-badge">Popular</div>
+        <div class="buyplan-dur">6 Months</div>
+        <div class="buyplan-price">₹1</div>
+        <div class="buyplan-sub">Half-year access</div>
+      </button>
+      <button class="buyplan sel" data-days="365" onclick="selectBuyPlan(365)">
+        <div class="buyplan-badge">Best value</div>
+        <div class="buyplan-dur">1 Year</div>
+        <div class="buyplan-price">₹1</div>
+        <div class="buyplan-sub">Full-year access</div>
+      </button>
+    </div>
+
     <div class="buycard">
-      <div class="buyprice">₹1 <span>one-time</span></div>
-      <div class="buyperiod">1-year license · renews annually</div>
       <ul class="buyfeatures">
-        <li>Outlook + Gmail integration</li>
-        <li>Jira, Azure, Slack, Teams</li>
-        <li>All future updates in this version</li>
-        <li>Mac &amp; Windows</li>
+        <li>Outlook + Gmail — mail, meetings, to-do</li>
+        <li>Jira, Azure DevOps, Slack, Teams</li>
+        <li>World clock, Timesheet, Peakon, Notes</li>
+        <li>Mac &amp; Windows · all updates included</li>
       </ul>
       <div class="buyform" id="buyForm">
-        <input class="buyinput" id="buyEmail" type="email" placeholder="Your email address" autocomplete="email" required/>
-        <input class="buyinput" id="buyMachineId" type="text" placeholder="Machine ID" autocomplete="off" required/>
-        <p class="buyhint">Open Eagle View → ⓘ About → <strong>Copy Machine ID</strong>, then paste it above.</p>
+        <input class="buyinput" id="buyEmail" type="email" placeholder="Your email address" autocomplete="email"/>
+        <div class="buymidok" id="buyMidOk" style="display:none">✓ Machine ID detected — <span>your key will be bound to this device</span></div>
+        <div id="buyMidManual">
+          <input class="buyinput" id="buyMachineId" type="text" placeholder="Machine ID (paste from Eagle View)" autocomplete="off"/>
+          <p class="buyhint">Open Eagle View → ⓘ About → <strong>Copy Machine ID</strong>, then paste it above.</p>
+        </div>
         <div class="buyerr" id="buyErr"></div>
-        <button class="buybtn" id="buyBtn" onclick="startPayment()">Buy License — ₹1</button>
+        <button class="buybtn" id="buyBtn" onclick="startPayment()">Pay now →</button>
       </div>
       <div class="buysuccess" id="buySuccess">
         <div class="buysuccess-icon">✉️</div>
         <div class="buysuccess-title">Check your email</div>
-        <div class="buysuccess-msg">Your license key is on its way.<br>Enter it in Eagle View under ⓘ About → Activate license.</div>
+        <div class="buysuccess-msg">Your license key is on its way.<br>Enter it in Eagle View → <strong>Activate License</strong>.</div>
       </div>
     </div>
   </div>
@@ -548,85 +578,65 @@ function clocks(){const now=new Date(),f2=tz=>new Intl.DateTimeFormat('en',{time
 clocks();setInterval(clocks,1000)
 
 // ── Payment flow ──────────────────────────────────────────────────────────────
-var RZP_KEY_ID = 'rzp_test_TU4y6c2kjPLAHH';
-var EDGE_URL   = 'https://cmmafuddsgritdmltxcr.supabase.co/functions/v1/activate-license';
+var EDGE_URL  = 'https://cmmafuddsgritdmltxcr.supabase.co/functions/v1/activate-license';
+var _buyPlan  = 365;   // selected plan days (default: 1 year)
+var _buyMid   = '';    // machine ID from URL param
+
+// Read ?mid= on page load; hide manual machine-ID field if present
+;(function(){
+  var params = new URLSearchParams(window.location.search);
+  var mid = (params.get('mid') || '').trim();
+  if (mid) {
+    _buyMid = mid;
+    var ok = document.getElementById('buyMidOk');
+    var manual = document.getElementById('buyMidManual');
+    if (ok) ok.style.display = 'block';
+    if (manual) manual.style.display = 'none';
+  }
+})();
+
+function selectBuyPlan(days) {
+  _buyPlan = days;
+  document.querySelectorAll('.buyplan').forEach(function(el) {
+    el.classList.toggle('sel', parseInt(el.dataset.days, 10) === days);
+  });
+}
 
 function showBuyErr(msg) {
   var el = document.getElementById('buyErr');
-  el.textContent = msg;
-  el.style.display = 'block';
+  el.textContent = msg; el.style.display = 'block';
 }
 
 function startPayment() {
   var email     = (document.getElementById('buyEmail').value || '').trim().toLowerCase();
-  var machineId = (document.getElementById('buyMachineId').value || '').trim();
-  var errEl     = document.getElementById('buyErr');
-  errEl.style.display = 'none';
+  var machineId = _buyMid || (document.getElementById('buyMachineId') ? (document.getElementById('buyMachineId').value || '').trim() : '');
+  document.getElementById('buyErr').style.display = 'none';
 
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showBuyErr('Please enter a valid email address.'); return; }
-  if (!machineId) { showBuyErr('Please paste your Machine ID (open Eagle View → ⓘ About → Copy Machine ID).'); return; }
+  if (!machineId) { showBuyErr('Please paste your Machine ID from Eagle View → ⓘ About → Copy Machine ID.'); return; }
 
   var btn = document.getElementById('buyBtn');
-  btn.disabled = true;
-  btn.textContent = 'Opening payment…';
+  btn.disabled = true; btn.textContent = 'Opening payment…';
 
-  // Create order on backend, then open Razorpay checkout
-  fetch(EDGE_URL + '?action=create-order', {
+  fetch(EDGE_URL + '?action=create-payment-link', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: email, machine_id: machineId, amount: 100 }) // 100 paise = ₹1
+    body: JSON.stringify({ email: email, machine_id: machineId, license_days: _buyPlan })
   })
   .then(function(r) { return r.json(); })
   .then(function(data) {
-    if (!data.order_id) throw new Error(data.error || 'Order creation failed');
-    var options = {
-      key: RZP_KEY_ID,
-      amount: data.amount,
-      currency: 'INR',
-      name: 'Eagle View',
-      description: '1-Year License',
-      order_id: data.order_id,
-      prefill: { email: email },
-      theme: { color: '#00E5FF' },
-      handler: function(response) {
-        // Payment captured — generate and email the license key
-        fetch(EDGE_URL + '?action=activate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            payment_id: response.razorpay_payment_id,
-            order_id:   response.razorpay_order_id,
-            signature:  response.razorpay_signature,
-            email:      email,
-            machine_id: machineId
-          })
-        })
-        .then(function(r) { return r.json(); })
-        .then(function(res) {
-          if (res.ok) {
-            document.getElementById('buyForm').style.display = 'none';
-            document.getElementById('buySuccess').style.display = 'block';
-          } else {
-            showBuyErr(res.error || 'Something went wrong. Email manoj@newmantech.in with your payment ID: ' + response.razorpay_payment_id);
-            btn.disabled = false; btn.textContent = 'Buy License — ₹1';
-          }
-        })
-        .catch(function() {
-          showBuyErr('Network error. Email manoj@newmantech.in with your payment ID: ' + response.razorpay_payment_id);
-          btn.disabled = false; btn.textContent = 'Buy License — ₹1';
-        });
-      },
-      modal: { ondismiss: function() { btn.disabled = false; btn.textContent = 'Buy License — ₹1'; } }
-    };
-    var rzp = new Razorpay(options);
-    rzp.open();
+    if (data.payment_link_url) {
+      window.location.href = data.payment_link_url;
+    } else {
+      showBuyErr(data.error || 'Could not open payment. Please try again.');
+      btn.disabled = false; btn.textContent = 'Pay now →';
+    }
   })
-  .catch(function(e) {
-    showBuyErr('Could not connect to payment server. Try again.');
-    btn.disabled = false; btn.textContent = 'Buy License — ₹1';
+  .catch(function() {
+    showBuyErr('Network error. Check your connection and try again.');
+    btn.disabled = false; btn.textContent = 'Pay now →';
   });
 }
 </script>
-<script src="https://checkout.razorpay.com/v1/checkout.js" async></script>
 </body>
 </html>

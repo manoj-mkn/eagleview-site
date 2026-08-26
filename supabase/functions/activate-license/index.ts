@@ -13,7 +13,8 @@ const RAZORPAY_KEY_ID         = Deno.env.get('RAZORPAY_KEY_ID')!
 const RAZORPAY_KEY_SECRET     = Deno.env.get('RAZORPAY_KEY_SECRET')!
 const RAZORPAY_WEBHOOK_SECRET = Deno.env.get('RAZORPAY_WEBHOOK_SECRET') || ''
 const RESEND_API_KEY          = Deno.env.get('RESEND_API_KEY')!
-const LICENSE_DAYS            = parseInt(Deno.env.get('LICENSE_DAYS') || '40', 10)
+const LICENSE_DAYS_DEFAULT    = parseInt(Deno.env.get('LICENSE_DAYS') || '40', 10)
+const ALLOWED_PLANS           = new Set([40, 180, 365])
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -49,9 +50,9 @@ async function hmacSha256Str(secret: string, msg: string): Promise<string> {
 
 // ── License key generation (mirrors Rust validate_license_key exactly) ────────
 
-async function generateLicenseKey(email: string, machineId: string): Promise<string> {
+async function generateLicenseKey(email: string, machineId: string, licenseDays = LICENSE_DAYS_DEFAULT): Promise<string> {
   const secretBytes = hexToBytes(LICENSE_SECRET_HEX)
-  const expiryDays  = Math.floor(Date.now() / 1000 / 86400) + LICENSE_DAYS
+  const expiryDays  = Math.floor(Date.now() / 1000 / 86400) + licenseDays
   const expiryHex   = expiryDays.toString(16).toUpperCase().padStart(8, '0')
   const msg         = `${email.trim().toLowerCase()}|${expiryHex}|${machineId.trim()}`
   const mac         = await hmacSha256Bytes(secretBytes, msg)
@@ -62,20 +63,26 @@ async function generateLicenseKey(email: string, machineId: string): Promise<str
 
 // ── Razorpay ──────────────────────────────────────────────────────────────────
 
-async function createPaymentLink(email: string, machineId: string) {
-  const expireBy = Math.floor(Date.now() / 1000) + 3600 // 1 hour to complete payment
+function planLabel(days: number): string {
+  if (days === 180) return '6-Month License'
+  if (days === 365) return '1-Year License'
+  return `${days}-Day License`
+}
+
+async function createPaymentLink(email: string, machineId: string, licenseDays: number) {
+  const expireBy = Math.floor(Date.now() / 1000) + 3600
   const r = await fetch('https://api.razorpay.com/v1/payment_links', {
     method: 'POST',
     headers: { Authorization: RZP_AUTH, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      amount: 100, // ₹1 in paise
+      amount: 100, // ₹1 in paise (test); update per plan when going live
       currency: 'INR',
-      description: `Eagle View — ${LICENSE_DAYS}-day License`,
+      description: `Eagle View — ${planLabel(licenseDays)}`,
       customer: { email },
       notify: { email: false, sms: false },
       reminder_enable: false,
       expire_by: expireBy,
-      notes: { email: email.trim().toLowerCase(), machine_id: machineId.trim() },
+      notes: { email: email.trim().toLowerCase(), machine_id: machineId.trim(), license_days: String(licenseDays) },
     }),
   })
   return r.json()
@@ -89,33 +96,62 @@ async function verifyWebhookSignature(body: string, signature: string): Promise<
 
 // ── Email via Resend ──────────────────────────────────────────────────────────
 
-async function sendLicenseEmail(to: string, key: string) {
-  await fetch('https://api.resend.com/emails', {
+async function sendLicenseEmail(to: string, key: string, licenseDays = LICENSE_DAYS_DEFAULT) {
+  const r = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { Authorization: `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      from: 'Eagle View <onboarding@resend.dev>',
+      from: 'Eagle View <license@newmantech.in>',
       to: [to],
       subject: 'Your Eagle View License Key',
       html: `
-        <div style="font-family:-apple-system,sans-serif;max-width:480px;margin:0 auto;background:#07100F;color:#A8D4D1;padding:32px;border-radius:12px">
-          <div style="font-size:22px;font-weight:700;color:#00E5FF;margin-bottom:8px">Eagle View</div>
-          <div style="font-size:15px;font-weight:600;color:#F0FFFE;margin-bottom:24px">Your license key is ready</div>
-          <div style="background:#0D1E1B;border:1px solid #1A3530;border-radius:8px;padding:16px;margin-bottom:24px">
-            <div style="font-size:11px;color:#5A8A87;margin-bottom:6px;letter-spacing:.06em;text-transform:uppercase">License Key</div>
-            <div style="font-family:monospace;font-size:15px;color:#00E5FF;word-break:break-all;letter-spacing:.04em">${key}</div>
+        <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;max-width:560px;margin:0 auto;background:#0D1E1B;border-radius:12px;overflow:hidden">
+          <div style="background:linear-gradient(135deg,#7A3200 0%,#B85400 40%,#E87722 70%,#F5A040 100%);padding:28px 32px;text-align:center">
+            <div style="font-size:22px;font-weight:800;color:#ffffff;letter-spacing:.18em;text-transform:uppercase">Eagle View</div>
           </div>
-          <div style="font-size:13px;color:#7AB8B5;line-height:1.8;margin-bottom:24px">
-            To activate:<br>
-            1. Open Eagle View<br>
-            2. Click <strong style="color:#F0FFFE">Activate license →</strong><br>
-            3. Enter your email and the key above
+          <div style="padding:32px">
+            <p style="font-size:15px;color:#C8E8E5;line-height:1.7;margin:0 0 28px">Here is your Eagle View license key. Keep this safe — it is tied to your machine and expires in ${licenseDays} days.</p>
+            <div style="background:linear-gradient(135deg,#0D3330 0%,#0A4A42 50%,#0D6B5E 100%);border-radius:10px;padding:24px;text-align:center;margin-bottom:28px">
+              <div style="font-size:10px;font-weight:700;color:#7AB8B5;letter-spacing:.14em;text-transform:uppercase;margin-bottom:12px">Your Key</div>
+              <div style="font-family:'Courier New',Courier,monospace;font-size:16px;font-weight:700;color:#ffffff;letter-spacing:.06em;word-break:break-all">${key}</div>
+            </div>
+            <div style="font-size:11px;font-weight:700;color:#7AB8B5;letter-spacing:.12em;text-transform:uppercase;margin-bottom:16px">How to Activate</div>
+            <table style="width:100%;border-collapse:collapse">
+              <tr>
+                <td style="width:32px;vertical-align:middle;padding-bottom:14px">
+                  <table style="border-collapse:collapse"><tr><td style="width:26px;height:26px;border-radius:50%;border:1.5px solid #00E5FF;font-size:12px;font-weight:700;color:#00E5FF;text-align:center;vertical-align:middle;line-height:26px">1</td></tr></table>
+                </td>
+                <td style="padding-bottom:14px;padding-left:12px;font-size:14px;color:#C8E8E5;vertical-align:middle">Open Eagle View on your Mac or Windows machine</td>
+              </tr>
+              <tr>
+                <td style="width:32px;vertical-align:middle;padding-bottom:14px">
+                  <table style="border-collapse:collapse"><tr><td style="width:26px;height:26px;border-radius:50%;border:1.5px solid #00E5FF;font-size:12px;font-weight:700;color:#00E5FF;text-align:center;vertical-align:middle;line-height:26px">2</td></tr></table>
+                </td>
+                <td style="padding-bottom:14px;padding-left:12px;font-size:14px;color:#C8E8E5;vertical-align:middle">Click <strong style="color:#00E5FF">Activate license →</strong> on the license screen</td>
+              </tr>
+              <tr>
+                <td style="width:32px;vertical-align:middle">
+                  <table style="border-collapse:collapse"><tr><td style="width:26px;height:26px;border-radius:50%;border:1.5px solid #00E5FF;font-size:12px;font-weight:700;color:#00E5FF;text-align:center;vertical-align:middle;line-height:26px">3</td></tr></table>
+                </td>
+                <td style="padding-left:12px;font-size:14px;color:#C8E8E5;vertical-align:middle">Paste the key above, enter your email, and click <strong style="color:#00E5FF">Activate</strong></td>
+              </tr>
+            </table>
+            <div style="border-top:1px solid #1A3530;margin-top:28px;padding-top:18px">
+              <table style="width:100%;border-collapse:collapse"><tr>
+                <td style="font-size:12px;color:#5A8A87">Newman Tech</td>
+                <td style="text-align:right"><a href="https://newmantech.in" style="font-size:12px;color:#00E5FF;text-decoration:none">newmantech.in</a></td>
+              </tr></table>
+            </div>
           </div>
-          <div style="font-size:11px;color:#3A6460">Valid for ${LICENSE_DAYS} days from today · Questions? Reply to this email.</div>
         </div>
       `,
     }),
   })
+  const resendResult = await r.json()
+  console.log('[email] Resend response:', JSON.stringify(resendResult))
+  if (resendResult.statusCode >= 400 || resendResult.name === 'validation_error') {
+    console.error('[email] Resend error — key was:', key)
+  }
 }
 
 // ── Main handler ──────────────────────────────────────────────────────────────
@@ -139,10 +175,12 @@ serve(async (req) => {
         const notes      = payload?.payload?.payment_link?.entity?.notes || {}
         const email      = notes.email?.trim().toLowerCase()
         const machineId  = notes.machine_id?.trim()
+        const noteDays   = parseInt(notes.license_days || '0', 10)
+        const licenseDays = ALLOWED_PLANS.has(noteDays) ? noteDays : LICENSE_DAYS_DEFAULT
         if (email && machineId) {
-          const key = await generateLicenseKey(email, machineId)
-          await sendLicenseEmail(email, key)
-          console.log(`[webhook] license generated for ${email}`)
+          const key = await generateLicenseKey(email, machineId, licenseDays)
+          await sendLicenseEmail(email, key, licenseDays)
+          console.log(`[webhook] license generated for ${email} — plan=${licenseDays}d`)
         }
       }
       return json({ ok: true })
@@ -152,11 +190,13 @@ serve(async (req) => {
 
     // ── create-payment-link (called by the app) ──────────────────────────────
     if (action === 'create-payment-link') {
-      const { email, machine_id } = body
+      const { email, machine_id, license_days } = body
       if (!email || !machine_id) return json({ error: 'Missing email or machine_id' }, 400)
+      const planDays = ALLOWED_PLANS.has(Number(license_days)) ? Number(license_days) : LICENSE_DAYS_DEFAULT
 
-      const link = await createPaymentLink(email.trim().toLowerCase(), machine_id.trim())
-      if (!link.short_url) return json({ error: link.error?.description || 'Payment link creation failed' }, 500)
+      const link = await createPaymentLink(email.trim().toLowerCase(), machine_id.trim(), planDays)
+      console.log('[create-payment-link] Razorpay response:', JSON.stringify(link))
+      if (!link.short_url) return json({ error: link.error?.description || link.error?.code || link.description || JSON.stringify(link) }, 500)
 
       return json({ payment_link_url: link.short_url })
     }

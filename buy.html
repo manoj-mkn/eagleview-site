@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Eagle View — Buy a License</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#07100F;color:#F0FFFE;}
+
+/* ── Layout ── */
+body{display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:48px 20px 64px;}
+
+/* ── Header ── */
+.ev-logo{display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:40px;}
+.ev-icon{width:52px;height:52px;background:linear-gradient(135deg,#7A3200 0%,#B85400 40%,#E87722 80%,#F5A040 100%);border-radius:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 32px rgba(232,119,34,.35);}
+.ev-wordmark{font-size:13px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.55);}
+
+/* ── Headline ── */
+.ev-title{font-size:clamp(22px,5vw,30px);font-weight:800;text-align:center;color:#F0FFFE;margin-bottom:8px;line-height:1.2;}
+.ev-sub{font-size:13px;color:#5A8A87;text-align:center;margin-bottom:36px;line-height:1.6;}
+
+/* ── Plan cards ── */
+.plans{display:flex;gap:12px;width:100%;max-width:520px;margin-bottom:24px;}
+.plan{flex:1;background:#0D1E1B;border:1.5px solid #1A3530;border-radius:14px;padding:22px 14px 18px;cursor:pointer;transition:border-color .18s,background .18s,box-shadow .18s;text-align:center;font-family:inherit;position:relative;outline:none;}
+.plan:hover{background:#101F1C;border-color:#336B66;}
+.plan.sel{background:rgba(232,119,34,.1);border-color:#E87722;box-shadow:0 0 0 1px rgba(232,119,34,.25);}
+.plan-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:linear-gradient(90deg,#B85400,#E87722);color:#fff;border-radius:20px;padding:3px 10px;white-space:nowrap;}
+.plan-dur{font-size:15px;font-weight:700;color:#C8E8E5;margin-bottom:8px;}
+.plan.sel .plan-dur{color:#F5A040;}
+.plan-price{font-size:26px;font-weight:800;color:#F0FFFE;margin-bottom:4px;line-height:1;}
+.plan.sel .plan-price{color:#E87722;}
+.plan-note{font-size:10px;color:#3A6460;line-height:1.4;}
+.plan.sel .plan-note{color:#7A5A30;}
+
+/* ── Form card ── */
+.card{width:100%;max-width:520px;background:#0D1E1B;border:1px solid #1A3530;border-radius:16px;padding:28px;}
+.features{list-style:none;display:flex;flex-direction:column;gap:9px;margin-bottom:24px;}
+.features li{font-size:13px;color:#A8D4D1;display:flex;align-items:center;gap:9px;}
+.features li::before{content:'✓';color:#E87722;font-weight:700;flex-shrink:0;font-size:12px;}
+.form{display:flex;flex-direction:column;gap:12px;}
+.inp{width:100%;background:#070F0D;border:1px solid #1A3530;border-radius:9px;padding:11px 14px;font-size:13px;color:#F0FFFE;outline:none;transition:border-color .18s;font-family:inherit;}
+.inp:focus{border-color:#E87722;}
+.inp::placeholder{color:#2A4A46;}
+.mid-ok{font-size:11px;color:#5A8A87;padding:0 2px;display:flex;align-items:center;gap:6px;}
+.mid-ok strong{color:#E87722;}
+.hint{font-size:11px;color:#3A6460;padding:0 2px;line-height:1.55;}
+.hint strong{color:#5A8A87;}
+.err{font-size:12px;color:#FF6B7A;display:none;}
+.pay-btn{width:100%;padding:14px;background:linear-gradient(135deg,#7A3200 0%,#B85400 45%,#E87722 100%);color:#fff;font-size:14px;font-weight:700;border:none;border-radius:9px;cursor:pointer;letter-spacing:.02em;transition:opacity .18s;font-family:inherit;box-shadow:0 4px 20px rgba(232,119,34,.3);}
+.pay-btn:hover{opacity:.88;}
+.pay-btn:disabled{opacity:.4;cursor:not-allowed;}
+.secure-note{font-size:11px;color:#2A4A46;text-align:center;margin-top:12px;line-height:1.5;}
+
+/* ── Success ── */
+.success{display:none;text-align:center;padding:12px 0 4px;}
+.success-icon{font-size:44px;margin-bottom:14px;}
+.success-title{font-size:18px;font-weight:700;color:#E87722;margin-bottom:8px;}
+.success-msg{font-size:13px;color:#7AB8B5;line-height:1.65;}
+
+/* ── Footer ── */
+.ev-footer{margin-top:40px;font-size:11px;color:#1A3530;text-align:center;}
+.ev-footer a{color:#2A4A46;text-decoration:none;}
+.ev-footer a:hover{color:#5A8A87;}
+
+/* ── Responsive ── */
+@media(max-width:520px){
+  .plans{flex-direction:column;gap:8px;}
+  .plan{padding:14px 16px;display:flex;align-items:center;gap:14px;text-align:left;border-radius:11px;}
+  .plan-badge{position:static;transform:none;order:-1;margin-right:auto;}
+  .plan-dur,.plan-price,.plan-note{margin-bottom:0;}
+  .plan-note{display:none;}
+  .card{padding:20px;}
+  body{padding:32px 16px 48px;}
+}
+</style>
+</head>
+<body>
+
+<div class="ev-logo">
+  <div class="ev-icon">
+    <svg width="30" height="30" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="50,8 67,40 50,35 33,40" fill="white"/>
+      <polygon points="50,35 10,25 20,50 38,50" fill="white" opacity="0.9"/>
+      <polygon points="50,35 90,25 80,50 62,50" fill="white" opacity="0.9"/>
+      <polygon points="38,50 20,60 30,72 50,65" fill="white" opacity="0.8"/>
+      <polygon points="62,50 80,60 70,72 50,65" fill="white" opacity="0.8"/>
+      <polygon points="50,65 44,85 50,80 56,85" fill="white" opacity="0.75"/>
+    </svg>
+  </div>
+  <span class="ev-wordmark">Eagle View</span>
+</div>
+
+<h1 class="ev-title">Choose your plan</h1>
+<p class="ev-sub">One-time payment &nbsp;·&nbsp; No subscription &nbsp;·&nbsp; Mac &amp; Windows</p>
+
+<!-- Plan cards -->
+<div class="plans">
+  <button class="plan" data-days="40" onclick="selectPlan(40)">
+    <div class="plan-dur">40 Days</div>
+    <div class="plan-price">₹1</div>
+    <div class="plan-note">Short-term access</div>
+  </button>
+  <button class="plan" data-days="180" onclick="selectPlan(180)">
+    <div class="plan-badge">Popular</div>
+    <div class="plan-dur">6 Months</div>
+    <div class="plan-price">₹1</div>
+    <div class="plan-note">Half-year access</div>
+  </button>
+  <button class="plan sel" data-days="365" onclick="selectPlan(365)">
+    <div class="plan-badge">Best value</div>
+    <div class="plan-dur">1 Year</div>
+    <div class="plan-price">₹1</div>
+    <div class="plan-note">Full-year access</div>
+  </button>
+</div>
+
+<!-- Form card -->
+<div class="card">
+  <ul class="features">
+    <li>Outlook + Gmail — mail, meetings, to-do</li>
+    <li>Jira, Azure DevOps, Slack, Teams</li>
+    <li>World clock, Timesheet, Peakon, Notes</li>
+    <li>All future updates included</li>
+  </ul>
+
+  <div class="form" id="buyForm">
+    <input class="inp" id="buyEmail" type="email" placeholder="Your email address" autocomplete="email"/>
+
+    <!-- Shown when machine ID comes from the app via ?mid= -->
+    <div class="mid-ok" id="buyMidOk" style="display:none">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#E87722" stroke-width="1.4"/><path d="M5 8l2 2 4-4" stroke="#E87722" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Machine ID detected — <strong>key will be bound to this device</strong></span>
+    </div>
+
+    <!-- Shown when visiting directly (no ?mid=) -->
+    <div id="buyMidManual">
+      <input class="inp" id="buyMachineId" type="text" placeholder="Paste Machine ID from Eagle View" autocomplete="off" spellcheck="false"/>
+      <p class="hint" style="margin-top:-2px">Open Eagle View → ⓘ About → <strong>Copy Machine ID</strong></p>
+    </div>
+
+    <div class="err" id="buyErr"></div>
+    <button class="pay-btn" id="buyBtn" onclick="startPayment()">Pay now →</button>
+    <p class="secure-note">🔒 Payment secured by Razorpay &nbsp;·&nbsp; Key delivered to your email</p>
+  </div>
+
+  <div class="success" id="buySuccess">
+    <div class="success-icon">✉️</div>
+    <div class="success-title">Check your email</div>
+    <div class="success-msg">Your Eagle View license key is on its way.<br>Open Eagle View → <strong>Activate License</strong> → paste the key.</div>
+  </div>
+</div>
+
+<p class="ev-footer">
+  © 2026 Eagle View &nbsp;·&nbsp;
+  <a href="https://newmantech.in/eagleview.html">Product page</a> &nbsp;·&nbsp;
+  <a href="https://newmantech.in/privacy.html">Privacy</a>
+</p>
+
+<script>
+var EDGE_URL = 'https://cmmafuddsgritdmltxcr.supabase.co/functions/v1/activate-license';
+var _plan = 365;
+var _mid  = '';
+
+// Read ?mid= from URL on load
+;(function(){
+  var p = new URLSearchParams(window.location.search);
+  var mid = (p.get('mid') || '').trim();
+  if (mid) {
+    _mid = mid;
+    document.getElementById('buyMidOk').style.display = 'flex';
+    document.getElementById('buyMidManual').style.display = 'none';
+  }
+})();
+
+function selectPlan(days) {
+  _plan = days;
+  document.querySelectorAll('.plan').forEach(function(el) {
+    el.classList.toggle('sel', parseInt(el.dataset.days, 10) === days);
+  });
+}
+
+function showErr(msg) {
+  var el = document.getElementById('buyErr');
+  el.textContent = msg; el.style.display = 'block';
+}
+
+function startPayment() {
+  var email = (document.getElementById('buyEmail').value || '').trim().toLowerCase();
+  var mid   = _mid || (document.getElementById('buyMachineId') ? (document.getElementById('buyMachineId').value || '').trim() : '');
+  document.getElementById('buyErr').style.display = 'none';
+
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showErr('Please enter a valid email address.'); return; }
+  if (!mid) { showErr('Please paste your Machine ID from Eagle View → ⓘ About → Copy Machine ID.'); return; }
+
+  var btn = document.getElementById('buyBtn');
+  btn.disabled = true; btn.textContent = 'Opening payment…';
+
+  fetch(EDGE_URL + '?action=create-payment-link', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: email, machine_id: mid, license_days: _plan })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    if (data.payment_link_url) {
+      window.location.href = data.payment_link_url;
+    } else {
+      showErr(data.error || 'Could not open payment. Please try again.');
+      btn.disabled = false; btn.textContent = 'Pay now →';
+    }
+  })
+  .catch(function() {
+    showErr('Network error. Check your connection and try again.');
+    btn.disabled = false; btn.textContent = 'Pay now →';
+  });
+}
+</script>
+</body>
+</html>
