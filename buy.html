@@ -65,9 +65,9 @@ h1{font-size:26px;font-weight:700;color:#1A1A2E;margin-bottom:6px;line-height:1.
   <h1>Unlock your license</h1>
   <p class="sub">One-time payment · No subscription · Mac &amp; Windows</p>
   <div class="plans">
-    <div class="plan" data-days="40" onclick="selectPlan(40)"><div class="plan-left"><div class="plan-dur">40 Days</div><div class="plan-desc">Try it out</div></div><div class="plan-right"><div class="plan-price">₹1</div><div class="plan-period">one-time</div></div><div class="radio"></div></div>
-    <div class="plan" data-days="180" onclick="selectPlan(180)"><div class="plan-left"><div class="plan-dur">6 Months <span class="badge">Popular</span></div><div class="plan-desc">Half-year access</div></div><div class="plan-right"><div class="plan-price">₹1</div><div class="plan-period">one-time</div></div><div class="radio"></div></div>
-    <div class="plan sel" data-days="365" onclick="selectPlan(365)"><div class="plan-left"><div class="plan-dur">1 Year <span class="badge">Best value</span></div><div class="plan-desc">Full-year access</div></div><div class="plan-right"><div class="plan-price">₹1</div><div class="plan-period">one-time</div></div><div class="radio"></div></div>
+    <div class="plan" data-days="180" onclick="selectPlan(180)"><div class="plan-left"><div class="plan-dur">6 Months</div><div class="plan-desc">Half-year access</div></div><div class="plan-right"><div class="plan-price">₹1,299</div><div class="plan-period">one-time</div></div><div class="radio"></div></div>
+    <div class="plan sel" data-days="365" onclick="selectPlan(365)"><div class="plan-left"><div class="plan-dur">1 Year <span class="badge">Popular</span></div><div class="plan-desc">Full-year access</div></div><div class="plan-right"><div class="plan-price">₹2,199</div><div class="plan-period">one-time</div></div><div class="radio"></div></div>
+    <div class="plan" data-days="730" onclick="selectPlan(730)"><div class="plan-left"><div class="plan-dur">2 Years <span class="badge">Best value</span></div><div class="plan-desc">Extended access</div></div><div class="plan-right"><div class="plan-price">₹3,199</div><div class="plan-period">one-time</div></div><div class="radio"></div></div>
   </div>
   <div class="divider"></div>
   <div id="buyForm">
@@ -83,10 +83,11 @@ h1{font-size:26px;font-weight:700;color:#1A1A2E;margin-bottom:6px;line-height:1.
 </div>
 <script>
 var EDGE_URL='https://cmmafuddsgritdmltxcr.supabase.co/functions/v1/activate-license';
-var _plan=365,_mid='';
+var _plan=365,_mid='',_price=2199;
+var PRICES={180:1299,365:2199,730:3199};
 (function(){var p=new URLSearchParams(window.location.search),mid=(p.get('mid')||'').trim(),email=(p.get('email')||'').trim();if(mid){_mid=mid;var ok=document.getElementById('buyMidOk'),mn=document.getElementById('buyMidManual');if(ok)ok.style.display='flex';if(mn)mn.style.display='none';}if(email){var el=document.getElementById('buyEmail');if(el){el.value=email;el.readOnly=true;}}})();
-function selectPlan(d){_plan=d;document.querySelectorAll('[data-days]').forEach(function(el){el.classList.toggle('sel',parseInt(el.dataset.days,10)===d);});}
+function selectPlan(d){_plan=d;_price=PRICES[d]||2199;document.querySelectorAll('[data-days]').forEach(function(el){el.classList.toggle('sel',parseInt(el.dataset.days,10)===d);});}
 function showErr(m){var el=document.getElementById('buyErr');el.textContent=m;el.style.display='block';}
-function startPayment(){var email=(document.getElementById('buyEmail').value||'').trim().toLowerCase(),mid=_mid||(document.getElementById('buyMachineId')?(document.getElementById('buyMachineId').value||'').trim():'');document.getElementById('buyErr').style.display='none';if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showErr('Enter a valid email address.');return;}if(!mid){showErr('Paste your Machine ID from Eagle View.');return;}var btn=document.getElementById('buyBtn');btn.disabled=true;btn.textContent='Opening…';fetch(EDGE_URL+'?action=create-payment-link',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,machine_id:mid,license_days:_plan})}).then(function(r){return r.json();}).then(function(data){if(data.payment_link_url){window.location.href=data.payment_link_url;}else{showErr(data.error||'Try again.');btn.disabled=false;btn.textContent='Pay now →';}}).catch(function(){showErr('Network error.');btn.disabled=false;btn.textContent='Pay now →';});}
+function startPayment(){var email=(document.getElementById('buyEmail').value||'').trim().toLowerCase(),mid=_mid||(document.getElementById('buyMachineId')?(document.getElementById('buyMachineId').value||'').trim():'');document.getElementById('buyErr').style.display='none';if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showErr('Enter a valid email address.');return;}if(!mid){showErr('Paste your Machine ID from Eagle View.');return;}var btn=document.getElementById('buyBtn');btn.disabled=true;btn.textContent='Opening…';fetch(EDGE_URL+'?action=create-payment-link',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,machine_id:mid,license_days:40,amount_inr:_price})}).then(function(r){return r.json();}).then(function(data){if(data.payment_link_url){window.location.href=data.payment_link_url;}else{showErr(data.error||'Try again.');btn.disabled=false;btn.textContent='Pay now →';}}).catch(function(){showErr('Network error.');btn.disabled=false;btn.textContent='Pay now →';});}
 </script>
 </body></html>

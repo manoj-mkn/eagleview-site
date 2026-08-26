@@ -14,7 +14,7 @@ const RAZORPAY_KEY_SECRET     = Deno.env.get('RAZORPAY_KEY_SECRET')!
 const RAZORPAY_WEBHOOK_SECRET = Deno.env.get('RAZORPAY_WEBHOOK_SECRET') || ''
 const RESEND_API_KEY          = Deno.env.get('RESEND_API_KEY')!
 const LICENSE_DAYS_DEFAULT    = parseInt(Deno.env.get('LICENSE_DAYS') || '40', 10)
-const ALLOWED_PLANS           = new Set([40, 180, 365])
+const ALLOWED_PLANS           = new Set([40, 180, 365, 730])
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -66,16 +66,17 @@ async function generateLicenseKey(email: string, machineId: string, licenseDays 
 function planLabel(days: number): string {
   if (days === 180) return '6-Month License'
   if (days === 365) return '1-Year License'
+  if (days === 730) return '2-Year License'
   return `${days}-Day License`
 }
 
-async function createPaymentLink(email: string, machineId: string, licenseDays: number) {
+async function createPaymentLink(email: string, machineId: string, licenseDays: number, amountInr = 1) {
   const expireBy = Math.floor(Date.now() / 1000) + 3600
   const r = await fetch('https://api.razorpay.com/v1/payment_links', {
     method: 'POST',
     headers: { Authorization: RZP_AUTH, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      amount: 100, // ₹1 in paise (test); update per plan when going live
+      amount: amountInr * 100, // paise
       currency: 'INR',
       description: `Eagle View — ${planLabel(licenseDays)}`,
       customer: { email },
@@ -190,11 +191,12 @@ serve(async (req) => {
 
     // ── create-payment-link (called by the app) ──────────────────────────────
     if (action === 'create-payment-link') {
-      const { email, machine_id, license_days } = body
+      const { email, machine_id, license_days, amount_inr } = body
       if (!email || !machine_id) return json({ error: 'Missing email or machine_id' }, 400)
-      const planDays = ALLOWED_PLANS.has(Number(license_days)) ? Number(license_days) : LICENSE_DAYS_DEFAULT
+      const planDays  = ALLOWED_PLANS.has(Number(license_days)) ? Number(license_days) : LICENSE_DAYS_DEFAULT
+      const amountInr = Number(amount_inr) > 0 ? Number(amount_inr) : 1
 
-      const link = await createPaymentLink(email.trim().toLowerCase(), machine_id.trim(), planDays)
+      const link = await createPaymentLink(email.trim().toLowerCase(), machine_id.trim(), planDays, amountInr)
       console.log('[create-payment-link] Razorpay response:', JSON.stringify(link))
       if (!link.short_url) return json({ error: link.error?.description || link.error?.code || link.description || JSON.stringify(link) }, 500)
 
