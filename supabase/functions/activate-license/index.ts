@@ -8,6 +8,8 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 // RESEND_API_KEY          — from resend.com
 // LICENSE_DAYS            — e.g. "40"
 
+const SUPABASE_URL            = Deno.env.get('SUPABASE_URL')!
+const SUPABASE_SERVICE_KEY    = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 const LICENSE_SECRET_HEX      = Deno.env.get('LICENSE_SECRET_HEX')!
 const RAZORPAY_KEY_ID         = Deno.env.get('RAZORPAY_KEY_ID')!
 const RAZORPAY_KEY_SECRET     = Deno.env.get('RAZORPAY_KEY_SECRET')!
@@ -229,6 +231,23 @@ serve(async (req) => {
 
       const key = await generateLicenseKey(email, machine_id)
       await sendLicenseEmail(email, key)
+      return json({ ok: true })
+    }
+
+    // ── register-trial (called by the app when user enters trial mode) ──────────
+    if (action === 'register-trial') {
+      const { email, machine_id } = body
+      if (!email || !machine_id) return json({ error: 'Missing fields' }, 400)
+      await fetch(`${SUPABASE_URL}/rest/v1/trial_users`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+          'apikey': SUPABASE_SERVICE_KEY,
+          'Prefer': 'resolution=merge-duplicates,return=minimal',
+        },
+        body: JSON.stringify({ email: email.trim().toLowerCase(), machine_id: machine_id.trim() }),
+      })
       return json({ ok: true })
     }
 
