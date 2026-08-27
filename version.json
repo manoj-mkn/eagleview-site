@@ -1,10 +1,10 @@
 {
-  "version": "1.1.4",
+  "version": "1.1.5",
   "url": "https://newmantech.in/eagleview.html",
-  "notes": "Favicon instant load, pinned toggle guard, license UX improvements, CSP wildcard for Gmail, account switch lands on main window",
+  "notes": "License gate & trial flow improvements, machine-bound Razorpay payments, 30-day trial, security hardening",
   "platforms": {
-    "macos_silicon": "https://github.com/manoj-mkn/eagleview-site/releases/download/v1.1.4/Eagle.View_1.1.4_aarch64.dmg",
-    "macos_intel": "https://github.com/manoj-mkn/eagleview-site/releases/download/v1.1.4/Eagle.View_1.1.4_x64.dmg",
-    "windows": "https://github.com/manoj-mkn/eagleview-site/releases/download/v1.1.4/Eagle.View_1.1.4_x64-setup.exe"
+    "macos_silicon": "https://github.com/manoj-mkn/eagleview-site/releases/download/v1.1.5/Eagle.View_1.1.5_aarch64.dmg",
+    "macos_intel": "https://github.com/manoj-mkn/eagleview-site/releases/download/v1.1.5/Eagle.View_1.1.5_x64.dmg",
+    "windows": "https://github.com/manoj-mkn/eagleview-site/releases/download/v1.1.5/Eagle.View_1.1.5_x64-setup.exe"
   }
 }
