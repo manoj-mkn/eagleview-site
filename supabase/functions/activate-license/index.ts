@@ -17,6 +17,7 @@ const RAZORPAY_WEBHOOK_SECRET = Deno.env.get('RAZORPAY_WEBHOOK_SECRET') || ''
 const RESEND_API_KEY          = Deno.env.get('RESEND_API_KEY')!
 const LICENSE_DAYS_DEFAULT    = parseInt(Deno.env.get('LICENSE_DAYS') || '40', 10)
 const ALLOWED_PLANS           = new Set([40, 180, 365, 730])
+const PLAN_PRICES: Record<number, number> = { 180: 1699, 365: 2199, 730: 3199 }
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -175,15 +176,52 @@ serve(async (req) => {
 
       const payload = JSON.parse(rawBody)
       if (payload.event === 'payment_link.paid') {
-        const notes      = payload?.payload?.payment_link?.entity?.notes || {}
-        const email      = notes.email?.trim().toLowerCase()
-        const machineId  = notes.machine_id?.trim()
-        const noteDays   = parseInt(notes.license_days || '0', 10)
+        const entity      = payload?.payload?.payment_link?.entity || {}
+        const paymentLinkId = entity.id as string | undefined
+        const notes       = entity.notes || {}
+        const email       = notes.email?.trim().toLowerCase()
+        const machineId   = notes.machine_id?.trim()
+        const noteDays    = parseInt(notes.license_days || '0', 10)
         const licenseDays = ALLOWED_PLANS.has(noteDays) ? noteDays : LICENSE_DAYS_DEFAULT
-        if (email && machineId) {
+
+        if (email && machineId && paymentLinkId) {
+          // Idempotency: insert payment_link_id; conflict = already processed, skip.
+          const idem = await fetch(
+            `${SUPABASE_URL}/rest/v1/webhook_events`,
+            {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+                'apikey': SUPABASE_SERVICE_KEY,
+                'Content-Type': 'application/json',
+                'Prefer': 'return=minimal',
+              },
+              body: JSON.stringify({ payment_link_id: paymentLinkId }),
+            }
+          )
+          if (idem.status === 409) {
+            console.log(`[webhook] duplicate delivery for ${paymentLinkId}, skipping`)
+            return json({ ok: true, duplicate: true })
+          }
           const key = await generateLicenseKey(email, machineId, licenseDays)
           await sendLicenseEmail(email, key, licenseDays)
           console.log(`[webhook] license generated for ${email} — plan=${licenseDays}d`)
+
+          // Pre-exhaust trial for direct-purchase machines (G4 fix).
+          // If the machine never entered trial mode, this creates an already-expired
+          // trial record so factory reset / license expiry doesn't grant a free trial.
+          // ignore-duplicates leaves existing records untouched for users who trialled first.
+          const thirtyOneDaysAgo = new Date(Date.now() - 31 * 24 * 60 * 60 * 1000).toISOString()
+          await fetch(`${SUPABASE_URL}/rest/v1/trial_users`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+              'apikey': SUPABASE_SERVICE_KEY,
+              'Content-Type': 'application/json',
+              'Prefer': 'resolution=ignore-duplicates,return=minimal',
+            },
+            body: JSON.stringify({ machine_id: machineId, email, created_at: thirtyOneDaysAgo }),
+          })
         }
       }
       return json({ ok: true })
@@ -195,10 +233,12 @@ serve(async (req) => {
     if (action === 'create-payment-link') {
       const { email, machine_id, license_days, amount_inr } = body
       if (!email || !machine_id) return json({ error: 'Missing email or machine_id' }, 400)
-      const planDays  = ALLOWED_PLANS.has(Number(license_days)) ? Number(license_days) : LICENSE_DAYS_DEFAULT
-      const amountInr = Number(amount_inr) > 0 ? Number(amount_inr) : 1
+      const planDays = Number(license_days)
+      const expectedPrice = PLAN_PRICES[planDays]
+      if (!expectedPrice) return json({ error: 'Invalid plan.' }, 400)
+      if (Number(amount_inr) !== expectedPrice) return json({ error: 'Invalid plan selection.' }, 400)
 
-      const link = await createPaymentLink(email.trim().toLowerCase(), machine_id.trim(), planDays, amountInr)
+      const link = await createPaymentLink(email.trim().toLowerCase(), machine_id.trim(), planDays, expectedPrice)
       console.log('[create-payment-link] Razorpay response:', JSON.stringify(link))
       if (!link.short_url) return json({ error: link.error?.description || link.error?.code || link.description || JSON.stringify(link) }, 500)
 
@@ -285,6 +325,86 @@ serve(async (req) => {
         body: JSON.stringify(payload),
       })
       return json({ ok: true })
+    }
+
+    // ── check-trial (called by the app on startup when ev-trial-start is absent) ──
+    if (action === 'check-trial') {
+      const { machine_id } = body
+      if (!machine_id || String(machine_id).trim().length < 4) return json({ error: 'Missing machine_id' }, 400)
+      const mid = String(machine_id).trim()
+      const h = {
+        'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+        'apikey': SUPABASE_SERVICE_KEY,
+        'Content-Type': 'application/json',
+      }
+      // Look up existing trial record for this machine
+      const qr = await fetch(
+        `${SUPABASE_URL}/rest/v1/trial_users?machine_id=eq.${encodeURIComponent(mid)}&select=created_at&limit=1`,
+        { headers: h }
+      )
+      const rows = await qr.json()
+      if (Array.isArray(rows) && rows.length > 0 && rows[0].created_at) {
+        // Prior trial found — return original start as Unix seconds
+        const trial_start = Math.floor(new Date(rows[0].created_at).getTime() / 1000)
+        console.log(`[check-trial] existing record found for ${mid}, trial_start=${trial_start}`)
+        return json({ found: true, trial_start })
+      }
+      // No record — fresh install. Create one now so future factory resets are blocked.
+      const now_ts = Math.floor(Date.now() / 1000)
+      await fetch(`${SUPABASE_URL}/rest/v1/trial_users`, {
+        method: 'POST',
+        headers: { ...h, 'Prefer': 'resolution=ignore-duplicates,return=minimal' },
+        body: JSON.stringify({ machine_id: mid, email: '' }),
+      })
+      console.log(`[check-trial] fresh install for ${mid}, trial_start=${now_ts}`)
+      return json({ found: false, trial_start: now_ts })
+    }
+
+    // ── record-activation (called by app after successful local HMAC activation) ──
+    if (action === 'record-activation') {
+      const { email, machine_id } = body
+      if (!email || !machine_id) return json({ error: 'Missing fields' }, 400)
+      const mid = String(machine_id).trim()
+      const em  = String(email).trim().toLowerCase()
+      const h = {
+        'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+        'apikey': SUPABASE_SERVICE_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates,return=minimal',
+      }
+      // Upsert on machine_id — if same machine re-activates, mark active again
+      await fetch(`${SUPABASE_URL}/rest/v1/license_activations?on_conflict=machine_id`, {
+        method: 'POST',
+        headers: h,
+        body: JSON.stringify({ email: em, machine_id: mid, active: true }),
+      })
+      console.log(`[record-activation] recorded machine=${mid} email=${em}`)
+      return json({ ok: true })
+    }
+
+    // ── check-activation (called by app on startup when a license key is present) ──
+    if (action === 'check-activation') {
+      const { machine_id } = body
+      if (!machine_id || String(machine_id).trim().length < 4) return json({ error: 'Missing machine_id' }, 400)
+      const mid = String(machine_id).trim()
+      const h = {
+        'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+        'apikey': SUPABASE_SERVICE_KEY,
+        'Content-Type': 'application/json',
+      }
+      const qr = await fetch(
+        `${SUPABASE_URL}/rest/v1/license_activations?machine_id=eq.${encodeURIComponent(mid)}&select=active&limit=1`,
+        { headers: h }
+      )
+      const rows = await qr.json()
+      if (!Array.isArray(rows) || rows.length === 0) {
+        // No record — this machine activated before this feature existed; fail open
+        console.log(`[check-activation] no record for ${mid}, allowing (pre-feature activation)`)
+        return json({ found: false, active: true })
+      }
+      const active = rows[0].active === true
+      console.log(`[check-activation] machine=${mid} active=${active}`)
+      return json({ found: true, active })
     }
 
     return json({ error: 'Unknown action' }, 400)
