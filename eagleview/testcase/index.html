@@ -418,6 +418,40 @@ body[data-submitted] #submit-banner{display:none!important}
         </svg>
       </button>
       <span id="save-nudge"></span>
+      <style>
+        #ev-horse{overflow:visible}
+        #ev-horse .evh-body{animation:evh-bounce .52s ease-in-out infinite alternate;transform-origin:35px 30px}
+        #ev-horse .evh-lfl{animation:evh-legf .52s ease-in-out infinite alternate;transform-origin:41px 31px}
+        #ev-horse .evh-lfr{animation:evh-legf .52s ease-in-out infinite alternate-reverse;transform-origin:41px 31px}
+        #ev-horse .evh-lbl{animation:evh-legb .52s ease-in-out infinite alternate;transform-origin:22px 31px}
+        #ev-horse .evh-lbr{animation:evh-legb .52s ease-in-out infinite alternate-reverse;transform-origin:22px 31px}
+        #ev-horse .evh-tail{animation:evh-tail .52s ease-in-out infinite alternate;transform-origin:13px 27px}
+        @keyframes evh-bounce{0%{transform:translateY(0)}100%{transform:translateY(-2.5px)}}
+        @keyframes evh-legf{0%{transform:rotate(-26deg)}100%{transform:rotate(24deg)}}
+        @keyframes evh-legb{0%{transform:rotate(20deg)}100%{transform:rotate(-22deg)}}
+        @keyframes evh-tail{0%{transform:rotate(-10deg)}100%{transform:rotate(14deg)}}
+      </style>
+      <div style="flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;min-width:0;pointer-events:none">
+        <svg id="ev-horse" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 50" width="56" height="38">
+          <!-- tail -->
+          <g class="evh-tail"><path d="M13 27C8 24 5 29 4 36" stroke="var(--accent)" stroke-width="2.8" stroke-linecap="round" fill="none"/></g>
+          <!-- far legs (behind body) -->
+          <line class="evh-lfr" x1="41" y1="31" x2="38" y2="46" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" opacity=".45"/>
+          <line class="evh-lbr" x1="22" y1="31" x2="19" y2="46" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" opacity=".45"/>
+          <!-- body group (bobs) -->
+          <g class="evh-body">
+            <path d="M12 27C12 19 18 17 31 17C44 17 52 19 52 27C52 33 46 35 31 35C16 35 12 33 12 27Z" fill="var(--accent)"/>
+            <path d="M46 23C50 17 51 11 49 7" stroke="var(--accent)" stroke-width="7" stroke-linecap="round" fill="none"/>
+            <path d="M47 6C51 4 56 5 57 8C58 12 55 15 51 15C48 15 46 12 47 6Z" fill="var(--accent)"/>
+            <path d="M48 6C47 3 50 2 51 4" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+            <path d="M45 9C43 13 44 18 45 23" stroke="rgba(0,0,0,0.16)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            <circle cx="53" cy="9" r="1.2" fill="rgba(0,0,0,0.32)"/>
+          </g>
+          <!-- near legs (in front of body) -->
+          <line class="evh-lfl" x1="41" y1="31" x2="43" y2="46" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/>
+          <line class="evh-lbl" x1="22" y1="31" x2="24" y2="46" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
       <div class="filter-area" style="margin-left:auto;display:flex;align-items:center;gap:5px;flex-shrink:0;padding-left:6px">
 <span class="meta-label">Filter:</span>
         <button class="filter-btn active" data-filter="all"      onclick="setFilter('all')">All</button>
