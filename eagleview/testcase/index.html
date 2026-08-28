@@ -1132,7 +1132,37 @@ body[data-submitted] #submit-banner{display:none!important}
   </div>
   <div class="sec-body" id="s16-body">
     <div class="tc" data-id="TC-298"><span class="tc-id tc-verified">TC-298</span><span class="tc-desc"><span style="display:inline-block;vertical-align:middle;margin-right:5px;position:relative;top:-1px;"><svg width="15" height="15" viewBox="0 0 128 128" fill="none"><defs><linearGradient id="ti-jira-g1" gradientUnits="userSpaceOnUse" x1="88.136" y1="39.092" x2="68.472" y2="59.368"><stop offset="0.176" stop-color="#0052CC"/><stop offset="1" stop-color="#2684FF"/></linearGradient><linearGradient id="ti-jira-g2" gradientUnits="userSpaceOnUse" x1="66.564" y1="62.256" x2="43.828" y2="84.376"><stop offset="0.176" stop-color="#0052CC"/><stop offset="1" stop-color="#2684FF"/></linearGradient></defs><path d="M108.023 16H61.805c0 11.52 9.324 20.848 20.847 20.848h8.5v8.226c0 11.52 9.328 20.848 20.848 20.848V19.977A3.98 3.98 0 00108.023 16z" fill="#2684FF"/><path d="M85.121 39.04H38.902c0 11.519 9.325 20.847 20.844 20.847h8.504v8.226c0 11.52 9.328 20.848 20.848 20.848V43.016a3.983 3.983 0 00-3.977-3.977z" fill="url(#ti-jira-g1)"/><path d="M62.219 62.078H16c0 11.524 9.324 20.848 20.848 20.848h8.5v8.23c0 11.52 9.328 20.844 20.847 20.844V66.059a3.984 3.984 0 00-3.976-3.98z" fill="url(#ti-jira-g2)"/></svg></span>Jira row badge shows count of 3 (the first project alphabetically is APP, which has 3 issues)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn nt" data-val="nt">Not Tested</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-299"><span class="tc-id tc-verified">TC-299</span><span class="tc-desc">Clicking Jira row expands the dropdown showing issues with key, summary, and status</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn nt" data-val="nt">Not Tested</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-299"><span class="tc-id tc-verified">TC-299</span><span class="tc-desc">Clicking Jira row expands the dropdown showing issues with key, summary, and status
+<span style="display:block;margin-top:9px">
+  <span style="font-size:10.5px;color:var(--text2);font-style:italic;display:block;margin-bottom:5px">Each issue row looks like this:</span>
+  <!-- Row 1: In Progress -->
+  <span style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:#1E1E24;border-radius:6px 6px 0 0;border:1px solid #2A2A35;border-bottom:none;min-height:50px;max-width:420px">
+    <svg width="18" height="18" viewBox="0 0 12 12" fill="none"><line x1="2" y1="4.5" x2="10" y2="4.5" stroke="#FFA726" stroke-width="1.8" stroke-linecap="round"/><line x1="2" y1="7.5" x2="10" y2="7.5" stroke="#FFA726" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <span style="flex:1;display:flex;flex-direction:column;gap:3px;overflow:hidden;min-width:0">
+      <span style="font-size:12px;font-weight:500;color:#FFF3E8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Login page throws 500 on invalid credentials</span>
+      <span style="font-size:11px;font-weight:700;color:#4C9AFF;font-family:'Courier New',monospace">EV-142</span>
+    </span>
+    <span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px;border:1px solid rgba(0,82,204,0.55);background:rgba(0,82,204,0.30);color:#4C9AFF;white-space:nowrap;text-transform:uppercase;letter-spacing:0.03em">In Progress</span>
+  </span>
+  <!-- Row 2: To Do -->
+  <span style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:#1E1E24;border:1px solid #2A2A35;border-bottom:none;min-height:50px;max-width:420px">
+    <svg width="18" height="18" viewBox="0 0 12 12" fill="none"><path d="M2 8L6 4l4 4" stroke="#FF7043" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span style="flex:1;display:flex;flex-direction:column;gap:3px;overflow:hidden;min-width:0">
+      <span style="font-size:12px;font-weight:500;color:#FFF3E8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Add dark-mode support to the dashboard settings panel</span>
+      <span style="font-size:11px;font-weight:700;color:#4C9AFF;font-family:'Courier New',monospace">EV-138</span>
+    </span>
+    <span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.45);white-space:nowrap;text-transform:uppercase;letter-spacing:0.03em">To Do</span>
+  </span>
+  <!-- Row 3: Done -->
+  <span style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:#1E1E24;border-radius:0 0 6px 6px;border:1px solid #2A2A35;min-height:50px;max-width:420px">
+    <svg width="18" height="18" viewBox="0 0 12 12" fill="none"><path d="M2 4L6 8l4-4" stroke="#42A5F5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span style="flex:1;display:flex;flex-direction:column;gap:3px;overflow:hidden;min-width:0">
+      <span style="font-size:12px;font-weight:500;color:#FFF3E8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Fix token refresh race condition on session expiry</span>
+      <span style="font-size:11px;font-weight:700;color:#4C9AFF;font-family:'Courier New',monospace">EV-131</span>
+    </span>
+    <span style="font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px;border:1px solid rgba(0,180,80,0.5);background:rgba(0,180,80,0.25);color:#57D989;white-space:nowrap;text-transform:uppercase;letter-spacing:0.03em">Done</span>
+  </span>
+</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn nt" data-val="nt">Not Tested</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
     <div class="tc" data-id="TC-300"><span class="tc-id tc-verified">TC-300</span><span class="tc-desc">7 dummy issues across 3 projects (APP, OPS, WEB) — first project APP shows: APP-12 "Fix login page redirect loop" In Progress · APP-9 "Add dark mode toggle to settings" To Do · APP-7 "Update API rate limit handling" To Do (overdue)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn nt" data-val="nt">Not Tested</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
     <div class="tc" data-id="TC-301"><span class="tc-id tc-verified">TC-301</span><span class="tc-desc">Overdue item (APP-7 "Update API rate limit handling", due 2026-07-10) is visually highlighted with a red/distinct overdue style (jira-overdue class)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn nt" data-val="nt">Not Tested</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
     <div class="tc" data-id="TC-302"><span class="tc-id tc-verified">TC-302</span><span class="tc-desc">Status abbreviations used: PROG, TO DO, IN REV, DONE, BLOCK</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn nt" data-val="nt">Not Tested</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
