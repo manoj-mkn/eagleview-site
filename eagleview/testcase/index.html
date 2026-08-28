@@ -419,38 +419,22 @@ body[data-submitted] #submit-banner{display:none!important}
       </button>
       <span id="save-nudge"></span>
       <style>
-        #ev-horse{overflow:visible}
-        #ev-horse .evh-body{animation:evh-bounce .52s ease-in-out infinite alternate;transform-origin:35px 30px}
-        #ev-horse .evh-lfl{animation:evh-legf .52s ease-in-out infinite alternate;transform-origin:41px 31px}
-        #ev-horse .evh-lfr{animation:evh-legf .52s ease-in-out infinite alternate-reverse;transform-origin:41px 31px}
-        #ev-horse .evh-lbl{animation:evh-legb .52s ease-in-out infinite alternate;transform-origin:22px 31px}
-        #ev-horse .evh-lbr{animation:evh-legb .52s ease-in-out infinite alternate-reverse;transform-origin:22px 31px}
-        #ev-horse .evh-tail{animation:evh-tail .52s ease-in-out infinite alternate;transform-origin:13px 27px}
-        @keyframes evh-bounce{0%{transform:translateY(0)}100%{transform:translateY(-2.5px)}}
-        @keyframes evh-legf{0%{transform:rotate(-26deg)}100%{transform:rotate(24deg)}}
-        @keyframes evh-legb{0%{transform:rotate(20deg)}100%{transform:rotate(-22deg)}}
-        @keyframes evh-tail{0%{transform:rotate(-10deg)}100%{transform:rotate(14deg)}}
+        #evb-anim{display:flex;align-items:flex-end;gap:10px;height:26px}
+        .evb{width:12px;height:12px;border-radius:50%;animation:evb-go .58s ease-in-out infinite alternate;transform-origin:center center}
+        .evb1{background:#E87722;box-shadow:0 0 9px rgba(232,119,34,0.6)}
+        .evb2{background:#6366F1;box-shadow:0 0 9px rgba(99,102,241,0.6);animation-delay:.2s}
+        @keyframes evb-go{
+          0%  {transform:translateY(0)      scaleX(1.22) scaleY(0.80)}
+          14% {transform:translateY(-4px)   scaleX(1)    scaleY(1)}
+          86% {transform:translateY(-17px)  scaleX(0.91) scaleY(1.09)}
+          100%{transform:translateY(-18px)  scaleX(0.88) scaleY(1.13)}
+        }
       </style>
       <div style="flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;min-width:0;pointer-events:none">
-        <svg id="ev-horse" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 50" width="56" height="38">
-          <!-- tail -->
-          <g class="evh-tail"><path d="M13 27C8 24 5 29 4 36" stroke="var(--accent)" stroke-width="2.8" stroke-linecap="round" fill="none"/></g>
-          <!-- far legs (behind body) -->
-          <line class="evh-lfr" x1="41" y1="31" x2="38" y2="46" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" opacity=".45"/>
-          <line class="evh-lbr" x1="22" y1="31" x2="19" y2="46" stroke="var(--accent)" stroke-width="3" stroke-linecap="round" opacity=".45"/>
-          <!-- body group (bobs) -->
-          <g class="evh-body">
-            <path d="M12 27C12 19 18 17 31 17C44 17 52 19 52 27C52 33 46 35 31 35C16 35 12 33 12 27Z" fill="var(--accent)"/>
-            <path d="M46 23C50 17 51 11 49 7" stroke="var(--accent)" stroke-width="7" stroke-linecap="round" fill="none"/>
-            <path d="M47 6C51 4 56 5 57 8C58 12 55 15 51 15C48 15 46 12 47 6Z" fill="var(--accent)"/>
-            <path d="M48 6C47 3 50 2 51 4" stroke="var(--accent)" stroke-width="1.8" stroke-linecap="round" fill="none"/>
-            <path d="M45 9C43 13 44 18 45 23" stroke="rgba(0,0,0,0.16)" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-            <circle cx="53" cy="9" r="1.2" fill="rgba(0,0,0,0.32)"/>
-          </g>
-          <!-- near legs (in front of body) -->
-          <line class="evh-lfl" x1="41" y1="31" x2="43" y2="46" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/>
-          <line class="evh-lbl" x1="22" y1="31" x2="24" y2="46" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/>
-        </svg>
+        <div id="evb-anim">
+          <div class="evb evb1"></div>
+          <div class="evb evb2"></div>
+        </div>
       </div>
       <div class="filter-area" style="margin-left:auto;display:flex;align-items:center;gap:5px;flex-shrink:0;padding-left:6px">
 <span class="meta-label">Filter:</span>
@@ -902,9 +886,27 @@ body[data-submitted] #submit-banner{display:none!important}
     <div class="tc" data-id="TC-194"><span class="tc-id tc-verified">TC-194</span><span class="tc-desc">Dragging over another checklist item row shows an orange top-border highlight <svg xmlns="http://www.w3.org/2000/svg" width="80" height="26" style="display:inline-block;vertical-align:middle;margin:0 4px;border-radius:3px;overflow:hidden"><rect width="80" height="26" fill="#1A0E04"/><rect width="80" height="24" y="2" fill="rgba(232,119,34,0.12)"/><rect width="80" height="2" fill="#E87722"/><text x="8" y="17" fill="rgba(255,255,255,0.5)" font-size="9" font-family="-apple-system,sans-serif">checklist item</text></svg> marking it as the drop target</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn nt" data-val="nt">Not Tested</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
     <div class="tc" data-id="TC-195"><span class="tc-id tc-verified">TC-195</span><span class="tc-desc">Releasing the drag places the checklist item at the target position; new order is saved immediately</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn nt" data-val="nt">Not Tested</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
     <div class="tc-group">Note Expand Popup</div>
-    <div class="tc" data-id="TC-196"><span class="tc-id tc-verified">TC-196</span><span class="tc-desc">Double-clicking a checklist item row (not on a button or checkbox) opens a full-screen expand popup with a larger auto-focused textarea, a <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:rgba(255,255,255,0.08);border-radius:4px;vertical-align:middle;margin:0 2px;"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="13" height="13" rx="3" stroke="#E87722" stroke-width="1.5"/></svg></span> "Mark as done / Done" toggle button, and a <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:rgba(255,255,255,0.08);border-radius:4px;vertical-align:middle;margin:0 2px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13" stroke="#E87722" stroke-width="2" stroke-linecap="round"/><path d="M22 2L15 22 11 13 2 9l20-7z" stroke="#E87722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span> copy-to-clipboard send button. A <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:rgba(255,255,255,0.08);border-radius:4px;vertical-align:middle;margin:0 2px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#E87722" stroke-width="2.6" stroke-linecap="round"/></svg></span> close button appears at the top-right of the popup</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn nt" data-val="nt">Not Tested</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-196"><span class="tc-id tc-verified">TC-196</span><span class="tc-desc">Double-clicking a checklist item row (not on a button or checkbox) opens a full-screen expand popup with a larger auto-focused textarea, a <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:rgba(255,255,255,0.08);border-radius:4px;vertical-align:middle;margin:0 2px;"><svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1.5" y="1.5" width="13" height="13" rx="3" stroke="#E87722" stroke-width="1.5"/></svg></span> "Mark as done / Done" toggle button, and a <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:rgba(255,255,255,0.08);border-radius:4px;vertical-align:middle;margin:0 2px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M22 2L11 13" stroke="#E87722" stroke-width="2" stroke-linecap="round"/><path d="M22 2L15 22 11 13 2 9l20-7z" stroke="#E87722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span> copy-to-clipboard send button, and a <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:rgba(255,255,255,0.08);border-radius:4px;vertical-align:middle;margin:0 2px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" stroke="rgba(220,60,60,0.9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><line x1="10" y1="11" x2="10" y2="17" stroke="rgba(220,60,60,0.9)" stroke-width="1.8" stroke-linecap="round"/><line x1="14" y1="11" x2="14" y2="17" stroke="rgba(220,60,60,0.9)" stroke-width="1.8" stroke-linecap="round"/></svg></span> delete button. A <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:rgba(255,255,255,0.08);border-radius:4px;vertical-align:middle;margin:0 2px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#E87722" stroke-width="2.6" stroke-linecap="round"/></svg></span> close button appears at the top-right of the popup</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn nt" data-val="nt">Not Tested</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
     <div class="tc" data-id="TC-197"><span class="tc-id tc-verified">TC-197</span><span class="tc-desc">The expand popup closes when clicking the <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:rgba(255,255,255,0.08);border-radius:4px;vertical-align:middle;margin:0 2px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#E87722" stroke-width="2.6" stroke-linecap="round"/></svg></span> × button or clicking the backdrop behind it; edits made in the popup are saved to the checklist item</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn nt" data-val="nt">Not Tested</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-198"><span class="tc-id tc-verified">TC-198</span><span class="tc-desc">A checklist item with text longer than the visible width automatically scrolls the text horizontally on hover, then resets — giving a marquee effect for long checklist items</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn nt" data-val="nt">Not Tested</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-198"><span class="tc-id tc-verified">TC-198</span><span class="tc-desc">A checklist item with text longer than the visible width automatically scrolls the text horizontally on hover, then resets — giving a marquee effect for long checklist items
+<span style="display:block;margin-top:10px">
+<style>
+#tc198-demo{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--bg3);border-radius:8px;border:1px solid var(--border);width:260px;max-width:96%;cursor:default;user-select:none}
+#tc198-demo .tc198-cb{flex-shrink:0;width:16px;height:16px;border:1.5px solid var(--text2);border-radius:3px}
+#tc198-demo .tc198-wrap{flex:1;overflow:hidden;min-width:0}
+#tc198-demo .tc198-txt{white-space:nowrap;font-size:12.5px;color:var(--text);display:inline-block;will-change:transform}
+</style>
+<span id="tc198-demo">
+  <span class="tc198-cb"></span>
+  <span class="tc198-wrap">
+    <span class="tc198-txt" id="tc198-inner">Follow up with the infrastructure team about the pending deployment pipeline configuration and access tokens</span>
+  </span>
+</span>
+<script>
+(function(){var demo=document.getElementById('tc198-demo'),inner=document.getElementById('tc198-inner'),timer=null,running=false;demo.addEventListener('mouseenter',function(){if(running)return;var dist=inner.scrollWidth-inner.parentElement.offsetWidth;if(dist<=0)return;running=true;inner.style.transition='transform 2.4s linear';inner.style.transform='translateX(-'+dist+'px)';timer=setTimeout(function(){inner.style.transition='none';inner.style.transform='translateX(0)';running=false;timer=null},3000)});demo.addEventListener('mouseleave',function(){if(timer){clearTimeout(timer);timer=null}inner.style.transition='none';inner.style.transform='translateX(0)';running=false})})()
+</script>
+<span style="font-size:11px;color:var(--text2);display:block;margin-top:5px;font-style:italic">↑ hover over the row above to see the marquee scroll</span>
+</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn nt" data-val="nt">Not Tested</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
   </div>
 </div>
 
@@ -956,9 +958,46 @@ body[data-submitted] #submit-banner{display:none!important}
     <div class="tc" data-id="TC-223"><span class="tc-id tc-verified">TC-223</span><span class="tc-desc">Clicking anywhere outside the Quick Links popup closes it</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn nt" data-val="nt">Not Tested</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
     <div class="tc-group">Favicon Loading Chain</div>
     <div class="tc-group">Classic Theme — Quick Links UI</div>
-    <div class="tc" data-id="TC-224"><span class="tc-id tc-verified">TC-224</span><span class="tc-desc">Classic (light) theme: Quick Links URL input text is dark and readable (navy <code>#0D2060</code>) — not white text on a white background</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn nt" data-val="nt">Not Tested</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-225"><span class="tc-id tc-verified">TC-225</span><span class="tc-desc">Classic (light) theme: Quick Links input placeholder text is visible (semi-transparent navy) — not invisible against the white field background</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn nt" data-val="nt">Not Tested</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
-    <div class="tc" data-id="TC-226"><span class="tc-id tc-verified">TC-226</span><span class="tc-desc">Classic (light) theme: pin button and link button icons in the footer are visible (dark navy color on white background)</span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn nt" data-val="nt">Not Tested</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-224"><span class="tc-id tc-verified">TC-224</span><span class="tc-desc">Classic (light) theme: Quick Links URL input text is dark and readable (navy <code>#0D2060</code>) — not white text on a white background
+<span style="display:block;margin-top:9px">
+  <span style="font-size:10.5px;color:var(--text2);font-style:italic;display:block;margin-bottom:5px">Classic theme — URL input should look like this:</span>
+  <span style="display:inline-flex;align-items:center;background:#FFFFFF;border:1.5px solid #CBD5E0;border-radius:7px;padding:6px 10px;gap:7px;max-width:300px">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" stroke="#0D2060" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" stroke="#0D2060" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span style="font-size:12.5px;color:#0D2060;font-family:'SF Mono',monospace;font-weight:500">https://siemens.com/healthineers</span>
+  </span>
+  <span style="font-size:10.5px;color:#22C55E;font-weight:700;display:block;margin-top:4px">✓ Dark navy text, clearly readable on white background</span>
+</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn nt" data-val="nt">Not Tested</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-225"><span class="tc-id tc-verified">TC-225</span><span class="tc-desc">Classic (light) theme: Quick Links input placeholder text is visible (semi-transparent navy) — not invisible against the white field background
+<span style="display:block;margin-top:9px">
+  <span style="font-size:10.5px;color:var(--text2);font-style:italic;display:block;margin-bottom:5px">Classic theme — empty URL input should look like this:</span>
+  <span style="display:inline-flex;align-items:center;background:#FFFFFF;border:1.5px solid #CBD5E0;border-radius:7px;padding:6px 10px;gap:7px;max-width:300px">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(13,32,96,0.38)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
+    <span style="font-size:12.5px;color:rgba(13,32,96,0.42);font-style:italic">Paste link here...</span>
+  </span>
+  <span style="font-size:10.5px;color:#22C55E;font-weight:700;display:block;margin-top:4px">✓ Placeholder is a dimmed navy — still visible, not invisible white-on-white</span>
+</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn nt" data-val="nt">Not Tested</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
+    <div class="tc" data-id="TC-226"><span class="tc-id tc-verified">TC-226</span><span class="tc-desc">Classic (light) theme: pin button and link button icons in the footer are visible (dark navy color on white background)
+<span style="display:block;margin-top:9px">
+  <span style="font-size:10.5px;color:var(--text2);font-style:italic;display:block;margin-bottom:5px">Classic theme — footer buttons should look like this:</span>
+  <span style="display:inline-flex;align-items:center;gap:8px;background:#FFFFFF;border:1.5px solid #CBD5E0;border-radius:7px;padding:7px 14px">
+    <!-- Pin button (exact paths from App.jsx lock-btn) -->
+    <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:#F0F2F7;border:1px solid #CBD5E0;border-radius:6px" title="Pin panel open">
+      <svg width="13" height="13" viewBox="0 0 24 26" fill="none" stroke="#0D2060" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V17a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1v3.76z" fill="rgba(13,32,96,0.12)"/>
+        <path d="M12 16v10" stroke-width="2.5"/>
+      </svg>
+    </span>
+    <!-- Link button (exact paths from App.jsx quicklinks btn) -->
+    <span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;background:#F0F2F7;border:1px solid #CBD5E0;border-radius:6px" title="Quick links">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#0D2060" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+      </svg>
+    </span>
+    <span style="font-size:10.5px;color:rgba(13,32,96,0.5)">← both icons dark navy, clearly visible</span>
+  </span>
+  <span style="font-size:10.5px;color:#22C55E;font-weight:700;display:block;margin-top:4px">✓ Pin + link icons dark navy — both clearly visible on white background</span>
+</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn nt" data-val="nt">Not Tested</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
     <div class="tc" data-id="TC-227"><span class="tc-id tc-verified">TC-227</span><span class="tc-desc">Quick Links favicons load instantly when the popup opens — no visible delay or placeholder flash; favicon images are pre-fetched via a hidden off-screen div that renders all favicon URLs on mount so the browser HTTP cache is warm before the popup appears<span class="note">faviconUrl() uses Google's s2/favicons service directly — no double-request via /favicon.ico</span></span><div class="tc-btns"><button class="tc-btn pass" data-val="pass">Pass</button><button class="tc-btn fail" data-val="fail">Fail</button><button class="tc-btn nt" data-val="nt">Not Tested</button><button class="tc-btn skip" data-val="skip">N/A</button></div></div>
   </div>
 </div>
