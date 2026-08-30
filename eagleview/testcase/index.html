@@ -1671,6 +1671,13 @@ function saveAsTestedFile(btn) {
   const d = document.getElementById('sel-display')?.value;
   if (!t || !p || !d) return;
 
+  // Notify — fire and forget, does not block unlock
+  fetch('https://zjppzsjtacfcgoskeynj.supabase.co/functions/v1/notify-tester-start', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ tester: t, platform: p, display: d, version: 'v1.1.5', timestamp: new Date().toISOString() }),
+  }).catch(() => {}) // silent fail — never blocks the tester
+
   // Unlock the form — no file download, same as feedback form
   document.body.classList.remove('pre-save');
   document.body.setAttribute('data-saved', '1');
