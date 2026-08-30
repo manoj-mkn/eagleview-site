@@ -1672,7 +1672,7 @@ function saveAsTestedFile(btn) {
   if (!t || !p || !d) return;
 
   // Notify — fire and forget, does not block unlock
-  fetch('https://zjppzsjtacfcgoskeynj.supabase.co/functions/v1/notify-tester-start', {
+  fetch('https://cmmafuddsgritdmltxcr.supabase.co/functions/v1/notify-tester-start', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ tester: t, platform: p, display: d, version: 'v1.1.5', timestamp: new Date().toISOString() }),
