@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eagle View — World Roadmap</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #070F0F;
+  --card:     #0C1E1C;
+  --border:   #163230;
+  --teal:     #009B8D;
+  --teal2:    #00D4C8;
+  --text:     #C8ECEA;
+  --muted:    #3A7A75;
+  --white:    #FFFFFF;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  font-size: 14px;
+  min-height: 100vh;
+  padding-bottom: 60px;
+}
+
+/* ── HERO ─────────────────────────────────────────────── */
+.hero {
+  background: linear-gradient(135deg, #061414 0%, #0D2A28 50%, #061414 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 56px 24px 48px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content:'';
+  position:absolute; inset:0;
+  background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(0,155,141,0.18) 0%, transparent 70%);
+  pointer-events:none;
+}
+.hero-eagle {
+  font-size: 56px;
+  display: block;
+  margin-bottom: 16px;
+  filter: drop-shadow(0 0 24px rgba(0,212,200,0.5));
+  animation: float 4s ease-in-out infinite;
+}
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+.hero h1 {
+  font-size: 36px;
+  font-weight: 800;
+  background: linear-gradient(90deg, #00D4C8, #FFFFFF, #009B8D);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+.hero-sub {
+  font-size: 15px;
+  color: var(--muted);
+  max-width: 560px;
+  margin: 0 auto 28px;
+  line-height: 1.6;
+}
+.hero-badges {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.hero-badge {
+  background: rgba(0,155,141,0.12);
+  border: 1px solid rgba(0,155,141,0.35);
+  color: var(--teal2);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 99px;
+  letter-spacing: 0.05em;
+}
+
+/* ── PROGRESS BAR ─────────────────────────────────────── */
+.sticky-progress {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(7,15,15,0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.sp-label { font-size: 12px; color: var(--teal2); font-weight: 700; white-space: nowrap; }
+.sp-bar-bg { flex: 1; background: #0A1A1A; border-radius: 8px; height: 8px; overflow: hidden; }
+.sp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #009B8D, #00D4C8, #7FFFFA);
+  border-radius: 8px;
+  width: 0%;
+  transition: width 0.5s ease;
+  box-shadow: 0 0 8px rgba(0,212,200,0.4);
+}
+.sp-count { font-size: 13px; font-weight: 700; color: var(--teal2); min-width: 60px; text-align: right; }
+.sp-actions { display: flex; gap: 8px; }
+.sp-btn {
+  padding: 5px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  background: var(--card);
+  color: var(--text);
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.sp-btn:hover { border-color: var(--teal); color: var(--teal2); }
+.sp-btn.export { background: var(--teal); border-color: var(--teal); color: #fff; }
+.sp-btn.export:hover { background: var(--teal2); }
+
+/* ── PHASE OVERVIEW STRIP ─────────────────────────────── */
+.phase-strip {
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  padding: 28px 24px 0;
+  scrollbar-width: none;
+  position: relative;
+}
+.phase-strip::-webkit-scrollbar { display: none; }
+.phase-strip::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 24px; right: 24px;
+  height: 2px;
+  background: linear-gradient(90deg, #009B8D, #2F6AA5, #7B63A8, #E87722, #28A745, #E53935, #00BCD4, #FFD700);
+  border-radius: 2px;
+}
+.ps-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 90px;
+  flex: 1;
+  cursor: pointer;
+  padding-bottom: 14px;
+  position: relative;
+  transition: opacity 0.2s;
+}
+.ps-item:hover { opacity: 0.85; }
+.ps-dot {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.ps-item.done .ps-dot { border-color: var(--teal); box-shadow: 0 0 12px rgba(0,212,200,0.3); }
+.ps-num { font-size: 9px; font-weight: 800; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; text-align: center; }
+.ps-name { font-size: 10px; color: var(--muted); text-align: center; line-height: 1.3; }
+
+/* ── MAIN LAYOUT ──────────────────────────────────────── */
+.main { max-width: 960px; margin: 0 auto; padding: 32px 24px; }
+
+/* ── PHASE CARD ───────────────────────────────────────── */
+.phase-card {
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  margin-bottom: 20px;
+  overflow: hidden;
+  transition: border-color 0.3s;
+}
+.phase-card:hover { border-color: rgba(0,155,141,0.3); }
+.phase-card.complete { border-color: rgba(0,155,141,0.5); }
+
+.phase-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 22px;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+}
+.phase-header::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.08;
+  background: var(--ph-color, var(--teal));
+}
+.phase-header:hover::before { opacity: 0.13; }
+
+.ph-icon {
+  width: 46px; height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.ph-meta { flex: 1; }
+.ph-phase-tag {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+.ph-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 3px;
+}
+.ph-subtitle { font-size: 12px; color: var(--muted); }
+.ph-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.ph-badge {
+  font-size: 11px;
+  padding: 3px 11px;
+  border-radius: 99px;
+  font-weight: 700;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--muted);
+  white-space: nowrap;
+}
+.ph-badge.done { background: rgba(0,155,141,0.15); border-color: var(--teal); color: var(--teal2); }
+.ph-chevron { font-size: 12px; color: var(--muted); transition: transform 0.25s; }
+.ph-chevron.open { transform: rotate(180deg); }
+
+.phase-body { display: none; padding: 0 22px 20px; background: var(--card); }
+.phase-body.open { display: block; }
+
+/* ── SUB SECTION LABEL ────────────────────────────────── */
+.sub { font-size: 10px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--teal); padding: 16px 0 6px; }
+
+/* ── CHECK ITEM ───────────────────────────────────────── */
+.ci {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-bottom: 2px;
+}
+.ci:hover { background: rgba(0,155,141,0.06); }
+.ci.checked { opacity: 0.5; }
+.ci input[type="checkbox"] { width: 16px; height: 16px; min-width: 16px; accent-color: var(--teal); cursor: pointer; margin-top: 2px; }
+.ci-text { flex: 1; }
+.ci-label { font-weight: 600; color: var(--white); font-size: 13px; line-height: 1.4; }
+.ci.checked .ci-label { text-decoration: line-through; color: var(--muted); }
+.ci-desc { font-size: 11px; color: var(--muted); margin-top: 2px; line-height: 1.5; }
+.ci-tag {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.tag-now    { background: #0A2A20; color: #00D4C8; border: 1px solid #1A4A3A; }
+.tag-dev    { background: #1A2A0A; color: #7ADE40; border: 1px solid #2A4A1A; }
+.tag-ent    { background: #1A0A2A; color: #B06AB3; border: 1px solid #3A1A4A; }
+.tag-mkt    { background: #2A1A0A; color: #F59E0B; border: 1px solid #4A3A1A; }
+.tag-biz    { background: #2A0A10; color: #FF6B6B; border: 1px solid #4A1A2A; }
+.tag-sec    { background: #0A1A2A; color: #6B9FFF; border: 1px solid #1A3A4A; }
+.tag-ux     { background: #1A1A0A; color: #E8E840; border: 1px solid #3A3A1A; }
+
+/* ── DIVIDER ──────────────────────────────────────────── */
+.div { height: 1px; background: var(--border); margin: 8px 0; }
+
+/* ── NOTES ────────────────────────────────────────────── */
+.notes-wrap { margin-top: 14px; }
+.notes-label { font-size: 11px; color: var(--muted); margin-bottom: 5px; }
+.notes-area {
+  width: 100%;
+  background: rgba(0,0,0,0.25);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 12px;
+  padding: 8px 12px;
+  resize: vertical;
+  min-height: 56px;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+.notes-area:focus { outline: none; border-color: var(--teal); }
+
+/* ── FOOTER ───────────────────────────────────────────── */
+.footer { text-align: center; color: var(--muted); font-size: 11px; margin-top: 40px; }
+
+@media (max-width: 600px) {
+  .hero h1 { font-size: 26px; }
+  .ph-title { font-size: 15px; }
+  .phase-strip { padding: 20px 12px 0; }
+  .ps-item { min-width: 70px; }
+}
+@media print {
+  .sticky-progress, .sp-actions { display: none; }
+  .phase-body { display: block !important; }
+  body { background: white; color: black; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HERO ══════════════════════════════════════════════ -->
+<div class="hero">
+  <span class="hero-eagle">🦅</span>
+  <h1>Eagle View — World Roadmap</h1>
+  <p class="hero-sub">From a personal productivity widget at Siemens Healthineers to a globally recognised corporate tool used by millions.</p>
+  <div class="hero-badges">
+    <span class="hero-badge">🏢 Enterprise Ready</span>
+    <span class="hero-badge">🌍 International Scale</span>
+    <span class="hero-badge">🔓 Open Source</span>
+    <span class="hero-badge">💼 Corporate Adoption</span>
+    <span class="hero-badge">🚀 World Famous</span>
+  </div>
+</div>
+
+<!-- ═══ STICKY PROGRESS ════════════════════════════════════ -->
+<div class="sticky-progress">
+  <div class="sp-label">🦅 Roadmap</div>
+  <div class="sp-bar-bg"><div class="sp-bar-fill" id="progressFill"></div></div>
+  <div class="sp-count" id="progressCount">0 / 0</div>
+  <div class="sp-actions">
+    <button class="sp-btn" onclick="resetAll()">↺ Reset</button>
+    <button class="sp-btn export" onclick="exportCSV()">⬇ Export</button>
+    <button class="sp-btn" onclick="window.print()">🖨 Print</button>
+  </div>
+</div>
+
+<!-- ═══ PHASE STRIP ════════════════════════════════════════ -->
+<div class="phase-strip" id="phaseStrip">
+  <div class="ps-item" onclick="scrollTo('p1')"><div class="ps-dot" style="background:rgba(0,155,141,0.15);border-color:#009B8D">✅</div><div class="ps-num">Phase 1</div><div class="ps-name">Stabilise</div></div>
+  <div class="ps-item" onclick="scrollTo('p2')"><div class="ps-dot" style="background:rgba(47,106,165,0.15);border-color:#2F6AA5">🔓</div><div class="ps-num">Phase 2</div><div class="ps-name">Open Source</div></div>
+  <div class="ps-item" onclick="scrollTo('p3')"><div class="ps-dot" style="background:rgba(123,99,168,0.15);border-color:#7B63A8">🔐</div><div class="ps-num">Phase 3</div><div class="ps-name">Enterprise Auth</div></div>
+  <div class="ps-item" onclick="scrollTo('p4')"><div class="ps-dot" style="background:rgba(232,119,34,0.15);border-color:#E87722">🏢</div><div class="ps-num">Phase 4</div><div class="ps-name">IT Deploy</div></div>
+  <div class="ps-item" onclick="scrollTo('p5')"><div class="ps-dot" style="background:rgba(40,167,69,0.15);border-color:#28A745">🎨</div><div class="ps-num">Phase 5</div><div class="ps-name">Branding</div></div>
+  <div class="ps-item" onclick="scrollTo('p6')"><div class="ps-dot" style="background:rgba(0,188,212,0.15);border-color:#00BCD4">🔌</div><div class="ps-num">Phase 6</div><div class="ps-name">Integrations</div></div>
+  <div class="ps-item" onclick="scrollTo('p7')"><div class="ps-dot" style="background:rgba(63,81,181,0.15);border-color:#3F51B5">🌐</div><div class="ps-num">Phase 7</div><div class="ps-name">Multi-Platform</div></div>
+  <div class="ps-item" onclick="scrollTo('p8')"><div class="ps-dot" style="background:rgba(229,57,53,0.15);border-color:#E53935">🛡️</div><div class="ps-num">Phase 8</div><div class="ps-name">Security</div></div>
+  <div class="ps-item" onclick="scrollTo('p9')"><div class="ps-dot" style="background:rgba(0,155,141,0.15);border-color:#009B8D">☁️</div><div class="ps-num">Phase 9</div><div class="ps-name">Cloud</div></div>
+  <div class="ps-item" onclick="scrollTo('p10')"><div class="ps-dot" style="background:rgba(255,193,7,0.15);border-color:#FFC107">📣</div><div class="ps-num">Phase 10</div><div class="ps-name">Go-to-Market</div></div>
+  <div class="ps-item" onclick="scrollTo('p11')"><div class="ps-dot" style="background:rgba(76,175,80,0.15);border-color:#4CAF50">💰</div><div class="ps-num">Phase 11</div><div class="ps-name">Monetise</div></div>
+  <div class="ps-item" onclick="scrollTo('p12')"><div class="ps-dot" style="background:rgba(255,215,0,0.15);border-color:#FFD700">🌟</div><div class="ps-num">Phase 12</div><div class="ps-name">World Scale</div></div>
+</div>
+
+<!-- ═══ MAIN ════════════════════════════════════════════════ -->
+<div class="main">
+
+
+<!-- ▓▓ PHASE 1 ▓▓ -->
+<div class="phase-card" id="p1">
+  <div class="phase-header" style="--ph-color:#009B8D" onclick="toggle('p1')">
+    <div class="ph-icon">✅</div>
+    <div class="ph-meta">
+      <div class="ph-phase-tag" style="color:#009B8D">Phase 1 · Where We Are Now</div>
+      <div class="ph-title">Stabilise & Polish</div>
+      <div class="ph-subtitle">Fix all known bugs, finalise QA, ship the first clean DMG</div>
+    </div>
+    <div class="ph-right">
+      <div class="ph-badge" id="badge-p1">0 / 9</div>
+      <div class="ph-chevron open" id="chev-p1">▼</div>
+    </div>
+  </div>
+  <div class="phase-body open" id="body-p1">
+    <div class="sub">Core App</div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">QA checklist 100% passed</div><div class="ci-desc">All 101 items in EagleView_QA_Checklist.html ticked green</div></div><span class="ci-tag tag-now">NOW</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">API rate-limiting handled (backoff / batch)</div><div class="ci-desc">No more 429 / ApplicationThrottled errors during normal use</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Mac DMG (Intel + Apple Silicon) tested and working</div><div class="ci-desc">Both x64 and arm64 DMGs install and run correctly</div></div><span class="ci-tag tag-now">NOW</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Windows NSIS installer tested end-to-end</div><div class="ci-desc">Install, launch, login, data loads on a Windows 10/11 machine</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Auto-updater implemented (electron-updater)</div><div class="ci-desc">App checks for new version on launch and notifies user — no manual reinstall</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="sub">Internal Rollout</div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Share with 5 colleagues at Siemens Healthineers for feedback</div><div class="ci-desc">Real users reveal problems QA misses — collect feedback form responses</div></div><span class="ci-tag tag-now">NOW</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Fix all feedback issues from pilot users</div><div class="ci-desc">Prioritise crash bugs and confusing UX before wider rollout</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Version number strategy decided (semver: 1.0.0)</div><div class="ci-desc">Major.Minor.Patch — follow this consistently from now on</div></div><span class="ci-tag tag-now">NOW</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">CHANGELOG.md created — tracks every release</div><div class="ci-desc">List of what changed in each version — essential for enterprise trust</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="notes-wrap"><div class="notes-label">Notes</div><textarea class="notes-area" placeholder="Notes for Phase 1..."></textarea></div>
+  </div>
+</div>
+
+
+<!-- ▓▓ PHASE 2 ▓▓ -->
+<div class="phase-card" id="p2">
+  <div class="phase-header" style="--ph-color:#2F6AA5" onclick="toggle('p2')">
+    <div class="ph-icon">🔓</div>
+    <div class="ph-meta">
+      <div class="ph-phase-tag" style="color:#6B9FFF">Phase 2 · Open Source Foundation</div>
+      <div class="ph-title">Publish to GitHub</div>
+      <div class="ph-subtitle">Make the code public — credibility, community, and contributions</div>
+    </div>
+    <div class="ph-right">
+      <div class="ph-badge" id="badge-p2">0 / 10</div>
+      <div class="ph-chevron" id="chev-p2">▼</div>
+    </div>
+  </div>
+  <div class="phase-body" id="body-p2">
+    <div class="sub">Repository Setup</div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Create public GitHub repository: eagle-view</div><div class="ci-desc">Clean name, matches the brand — github.com/[yourname]/eagle-view</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Write a comprehensive README.md</div><div class="ci-desc">Include: what it does, screenshots, install guide, features list, tech stack</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Add screenshots and a GIF demo to README</div><div class="ci-desc">A 30-second GIF showing the widget in action drives more stars than any text</div></div><span class="ci-tag tag-mkt">CONTENT</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Choose an open-source licence (MIT recommended)</div><div class="ci-desc">MIT = anyone can use freely; Apache 2.0 adds patent protection; both are corporate-friendly</div></div><span class="ci-tag tag-biz">LEGAL</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Add CONTRIBUTING.md — how to raise issues and submit PRs</div><div class="ci-desc">Without this, contributors don't know how to help</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Add CODE_OF_CONDUCT.md</div><div class="ci-desc">Required by most companies before adopting open-source projects</div></div><span class="ci-tag tag-biz">LEGAL</span></div>
+    <div class="sub">CI / CD Pipeline</div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">GitHub Actions: auto-build DMG + EXE on every release tag</div><div class="ci-desc">Push tag v1.0.1 → GitHub Actions builds both installers and publishes to Releases page</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">GitHub Actions: run linter and basic checks on every PR</div><div class="ci-desc">Catches broken code before it merges — essential for open-source quality</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">GitHub Issue templates created (Bug Report, Feature Request)</div><div class="ci-desc">Structured templates mean better bug reports from the community</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">First public release published with release notes</div><div class="ci-desc">v1.0.0 release with DMG + EXE attached, clear release notes, screenshots</div></div><span class="ci-tag tag-now">SHIP</span></div>
+    <div class="notes-wrap"><div class="notes-label">Notes</div><textarea class="notes-area" placeholder="Notes for Phase 2..."></textarea></div>
+  </div>
+</div>
+
+
+<!-- ▓▓ PHASE 3 ▓▓ -->
+<div class="phase-card" id="p3">
+  <div class="phase-header" style="--ph-color:#7B63A8" onclick="toggle('p3')">
+    <div class="ph-icon">🔐</div>
+    <div class="ph-meta">
+      <div class="ph-phase-tag" style="color:#B06AB3">Phase 3 · Enterprise Authentication</div>
+      <div class="ph-title">Azure AD / Work Accounts</div>
+      <div class="ph-subtitle">Current login only works for personal Microsoft accounts — enterprises need work SSO</div>
+    </div>
+    <div class="ph-right">
+      <div class="ph-badge" id="badge-p3">0 / 7</div>
+      <div class="ph-chevron" id="chev-p3">▼</div>
+    </div>
+  </div>
+  <div class="phase-body" id="body-p3">
+    <div class="sub">Azure AD Integration</div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Register app in Azure Active Directory (enterprise tenant)</div><div class="ci-desc">Current app uses /consumers — enterprise needs /organizations or /common authority</div></div><span class="ci-tag tag-ent">ENTERPRISE</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Support both personal (@outlook.com) and work (@company.com) accounts</div><div class="ci-desc">Use /common authority so both account types work with one app</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Admin Consent flow — IT admin grants permission once for whole company</div><div class="ci-desc">Without admin consent, each employee needs to individually approve — IT blocks this</div></div><span class="ci-tag tag-ent">ENTERPRISE</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Support Microsoft 365 Government cloud (GCC/GCC High)</div><div class="ci-desc">Government and defence companies use separate Microsoft cloud endpoints</div></div><span class="ci-tag tag-ent">ENTERPRISE</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Token refresh works silently for 8+ hour work sessions</div><div class="ci-desc">Tokens expire — silent refresh must work without interrupting the user during the day</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Sign-out / switch account feature</div><div class="ci-desc">User can log out and log in as a different account — important for shared machines</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Tested on a real company Azure AD tenant</div><div class="ci-desc">Confirm login, data, and admin consent all work on an actual corporate Office 365 account</div></div><span class="ci-tag tag-ent">ENTERPRISE</span></div>
+    <div class="notes-wrap"><div class="notes-label">Notes</div><textarea class="notes-area" placeholder="Notes for Phase 3..."></textarea></div>
+  </div>
+</div>
+
+
+<!-- ▓▓ PHASE 4 ▓▓ -->
+<div class="phase-card" id="p4">
+  <div class="phase-header" style="--ph-color:#E87722" onclick="toggle('p4')">
+    <div class="ph-icon">🏢</div>
+    <div class="ph-meta">
+      <div class="ph-phase-tag" style="color:#E87722">Phase 4 · Corporate IT Deployment</div>
+      <div class="ph-title">Enterprise-Grade Installation</div>
+      <div class="ph-subtitle">IT departments will not adopt software they cannot centrally deploy and manage</div>
+    </div>
+    <div class="ph-right">
+      <div class="ph-badge" id="badge-p4">0 / 8</div>
+      <div class="ph-chevron" id="chev-p4">▼</div>
+    </div>
+  </div>
+  <div class="phase-body" id="body-p4">
+    <div class="sub">Installer Requirements</div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Code-sign the Mac app with Apple Developer Certificate</div><div class="ci-desc">Unsigned apps show "untrusted developer" warning — IT blocks them. Certificate costs ~$99/year</div></div><span class="ci-tag tag-ent">ENTERPRISE</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Notarise the Mac app with Apple Notary Service</div><div class="ci-desc">macOS Gatekeeper requires notarisation — without it the app cannot run on modern Macs</div></div><span class="ci-tag tag-ent">ENTERPRISE</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Code-sign the Windows EXE with a Code Signing Certificate</div><div class="ci-desc">Unsigned EXEs trigger Windows Defender SmartScreen warning — IT will reject it</div></div><span class="ci-tag tag-ent">ENTERPRISE</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">MSI package for Windows (silent install via Group Policy)</div><div class="ci-desc">IT deploys MSI to 1000 machines in minutes — NSIS EXE cannot be pushed via Intune/SCCM</div></div><span class="ci-tag tag-ent">ENTERPRISE</span></div>
+    <div class="sub">Auto-Update</div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Auto-update via electron-updater pointing to GitHub Releases</div><div class="ci-desc">App checks for new version on startup and updates silently — no user action needed</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">IT admin can disable auto-update via config file</div><div class="ci-desc">Some companies control all software updates centrally and need to turn off auto-update</div></div><span class="ci-tag tag-ent">ENTERPRISE</span></div>
+    <div class="sub">MDM / Intune Support</div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">App listed in Microsoft Intune / JAMF as deployable package</div><div class="ci-desc">IT admins can deploy Eagle View to all company machines with one click</div></div><span class="ci-tag tag-ent">ENTERPRISE</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Admin config file support (JSON) — pre-configure settings for all users</div><div class="ci-desc">IT sets default refresh intervals, branding, and feature flags before deploying</div></div><span class="ci-tag tag-ent">ENTERPRISE</span></div>
+    <div class="notes-wrap"><div class="notes-label">Notes</div><textarea class="notes-area" placeholder="Notes for Phase 4..."></textarea></div>
+  </div>
+</div>
+
+
+<!-- ▓▓ PHASE 5 ▓▓ -->
+<div class="phase-card" id="p5">
+  <div class="phase-header" style="--ph-color:#28A745" onclick="toggle('p5')">
+    <div class="ph-icon">🎨</div>
+    <div class="ph-meta">
+      <div class="ph-phase-tag" style="color:#7ADE40">Phase 5 · White-Label & Branding</div>
+      <div class="ph-title">Every Company Wants Their Own Brand</div>
+      <div class="ph-subtitle">Companies will not adopt a tool with another company's name and colours on it</div>
+    </div>
+    <div class="ph-right">
+      <div class="ph-badge" id="badge-p5">0 / 7</div>
+      <div class="ph-chevron" id="chev-p5">▼</div>
+    </div>
+  </div>
+  <div class="phase-body" id="body-p5">
+    <div class="sub">Customisation</div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Company name replaces "Eagle View" in header and title bar</div><div class="ci-desc">Config-driven — "Eagle View" becomes "Accenture Desk" or "SAP Sidebar" etc.</div></div><span class="ci-tag tag-ux">UX</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Company logo replaces eagle icon (supports SVG/PNG upload)</div><div class="ci-desc">IT admin drops logo file in config folder — app uses it automatically</div></div><span class="ci-tag tag-ux">UX</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Company colour palette configurable (primary, accent, background)</div><div class="ci-desc">Full theme override — company colours replace default Siemens teal</div></div><span class="ci-tag tag-ux">UX</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Custom Quick Links section (company intranet, HR portal, IT helpdesk)</div><div class="ci-desc">Admin pre-populates useful links relevant to their company — one-click access</div></div><span class="ci-tag tag-ux">UX</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Hide/lock features that company does not want (e.g. disable Notes)</div><div class="ci-desc">Admin config can turn off individual sections — companies want a clean, policy-compliant UI</div></div><span class="ci-tag tag-ent">ENTERPRISE</span></div>
+    <div class="sub">Localisation (i18n)</div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">All UI text extracted to language files (en.json, de.json, fr.json…)</div><div class="ci-desc">Hard-coded English text prevents adoption in non-English-speaking companies</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Date / time formats respect user's locale (DD/MM vs MM/DD, 24h vs 12h)</div><div class="ci-desc">Meeting times and mail timestamps must display in the user's local format</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="notes-wrap"><div class="notes-label">Notes</div><textarea class="notes-area" placeholder="Notes for Phase 5..."></textarea></div>
+  </div>
+</div>
+
+
+<!-- ▓▓ PHASE 6 ▓▓ -->
+<div class="phase-card" id="p6">
+  <div class="phase-header" style="--ph-color:#00BCD4" onclick="toggle('p6')">
+    <div class="ph-icon">🔌</div>
+    <div class="ph-meta">
+      <div class="ph-phase-tag" style="color:#00BCD4">Phase 6 · Integrations</div>
+      <div class="ph-title">Connect Beyond Outlook</div>
+      <div class="ph-subtitle">The more tools Eagle View connects to, the more indispensable it becomes</div>
+    </div>
+    <div class="ph-right">
+      <div class="ph-badge" id="badge-p6">0 / 9</div>
+      <div class="ph-chevron" id="chev-p6">▼</div>
+    </div>
+  </div>
+  <div class="phase-body" id="body-p6">
+    <div class="sub">Productivity Integrations</div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Google Workspace — Gmail + Google Calendar support</div><div class="ci-desc">Huge market: many companies use Google, not Microsoft — opens a second universe of users</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Microsoft Teams — show unread chat count and join meeting from widget</div><div class="ci-desc">Teams messages are as important as email for corporate users — deep Graph API integration</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Slack — unread message count and DM preview</div><div class="ci-desc">Slack-first companies (tech startups, agencies) need this to consider Eagle View</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="sub">IT / DevOps Integrations</div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Jira — show assigned tickets and sprint tasks</div><div class="ci-desc">Every software company uses Jira — a "my tickets" widget would be hugely popular</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">ServiceNow — IT incident queue for support teams</div><div class="ci-desc">Large enterprises (banks, pharma, manufacturing) rely on ServiceNow for IT tickets</div></div><span class="ci-tag tag-ent">ENTERPRISE</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">GitHub / GitLab — PR reviews pending, CI pipeline status</div><div class="ci-desc">Developers want to see their review queue without switching context</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="sub">Plugin Architecture</div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Plugin / extension API — third parties can build their own Eagle View rows</div><div class="ci-desc">Open plugin system = community builds SAP, Salesforce, Workday integrations — app grows beyond what one team can build</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Plugin marketplace / registry published on website</div><div class="ci-desc">Users browse and install integrations like VS Code extensions</div></div><span class="ci-tag tag-mkt">PRODUCT</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Webhook support — any system can push live data into Eagle View</div><div class="ci-desc">Universal connector: if a system supports webhooks, it can send data to the widget</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="notes-wrap"><div class="notes-label">Notes</div><textarea class="notes-area" placeholder="Notes for Phase 6..."></textarea></div>
+  </div>
+</div>
+
+
+<!-- ▓▓ PHASE 7 ▓▓ -->
+<div class="phase-card" id="p7">
+  <div class="phase-header" style="--ph-color:#3F51B5" onclick="toggle('p7')">
+    <div class="ph-icon">🌐</div>
+    <div class="ph-meta">
+      <div class="ph-phase-tag" style="color:#6B9FFF">Phase 7 · Multi-Platform</div>
+      <div class="ph-title">Reach Every Device</div>
+      <div class="ph-subtitle">Mac + Windows is only the start — web, mobile, and Linux expand the user base massively</div>
+    </div>
+    <div class="ph-right">
+      <div class="ph-badge" id="badge-p7">0 / 7</div>
+      <div class="ph-chevron" id="chev-p7">▼</div>
+    </div>
+  </div>
+  <div class="phase-body" id="body-p7">
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Windows 10/11 — full feature parity with Mac version</div><div class="ci-desc">Most corporate users are on Windows — Windows must be a first-class experience</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Linux (Ubuntu/Debian) — AppImage or .deb package</div><div class="ci-desc">Engineering teams, banks, and government often run Linux desktops</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Browser Extension (Chrome + Edge) — sidebar widget in browser</div><div class="ci-desc">Users who live in the browser all day prefer an extension over a desktop app</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">iOS app — glanceable widget on iPhone home screen / lock screen</div><div class="ci-desc">iOS 16+ widgets show live mail/meeting data on home screen — high visibility</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Android app — widget on home screen</div><div class="ci-desc">Android widget API allows live data display — covers the other 70% of mobile users</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Web app (PWA) — works in any browser, installable</div><div class="ci-desc">Progressive Web App works on any device including Chromebooks — zero install friction</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">All platforms share the same codebase / design system</div><div class="ci-desc">Consistent UX across all platforms — same icons, colours, and interaction patterns</div></div><span class="ci-tag tag-ux">UX</span></div>
+    <div class="notes-wrap"><div class="notes-label">Notes</div><textarea class="notes-area" placeholder="Notes for Phase 7..."></textarea></div>
+  </div>
+</div>
+
+
+<!-- ▓▓ PHASE 8 ▓▓ -->
+<div class="phase-card" id="p8">
+  <div class="phase-header" style="--ph-color:#E53935" onclick="toggle('p8')">
+    <div class="ph-icon">🛡️</div>
+    <div class="ph-meta">
+      <div class="ph-phase-tag" style="color:#FF6B6B">Phase 8 · Security & Compliance</div>
+      <div class="ph-title">Enterprise Trust Requirements</div>
+      <div class="ph-subtitle">A company's IT/Legal team will block any app that cannot answer these questions</div>
+    </div>
+    <div class="ph-right">
+      <div class="ph-badge" id="badge-p8">0 / 8</div>
+      <div class="ph-chevron" id="chev-p8">▼</div>
+    </div>
+  </div>
+  <div class="phase-body" id="body-p8">
+    <div class="sub">Data & Privacy</div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Privacy Policy published on a public website</div><div class="ci-desc">Legally required in EU (GDPR), US, and most countries — without it companies will not adopt</div></div><span class="ci-tag tag-biz">LEGAL</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Data Processing Agreement (DPA) available for enterprise customers</div><div class="ci-desc">GDPR requires a DPA between any company and software that processes their employee data</div></div><span class="ci-tag tag-biz">LEGAL</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Confirmed: no email content or personal data sent to external servers</div><div class="ci-desc">Eagle View must be "local-first" — data flows from Microsoft → app only, never to a third server</div></div><span class="ci-tag tag-sec">SECURITY</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">GDPR compliance audit completed</div><div class="ci-desc">Identify all data stored (token cache, notes, settings) and document lawful basis</div></div><span class="ci-tag tag-biz">LEGAL</span></div>
+    <div class="sub">Security</div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Third-party security audit / penetration test</div><div class="ci-desc">Banks and regulated industries require a security audit report before approving any software</div></div><span class="ci-tag tag-sec">SECURITY</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Dependency audit — no known CVEs in npm packages</div><div class="ci-desc">Run npm audit regularly; pin dependency versions; use Dependabot on GitHub</div></div><span class="ci-tag tag-sec">SECURITY</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">OAuth scopes minimised — request only what is needed</div><div class="ci-desc">Current scopes: User.Read, Mail.Read, Calendars.Read — never request write permissions unless needed</div></div><span class="ci-tag tag-sec">SECURITY</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Security.md published — responsible disclosure process</div><div class="ci-desc">How to report a security vulnerability — required for enterprise open-source trust</div></div><span class="ci-tag tag-sec">SECURITY</span></div>
+    <div class="notes-wrap"><div class="notes-label">Notes</div><textarea class="notes-area" placeholder="Notes for Phase 8..."></textarea></div>
+  </div>
+</div>
+
+
+<!-- ▓▓ PHASE 9 ▓▓ -->
+<div class="phase-card" id="p9">
+  <div class="phase-header" style="--ph-color:#009B8D" onclick="toggle('p9')">
+    <div class="ph-icon">☁️</div>
+    <div class="ph-meta">
+      <div class="ph-phase-tag" style="color:#00D4C8">Phase 9 · Cloud & Sync</div>
+      <div class="ph-title">Settings Follow the User Everywhere</div>
+      <div class="ph-subtitle">Users want the same experience on every device without reconfiguring</div>
+    </div>
+    <div class="ph-right">
+      <div class="ph-badge" id="badge-p9">0 / 6</div>
+      <div class="ph-chevron" id="chev-p9">▼</div>
+    </div>
+  </div>
+  <div class="phase-body" id="body-p9">
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Cloud settings sync — preferences saved across all devices</div><div class="ci-desc">Row order, intervals, theme, hidden rows synced via a lightweight cloud backend</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Notes sync across devices (Mac + Windows + mobile)</div><div class="ci-desc">Notes created on Mac appear on phone within seconds</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Team Workspaces — shared Quick Links for a team</div><div class="ci-desc">Manager creates shared links (sprint board, team docs) — whole team sees them automatically</div></div><span class="ci-tag tag-ent">ENTERPRISE</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Admin Portal — web dashboard to manage teams and configure deployments</div><div class="ci-desc">IT admin logs into portal, sets company config, pushes to all users — no manual file editing</div></div><span class="ci-tag tag-ent">ENTERPRISE</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Offline mode — widget shows cached data when there is no internet</div><div class="ci-desc">Last known counts and notes visible even when offline — no blank screen</div></div><span class="ci-tag tag-ux">UX</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Usage analytics (opt-in, anonymised) — understand which features are used most</div><div class="ci-desc">Data-driven product decisions — know what to build next based on real usage</div></div><span class="ci-tag tag-biz">PRODUCT</span></div>
+    <div class="notes-wrap"><div class="notes-label">Notes</div><textarea class="notes-area" placeholder="Notes for Phase 9..."></textarea></div>
+  </div>
+</div>
+
+
+<!-- ▓▓ PHASE 10 ▓▓ -->
+<div class="phase-card" id="p10">
+  <div class="phase-header" style="--ph-color:#FFC107" onclick="toggle('p10')">
+    <div class="ph-icon">📣</div>
+    <div class="ph-meta">
+      <div class="ph-phase-tag" style="color:#FFC107">Phase 10 · Go-to-Market</div>
+      <div class="ph-title">Make the World Know It Exists</div>
+      <div class="ph-subtitle">The best product with zero marketing stays unknown — this phase changes that</div>
+    </div>
+    <div class="ph-right">
+      <div class="ph-badge" id="badge-p10">0 / 10</div>
+      <div class="ph-chevron" id="chev-p10">▼</div>
+    </div>
+  </div>
+  <div class="phase-body" id="body-p10">
+    <div class="sub">Online Presence</div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Product website — eagle-view.app (or similar)</div><div class="ci-desc">Clean landing page: what it does, screenshots, download button, enterprise contact form</div></div><span class="ci-tag tag-mkt">MARKETING</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">30-second demo video on website and YouTube</div><div class="ci-desc">Video converts visitors to downloads better than any text — show the widget in action</div></div><span class="ci-tag tag-mkt">MARKETING</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Product Hunt launch — "Eagle View: Outlook sidebar for corporate users"</div><div class="ci-desc">A successful Product Hunt launch can bring 2,000–10,000 visitors in one day</div></div><span class="ci-tag tag-mkt">MARKETING</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Hacker News "Show HN" post</div><div class="ci-desc">"Show HN: I built a sidebar widget that shows Outlook data without switching windows" — tech-savvy audience</div></div><span class="ci-tag tag-mkt">MARKETING</span></div>
+    <div class="sub">Community & Content</div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">LinkedIn article — "Why I built Eagle View and what I learned"</div><div class="ci-desc">Personal story posts go viral on LinkedIn in the professional/corporate audience</div></div><span class="ci-tag tag-mkt">CONTENT</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Dev.to / Medium blog — "Building an Electron sidebar widget with Microsoft Graph API"</div><div class="ci-desc">Technical blog posts attract developer contributors and establish credibility</div></div><span class="ci-tag tag-mkt">CONTENT</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Reddit posts — r/Outlook, r/Microsoft365, r/productivity, r/selfhosted</div><div class="ci-desc">Each subreddit has tens of thousands of target users — organic reach with zero cost</div></div><span class="ci-tag tag-mkt">MARKETING</span></div>
+    <div class="sub">Enterprise Outreach</div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Enterprise sales one-pager / PDF deck</div><div class="ci-desc">IT managers need a professional document to show their CTO when requesting budget</div></div><span class="ci-tag tag-biz">SALES</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Conference talk submitted (Microsoft Build, WWDC community events, local tech meetups)</div><div class="ci-desc">"How I built a corporate productivity tool with Electron + Graph API" — live demos convert</div></div><span class="ci-tag tag-mkt">MARKETING</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Microsoft Partner Network — list Eagle View in Microsoft AppSource</div><div class="ci-desc">AppSource is how IT departments discover Microsoft 365-compatible tools — massive enterprise distribution</div></div><span class="ci-tag tag-biz">SALES</span></div>
+    <div class="notes-wrap"><div class="notes-label">Notes</div><textarea class="notes-area" placeholder="Notes for Phase 10..."></textarea></div>
+  </div>
+</div>
+
+
+<!-- ▓▓ PHASE 11 ▓▓ -->
+<div class="phase-card" id="p11">
+  <div class="phase-header" style="--ph-color:#4CAF50" onclick="toggle('p11')">
+    <div class="ph-icon">💰</div>
+    <div class="ph-meta">
+      <div class="ph-phase-tag" style="color:#7ADE40">Phase 11 · Monetisation</div>
+      <div class="ph-title">Turn Users Into Revenue</div>
+      <div class="ph-subtitle">Sustainable funding = the ability to build better features and support enterprise customers</div>
+    </div>
+    <div class="ph-right">
+      <div class="ph-badge" id="badge-p11">0 / 8</div>
+      <div class="ph-chevron" id="chev-p11">▼</div>
+    </div>
+  </div>
+  <div class="phase-body" id="body-p11">
+    <div class="sub">Pricing Tiers</div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Free tier — core features, personal Microsoft account, 1 device</div><div class="ci-desc">Free tier drives adoption and word-of-mouth — never charge for basic personal use</div></div><span class="ci-tag tag-biz">BIZ</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Pro tier (~$5/month) — cloud sync, all integrations, unlimited devices</div><div class="ci-desc">Individual power users who rely on it daily will pay — remove friction with monthly subscription</div></div><span class="ci-tag tag-biz">BIZ</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Team tier (~$3/user/month, min 5 seats) — shared workspace, admin portal</div><div class="ci-desc">Team pricing with volume discount — easier to sell to a manager than to individual employees</div></div><span class="ci-tag tag-biz">BIZ</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Enterprise tier (annual contract) — white-label, SSO, SLA, priority support</div><div class="ci-desc">Custom pricing per company; large enterprises expect annual contracts with SLA guarantees</div></div><span class="ci-tag tag-ent">ENTERPRISE</span></div>
+    <div class="sub">Revenue Channels</div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Payment gateway integrated (Stripe) — subscription billing automated</div><div class="ci-desc">Stripe handles subscriptions, invoices, tax, and failed payment retries automatically</div></div><span class="ci-tag tag-dev">DEV</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Plugin marketplace — 30% revenue share on paid plugins</div><div class="ci-desc">Third-party developers publish paid integrations; Eagle View takes 30% — scales without extra work</div></div><span class="ci-tag tag-biz">BIZ</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">GitHub Sponsors enabled for open-source supporters</div><div class="ci-desc">Individual developers and companies can sponsor the project — common for well-known open-source tools</div></div><span class="ci-tag tag-biz">BIZ</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">First paying enterprise customer signed</div><div class="ci-desc">This is the most important milestone — one real enterprise customer validates the entire business model</div></div><span class="ci-tag tag-biz">MILESTONE</span></div>
+    <div class="notes-wrap"><div class="notes-label">Notes</div><textarea class="notes-area" placeholder="Notes for Phase 11..."></textarea></div>
+  </div>
+</div>
+
+
+<!-- ▓▓ PHASE 12 ▓▓ -->
+<div class="phase-card" id="p12">
+  <div class="phase-header" style="--ph-color:#FFD700" onclick="toggle('p12')">
+    <div class="ph-icon">🌟</div>
+    <div class="ph-meta">
+      <div class="ph-phase-tag" style="color:#FFD700">Phase 12 · World Scale</div>
+      <div class="ph-title">The Goal — Globally Recognised</div>
+      <div class="ph-subtitle">When every corporate professional knows "Eagle View" the way they know Slack or Notion</div>
+    </div>
+    <div class="ph-right">
+      <div class="ph-badge" id="badge-p12">0 / 8</div>
+      <div class="ph-chevron" id="chev-p12">▼</div>
+    </div>
+  </div>
+  <div class="phase-body" id="body-p12">
+    <div class="sub">Scale Milestones</div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">🎯 1,000 GitHub stars</div><div class="ci-desc">Stars = social proof — at 1k stars, tech press and influencers start covering the project</div></div><span class="ci-tag tag-mkt">MILESTONE</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">🎯 10,000 active users</div><div class="ci-desc">At this scale, word-of-mouth becomes self-sustaining — growth compounds naturally</div></div><span class="ci-tag tag-mkt">MILESTONE</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">🎯 10 enterprise companies using Eagle View</div><div class="ci-desc">A portfolio of 10 named enterprise clients unlocks credibility with any new prospect</div></div><span class="ci-tag tag-biz">MILESTONE</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">🎯 Listed in Microsoft AppSource with verified publisher badge</div><div class="ci-desc">Verified publisher status on AppSource = instant trust with IT procurement teams worldwide</div></div><span class="ci-tag tag-biz">MILESTONE</span></div>
+    <div class="sub">Community</div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Community forum / Discord — users help each other</div><div class="ci-desc">Active community reduces support burden and generates feature ideas organically</div></div><span class="ci-tag tag-mkt">COMMUNITY</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">Eagle View Ambassador programme — power users spread the word</div><div class="ci-desc">Ambassadors get early access and recognition; they become unpaid marketing at every company they work at</div></div><span class="ci-tag tag-mkt">COMMUNITY</span></div>
+    <div class="sub">Long-Term Vision</div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">AI-powered assistant row — summarise emails, suggest replies, predict your next meeting</div><div class="ci-desc">The next wave: an AI layer on top of Outlook data — "what should I focus on right now?"</div></div><span class="ci-tag tag-dev">FUTURE</span></div>
+    <div class="ci" onclick="tc(this)"><input type="checkbox"><div class="ci-text"><div class="ci-label">🏆 Featured in a major tech publication (TechCrunch, The Verge, Wired)</div><div class="ci-desc">This is the final validation — when press covers you without being asked, you have arrived</div></div><span class="ci-tag tag-mkt">MILESTONE</span></div>
+    <div class="notes-wrap"><div class="notes-label">Notes</div><textarea class="notes-area" placeholder="Notes for Phase 12..."></textarea></div>
+  </div>
+</div>
+
+
+<div class="footer">
+  <p>🦅 Eagle View Roadmap · Built with ambition · <span id="ts"></span></p>
+</div>
+
+</div><!-- /main -->
+
+<script>
+const PHASES = ['p1','p2','p3','p4','p5','p6','p7','p8','p9','p10','p11','p12'];
+
+function allCB() { return document.querySelectorAll('input[type="checkbox"]'); }
+function checkedCB() { return document.querySelectorAll('input[type="checkbox"]:checked'); }
+
+function toggle(id) {
+  const body = document.getElementById('body-' + id);
+  const chev = document.getElementById('chev-' + id);
+  const open = body.classList.contains('open');
+  body.classList.toggle('open', !open);
+  chev.classList.toggle('open', !open);
+}
+
+function scrollTo(id) {
+  document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function tc(el) {
+  const cb = el.querySelector('input[type="checkbox"]');
+  cb.checked = !cb.checked;
+  el.classList.toggle('checked', cb.checked);
+  updateProgress();
+  save();
+}
+
+function updateProgress() {
+  const total   = allCB().length;
+  const checked = checkedCB().length;
+  const pct     = total ? (checked / total * 100).toFixed(1) : 0;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressCount').textContent = checked + ' / ' + total;
+
+  PHASES.forEach(id => {
+    const card    = document.getElementById(id);
+    const tot     = card.querySelectorAll('input[type="checkbox"]').length;
+    const chk     = card.querySelectorAll('input[type="checkbox"]:checked').length;
+    const badge   = document.getElementById('badge-' + id);
+    badge.textContent = chk + ' / ' + tot;
+    badge.className   = 'ph-badge' + (chk === tot && tot > 0 ? ' done' : '');
+    card.classList.toggle('complete', chk === tot && tot > 0);
+    // Update strip dot
+    const strip = document.querySelector('.phase-strip');
+    const dot   = strip.querySelectorAll('.ps-item')[PHASES.indexOf(id)];
+    if (dot) dot.classList.toggle('done', chk === tot && tot > 0);
+  });
+
+  document.getElementById('ts').textContent = new Date().toLocaleString();
+}
+
+function save() {
+  const state = Array.from(allCB()).map(cb => cb.checked);
+  localStorage.setItem('ev_roadmap', JSON.stringify(state));
+  const notes = Array.from(document.querySelectorAll('.notes-area')).map(n => n.value);
+  localStorage.setItem('ev_roadmap_notes', JSON.stringify(notes));
+}
+
+function load() {
+  const s = localStorage.getItem('ev_roadmap');
+  if (s) {
+    const state = JSON.parse(s);
+    allCB().forEach((cb, i) => {
+      if (state[i]) { cb.checked = true; cb.closest('.ci').classList.add('checked'); }
+    });
+  }
+  const ns = localStorage.getItem('ev_roadmap_notes');
+  if (ns) {
+    const notes = JSON.parse(ns);
+    document.querySelectorAll('.notes-area').forEach((n, i) => { if (notes[i]) n.value = notes[i]; });
+  }
+  updateProgress();
+}
+
+function resetAll() {
+  if (!confirm('Reset all progress and notes?')) return;
+  allCB().forEach(cb => { cb.checked = false; cb.closest('.ci').classList.remove('checked'); });
+  document.querySelectorAll('.notes-area').forEach(n => n.value = '');
+  localStorage.removeItem('ev_roadmap');
+  localStorage.removeItem('ev_roadmap_notes');
+  updateProgress();
+}
+
+function exportCSV() {
+  const rows = [['Phase','Item','Status','Tag']];
+  PHASES.forEach(id => {
+    const card  = document.getElementById(id);
+    const title = card.querySelector('.ph-title').textContent.trim();
+    card.querySelectorAll('.ci').forEach(item => {
+      const label  = (item.querySelector('.ci-label') || {}).textContent || '';
+      const status = item.querySelector('input').checked ? 'DONE' : 'TODO';
+      const tag    = (item.querySelector('.ci-tag') || {}).textContent || '';
+      rows.push([title, label.trim(), status, tag.trim()]);
+    });
+  });
+  const csv  = rows.map(r => r.map(c => '"' + c.replace(/"/g,'""') + '"').join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
+  a.download = 'EagleView_Roadmap_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+}
+
+document.querySelectorAll('.notes-area').forEach(n => n.addEventListener('input', save));
+load();
+</script>
+</body>
+</html>
