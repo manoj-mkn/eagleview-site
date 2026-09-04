@@ -43,6 +43,10 @@ h1{font-size:26px;font-weight:700;color:#1A1A2E;margin-bottom:6px;line-height:1.
 .hint{font-size:11px;color:#B0B0C0;margin-bottom:10px;line-height:1.5;}
 .hint strong{color:#9090A0;}
 .err{display:none;font-size:12px;color:#E03030;margin-bottom:10px;}
+.coupon-row{display:flex;gap:8px;margin-bottom:10px;}
+.coupon-row .inp{margin-bottom:0;flex:1;min-width:0;}
+.coupon-apply-btn{padding:0 16px;background:rgba(232,119,34,.1);border:1.5px solid rgba(232,119,34,.4);border-radius:10px;color:#C85000;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .2s;white-space:nowrap;}
+.coupon-apply-btn:hover{background:rgba(232,119,34,.18);}
 .pay-btn{width:100%;padding:14px;background:linear-gradient(135deg,#E87722,#F5A040);color:#fff;font-size:14px;font-weight:600;border:none;border-radius:12px;cursor:pointer;font-family:inherit;box-shadow:0 6px 24px rgba(232,119,34,.35);transition:opacity .2s,transform .2s;}
 .pay-btn:hover{opacity:.9;transform:translateY(-1px);}
 .pay-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
@@ -69,8 +73,12 @@ h1{font-size:26px;font-weight:700;color:#1A1A2E;margin-bottom:6px;line-height:1.
     <div class="plan sel" data-days="365" onclick="selectPlan(365)"><div class="plan-left"><div class="plan-dur">1 Year <span class="badge">Popular</span></div><div class="plan-desc">Full-year access</div></div><div class="plan-right"><div class="plan-price">₹2,199</div><div class="plan-period">one-time</div></div><div class="radio"></div></div>
     <div class="plan" data-days="730" onclick="selectPlan(730)"><div class="plan-left"><div class="plan-dur">2 Years <span class="badge">Best value</span></div><div class="plan-desc">Extended access</div></div><div class="plan-right"><div class="plan-price">₹3,199</div><div class="plan-period">one-time</div></div><div class="radio"></div></div>
   </div>
-  <input class="inp" id="buyCoupon" type="text" placeholder="Coupon code (optional)" autocomplete="off" spellcheck="false" oninput="checkCoupon()"/>
+  <div class="coupon-row">
+    <input class="inp" id="buyCoupon" type="text" placeholder="Coupon code (optional)" autocomplete="off" spellcheck="false" oninput="onCouponInput()"/>
+    <button type="button" class="coupon-apply-btn" onclick="applyCoupon()">Apply</button>
+  </div>
   <div class="mid-ok" id="couponOk"><div class="mid-dot"></div><span>Coupon applied — <strong>₹1 on all plans</strong></span></div>
+  <div class="err" id="couponErr">Invalid coupon code.</div>
   <div class="divider"></div>
   <div id="buyForm">
     <input class="inp" id="buyEmail" type="email" placeholder="your@email.com" autocomplete="email"/>
@@ -87,7 +95,9 @@ h1{font-size:26px;font-weight:700;color:#1A1A2E;margin-bottom:6px;line-height:1.
 var EDGE_URL='https://cmmafuddsgritdmltxcr.supabase.co/functions/v1/activate-license';
 var _plan=365,_mid='',_price=2199,_coupon='';
 var PRICES={180:1699,365:2199,730:3199};
-function checkCoupon(){var v=(document.getElementById('buyCoupon').value||'').trim().toLowerCase();_coupon=(v==='coffee')?'coffee':'';var ok=document.getElementById('couponOk');if(ok)ok.style.display=_coupon?'flex':'none';document.querySelectorAll('[data-days]').forEach(function(el){var d=parseInt(el.dataset.days,10),priceEl=el.querySelector('.plan-price');if(!priceEl)return;priceEl.innerHTML=_coupon?('<s style="opacity:.5;font-weight:400;font-size:13px">₹'+PRICES[d].toLocaleString('en-IN')+'</s> ₹1'):('₹'+PRICES[d].toLocaleString('en-IN'));});}
+function renderPlanPrices(){document.querySelectorAll('[data-days]').forEach(function(el){var d=parseInt(el.dataset.days,10),priceEl=el.querySelector('.plan-price');if(!priceEl)return;priceEl.innerHTML=_coupon?('<s style="opacity:.5;font-weight:400;font-size:13px">₹'+PRICES[d].toLocaleString('en-IN')+'</s> ₹1'):('₹'+PRICES[d].toLocaleString('en-IN'));});}
+function applyCoupon(){var v=(document.getElementById('buyCoupon').value||'').trim().toLowerCase(),ok=document.getElementById('couponOk'),err=document.getElementById('couponErr');_coupon=(v==='coffee')?'coffee':'';if(ok)ok.style.display=_coupon?'flex':'none';if(err)err.style.display=_coupon?'none':'block';renderPlanPrices();}
+function onCouponInput(){var ok=document.getElementById('couponOk'),err=document.getElementById('couponErr');if(!_coupon&&(!err||err.style.display!=='block'))return;_coupon='';if(ok)ok.style.display='none';if(err)err.style.display='none';renderPlanPrices();}
 (function(){var p=new URLSearchParams(window.location.search),mid=(p.get('mid')||'').trim(),email=(p.get('email')||'').trim();if(mid){_mid=mid;var ok=document.getElementById('buyMidOk'),mn=document.getElementById('buyMidManual');if(ok)ok.style.display='flex';if(mn)mn.style.display='none';}if(email){var el=document.getElementById('buyEmail');if(el){el.value=email;el.readOnly=true;}}})();
 function selectPlan(d){_plan=d;_price=PRICES[d]||2199;document.querySelectorAll('[data-days]').forEach(function(el){el.classList.toggle('sel',parseInt(el.dataset.days,10)===d);});}
 function showErr(m){var el=document.getElementById('buyErr');el.textContent=m;el.style.display='block';}
