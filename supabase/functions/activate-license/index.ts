@@ -18,6 +18,7 @@ const RESEND_API_KEY          = Deno.env.get('RESEND_API_KEY')!
 const LICENSE_DAYS_DEFAULT    = parseInt(Deno.env.get('LICENSE_DAYS') || '40', 10)
 const ALLOWED_PLANS           = new Set([40, 180, 365, 730])
 const PLAN_PRICES: Record<number, number> = { 180: 1699, 365: 2199, 730: 3199 }
+const COUPON_PRICES: Record<string, number> = { coffee: 1 } // coupon code (lowercased) -> override price in INR, applies to all plans
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -73,7 +74,7 @@ function planLabel(days: number): string {
   return `${days}-Day License`
 }
 
-async function createPaymentLink(email: string, machineId: string, licenseDays: number, amountInr = 1) {
+async function createPaymentLink(email: string, machineId: string, licenseDays: number, amountInr = 1, coupon = '') {
   const expireBy = Math.floor(Date.now() / 1000) + 3600
   const r = await fetch('https://api.razorpay.com/v1/payment_links', {
     method: 'POST',
@@ -86,7 +87,7 @@ async function createPaymentLink(email: string, machineId: string, licenseDays: 
       notify: { email: false, sms: false },
       reminder_enable: false,
       expire_by: expireBy,
-      notes: { email: email.trim().toLowerCase(), machine_id: machineId.trim(), license_days: String(licenseDays) },
+      notes: { email: email.trim().toLowerCase(), machine_id: machineId.trim(), license_days: String(licenseDays), coupon },
     }),
   })
   return r.json()
@@ -231,14 +232,15 @@ serve(async (req) => {
 
     // ── create-payment-link (called by the app) ──────────────────────────────
     if (action === 'create-payment-link') {
-      const { email, machine_id, license_days, amount_inr } = body
+      const { email, machine_id, license_days, amount_inr, coupon } = body
       if (!email || !machine_id) return json({ error: 'Missing email or machine_id' }, 400)
       const planDays = Number(license_days)
-      const expectedPrice = PLAN_PRICES[planDays]
-      if (!expectedPrice) return json({ error: 'Invalid plan.' }, 400)
+      if (!PLAN_PRICES[planDays]) return json({ error: 'Invalid plan.' }, 400)
+      const couponKey = (coupon || '').trim().toLowerCase()
+      const expectedPrice = couponKey && COUPON_PRICES[couponKey] ? COUPON_PRICES[couponKey] : PLAN_PRICES[planDays]
       if (Number(amount_inr) !== expectedPrice) return json({ error: 'Invalid plan selection.' }, 400)
 
-      const link = await createPaymentLink(email.trim().toLowerCase(), machine_id.trim(), planDays, expectedPrice)
+      const link = await createPaymentLink(email.trim().toLowerCase(), machine_id.trim(), planDays, expectedPrice, couponKey)
       console.log('[create-payment-link] Razorpay response:', JSON.stringify(link))
       if (!link.short_url) return json({ error: link.error?.description || link.error?.code || link.description || JSON.stringify(link) }, 500)
 
