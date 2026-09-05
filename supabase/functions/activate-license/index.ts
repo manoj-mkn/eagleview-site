@@ -18,7 +18,7 @@ const RESEND_API_KEY          = Deno.env.get('RESEND_API_KEY')!
 const LICENSE_DAYS_DEFAULT    = parseInt(Deno.env.get('LICENSE_DAYS') || '40', 10)
 const ALLOWED_PLANS           = new Set([40, 180, 365, 730])
 const PLAN_PRICES: Record<number, number> = { 180: 1699, 365: 2199, 730: 3199 }
-const COUPON_PRICES: Record<string, number> = { coffee: 1 } // coupon code (lowercased) -> override price in INR, applies to all plans
+const COUPON_PRICES: Record<string, number> = { launchoffer01: 1 } // coupon code (lowercased) -> override price in INR, applies to all plans
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
