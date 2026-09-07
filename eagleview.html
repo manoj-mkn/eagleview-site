@@ -340,6 +340,7 @@ footer{padding:38px 64px;display:flex;align-items:center;justify-content:space-b
         <a href="#features" class="bs">See features →</a>
       </div>
       <div class="hstats">
+        <div class="stat"><div class="snum" id="ubNum">76</div><div class="slbl">Happy users</div></div>
         <div class="stat"><div class="snum" data-target="8" data-suffix="+">8+</div><div class="slbl">Live integrations</div></div>
         <div class="stat"><div class="snum" data-target="5">5</div><div class="slbl">Beautiful themes</div></div>
         <div class="stat"><div class="snum">∞</div><div class="slbl">Always on top</div></div>
@@ -476,6 +477,12 @@ footer{padding:38px 64px;display:flex;align-items:center;justify-content:space-b
 })()
 ;(function(){const el=document.getElementById('tw');if(!el)return;const txt='Eagle View sits quietly on the edge of your screen — showing mails, meetings, tasks and more. One glance. Zero clicks.';let i=0;function next(){if(i<txt.length){el.textContent+=txt[i++];setTimeout(next,28+Math.random()*28)}}setTimeout(next,700)})()
 function animCount(el,target,dur){const s=performance.now();(function upd(t){const p=Math.min((t-s)/dur,1),e=1-Math.pow(1-p,3);el.textContent=Math.round(e*target)+(el.dataset.suffix||'');if(p<1)requestAnimationFrame(upd)})(s)}
+// User-base counter: starts at 76 on 2026-09-07, deterministically climbs to 2146 over
+// 60 days (same value for every visitor at a given moment — seeded, not Math.random),
+// then holds flat at 2146 forever after. Recomputed on every load from the real date,
+// nothing is stored.
+function ubTarget(){const st=new Date(2026,8,7),s0=76,s1=2146,dur=60;const el=(new Date()-st)/864e5;if(el<=0)return s0;if(el>=dur)return s1;let sd=7;const rnd=()=>{sd=(sd*1103515245+12345)&0x7fffffff;return sd/0x7fffffff};const w=[];let sum=0;for(let i=0;i<dur;i++){const v=.5+rnd();w.push(v);sum+=v}const per=(s1-s0)/sum;const cum=[s0];for(let i=0;i<dur;i++)cum.push(cum[i]+w[i]*per);const d0=Math.floor(el),frac=el-d0;return Math.round(cum[d0]+(cum[d0+1]-cum[d0])*frac)}
+const ubEl=document.getElementById('ubNum');if(ubEl)ubEl.dataset.target=ubTarget()
 const rvObs=new IntersectionObserver((entries)=>{entries.forEach((e,i)=>{if(e.isIntersecting){setTimeout(()=>e.target.classList.add('in'),i*90);rvObs.unobserve(e.target)}})},{threshold:.1})
 document.querySelectorAll('.rv,.rv2,.rv3').forEach(el=>rvObs.observe(el))
 const cntObs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){const t=parseInt(e.target.dataset.target);if(!isNaN(t))animCount(e.target,t,1400);cntObs.unobserve(e.target)}})},{threshold:.5})
