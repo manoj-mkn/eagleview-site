@@ -118,11 +118,52 @@ h1.hh{font-size:82px;font-weight:900;line-height:.93;letter-spacing:-3.5px;margi
 .snum{font-size:38px;font-weight:900;color:var(--cy);letter-spacing:-1.5px;text-shadow:0 0 20px rgba(0,229,255,.35);font-variant-numeric:tabular-nums;line-height:1;}
 .slbl{font-size:11px;color:var(--tx3);margin-top:5px;text-transform:uppercase;letter-spacing:1.5px;font-weight:600;}
 
-/* HAPPY USERS — standalone big-number section */
-@keyframes ubBob{0%,100%{transform:translateY(-7px);}50%{transform:translateY(7px);}}
-.ubsec{padding:80px 64px;text-align:center;position:relative;z-index:1;}
-.ubnum{font-size:clamp(64px,12vw,140px);font-weight:900;color:var(--cy);letter-spacing:-3px;line-height:1;font-variant-numeric:tabular-nums;text-shadow:0 0 40px rgba(0,229,255,.5),0 0 90px rgba(0,229,255,.25);animation:fadeUp .7s .1s ease both,ubBob 4s ease-in-out .8s infinite;}
-.ublbl{font-size:17px;color:var(--tx2);margin-top:14px;text-transform:uppercase;letter-spacing:5px;font-weight:700;animation:fadeUp .7s .3s ease both;}
+/* ADOPTION — pill tag, tagline, live stat row, integrations strip */
+.gasec{padding:100px 64px 90px;text-align:center;position:relative;z-index:1;}
+.gatag{font-size:26px;font-weight:800;letter-spacing:-.8px;color:var(--tx);margin:0 auto 56px;max-width:560px;line-height:1.4;animation:fadeUp .6s .1s ease both;}
+.gastats{display:flex;justify-content:center;gap:0;flex-wrap:wrap;max-width:920px;margin:0 auto;animation:fadeUp .6s .2s ease both;}
+.gastat{padding:0 40px;position:relative;}
+.gastat:not(:last-child)::after{content:'';position:absolute;right:0;top:6px;bottom:6px;width:1px;background:rgba(0,229,255,.12);}
+.ganum{font-size:40px;font-weight:900;color:var(--cy);letter-spacing:-1.5px;line-height:1;font-variant-numeric:tabular-nums;text-shadow:0 0 24px rgba(0,229,255,.35);}
+.galbl{font-size:11px;color:var(--tx3);margin-top:8px;text-transform:uppercase;letter-spacing:1.5px;font-weight:700;}
+.gadiv{max-width:920px;margin:64px auto 40px;}
+.gaworks{font-size:10.5px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--tx3);margin-bottom:24px;}
+.gatools{display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;animation:fadeUp .6s .3s ease both;}
+.gatool{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:7px 16px;border-radius:100px;background:var(--sf);border:1px solid rgba(255,255,255,.07);color:var(--tx2);transition:border-color .2s,transform .2s;}
+.gatool:hover{transform:translateY(-2px);}
+.gatool .gadot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.gatool.t-ol{border-color:rgba(21,101,192,.25);} .gatool.t-ol .gadot{background:#1565C0;}
+.gatool.t-gm{border-color:rgba(234,67,53,.25);} .gatool.t-gm .gadot{background:#EA4335;}
+.gatool.t-ji{border-color:rgba(0,82,204,.25);} .gatool.t-ji .gadot{background:#0052CC;}
+.gatool.t-az{border-color:rgba(0,120,212,.25);} .gatool.t-az .gadot{background:#0078D4;}
+.gatool.t-tm{border-color:rgba(91,95,166,.25);} .gatool.t-tm .gadot{background:#5B5FA6;}
+.gatool.t-sl{border-color:rgba(224,30,90,.25);} .gatool.t-sl .gadot{background:#E01E5A;}
+@media (max-width:640px){
+  .gastat{padding:12px 22px;}
+  .gastat:not(:last-child)::after{display:none;}
+  .gatag{font-size:21px;}
+}
+
+/* TESTIMONIALS */
+.testigrid{display:flex;justify-content:center;flex-wrap:wrap;gap:20px;max-width:1280px;margin:0 auto;}
+.testic{background:var(--sf);border:1px solid rgba(0,229,255,.07);border-radius:18px;padding:28px;flex:1 1 270px;max-width:300px;min-height:230px;display:flex;flex-direction:column;text-align:left;position:relative;transition:transform .3s ease,border-color .3s;}
+/* Compact pairing: user-base stats + feedback fit closer together on one screen */
+.gasec-compact{padding:64px 64px 32px;}
+.so.feedback-compact{padding:8px 64px 64px;}
+.feedback-compact .shd{margin-bottom:36px;}
+.feedback-compact .testic{padding:22px;min-height:190px;}
+.feedback-compact .testitxt{font-size:13px;line-height:1.65;margin-bottom:14px;-webkit-line-clamp:6;display:-webkit-box;-webkit-box-orient:vertical;overflow:hidden;}
+.feedback-compact .testiq{font-size:26px;margin-bottom:2px;}
+@media (max-width:640px){.gasec-compact{padding:48px 24px 24px;}.so.feedback-compact{padding:8px 24px 48px;}}
+.testitxt{flex:1;}
+@media (max-width:900px){.testic{flex:1 1 260px;max-width:340px;}}
+.testic:hover{transform:translateY(-4px);border-color:rgba(0,229,255,.2);}
+.testiq{font-size:32px;color:var(--cy);opacity:.35;line-height:1;font-family:Georgia,serif;margin-bottom:6px;}
+.testitxt{font-size:14.5px;color:var(--tx2);line-height:1.75;margin-bottom:20px;}
+.testiwho{display:flex;align-items:center;gap:10px;}
+.testiav{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--cy),var(--or));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#02131a;flex-shrink:0;}
+.testinm{font-size:13px;font-weight:700;color:var(--tx);}
+.testirole{font-size:11px;color:var(--tx3);}
 
 /* MOCKUP */
 .hm{flex:0 0 auto;position:relative;animation:fadeUp .6s .15s ease both;}
@@ -382,13 +423,6 @@ footer{padding:38px 64px;display:flex;align-items:center;justify-content:space-b
 
 <div class="div"></div>
 
-<section class="ubsec">
-  <div class="ubnum" id="ubNum">76</div>
-  <div class="ublbl">Happy users</div>
-</section>
-
-<div class="div"></div>
-
 <section class="so alt" id="features">
   <div class="si">
     <div class="shd rv"><div class="ey">Features</div><h2 class="sh2">Everything you need,<br>nothing you don't</h2><p class="sp">All your work tools in one slim sidebar. Always visible, never in the way.</p></div>
@@ -472,6 +506,31 @@ footer{padding:38px 64px;display:flex;align-items:center;justify-content:space-b
   </div>
 </section>
 
+<div class="div"></div>
+
+<section class="gasec gasec-compact">
+  <div class="hbadge" style="margin-bottom:16px"><span class="bdot"></span>Growing fast</div>
+  <div class="gatag">Loved by users. Built for modern productivity teams.</div>
+  <div class="gastats">
+    <div class="gastat"><div class="ganum" id="ubNum">746</div><div class="galbl">Happy users</div></div>
+    <div class="gastat"><div class="ganum" data-target="5">5</div><div class="galbl">Themes</div></div>
+    <div class="gastat"><div class="ganum" data-target="8" data-suffix="+">8+</div><div class="galbl">Integrations</div></div>
+    <div class="gastat"><div class="ganum" data-target="2">2</div><div class="galbl">Platforms</div></div>
+  </div>
+</section>
+
+<section class="so feedback-compact" id="feedback">
+  <div class="si">
+    <div class="shd c rv"><div class="ey">Feedback</div><h2 class="sh2">What users are saying</h2></div>
+    <div class="testigrid rv2">
+      <div class="testic"><div class="testiq">"</div><div class="testitxt">The application is very easy to understand and I was able to start using it without much guidance. The widgets look modern and don't feel complicated. I would appreciate more ready-made widget designs and an option to save different widget layouts so I can switch between them easily.</div><div class="testiwho"><div class="testiav">R</div><div><div class="testinm">Ranjani</div></div></div></div>
+      <div class="testic"><div class="testiq">"</div><div class="testitxt">The overall experience is straightforward, and the widgets are easy to understand. I particularly like being able to get quick information at a glance. The initial setup could be slightly simpler, though. A short guided setup or recommended widget layout for first-time users would make the experience even better.</div><div class="testiwho"><div class="testiav">N</div><div><div class="testinm">Nithesh</div></div></div></div>
+      <div class="testic"><div class="testiq">"</div><div class="testitxt">The application provides a convenient way to keep important information visible on the desktop. I especially like the quick-access concept. However, some widgets could provide more detailed information, and having better integration with commonly used business applications would make it more valuable.</div><div class="testiwho"><div class="testiav">R</div><div><div class="testinm">Rahul Roy</div></div></div></div>
+      <div class="testic"><div class="testiq">"</div><div class="testitxt">The widgets are useful for quickly checking things like tasks, calendar events, and reminders without interrupting my workflow. It saves a lot of time during the day. It would be even better if the widgets could be customized based on different work profiles or activities.</div><div class="testiwho"><div class="testiav">D</div><div><div class="testinm">Deelip</div></div></div></div>
+    </div>
+  </div>
+</section>
+
 <footer>
   <div class="flogo"><div class="fico2"><svg width="20" height="20"><use href="#eagle"/></svg></div>Eagle View</div>
   <div class="fcopy">© 2026 Eagle View — Built with Tauri + React</div>
@@ -489,11 +548,11 @@ footer{padding:38px 64px;display:flex;align-items:center;justify-content:space-b
 })()
 ;(function(){const el=document.getElementById('tw');if(!el)return;const txt='Eagle View sits quietly on the edge of your screen — showing mails, meetings, tasks and more. One glance. Zero clicks.';let i=0;function next(){if(i<txt.length){el.textContent+=txt[i++];setTimeout(next,28+Math.random()*28)}}setTimeout(next,700)})()
 function animCount(el,target,dur){const s=performance.now();(function upd(t){const p=Math.min((t-s)/dur,1),e=1-Math.pow(1-p,3);el.textContent=Math.round(e*target)+(el.dataset.suffix||'');if(p<1)requestAnimationFrame(upd)})(s)}
-// User-base counter: starts at 76 on 2026-09-07, deterministically climbs to 2146 over
-// 60 days (same value for every visitor at a given moment — seeded, not Math.random),
-// then holds flat at 2146 forever after. Recomputed on every load from the real date,
-// nothing is stored.
-function ubTarget(){const st=new Date(2026,8,7),s0=76,s1=2146,dur=60;const el=(new Date()-st)/864e5;if(el<=0)return s0;if(el>=dur)return s1;let sd=7;const rnd=()=>{sd=(sd*1103515245+12345)&0x7fffffff;return sd/0x7fffffff};const w=[];let sum=0;for(let i=0;i<dur;i++){const v=.5+rnd();w.push(v);sum+=v}const per=(s1-s0)/sum;const cum=[s0];for(let i=0;i<dur;i++)cum.push(cum[i]+w[i]*per);const d0=Math.floor(el),frac=el-d0;return Math.round(cum[d0]+(cum[d0+1]-cum[d0])*frac)}
+// User-base counter: starts at 746 on 2026-09-08, deterministically climbs to 6000 over
+// the next 3 months (90 days; same value for every visitor at a given moment — seeded,
+// not Math.random, and always increasing — never down), then holds flat at 6000 forever
+// after. Recomputed on every load from the real date, nothing is stored.
+function ubTarget(){const st=new Date(2026,8,8),s0=746,s1=6000,dur=90;const el=(new Date()-st)/864e5;if(el<=0)return s0;if(el>=dur)return s1;let sd=8;const rnd=()=>{sd=(sd*1103515245+12345)&0x7fffffff;return sd/0x7fffffff};const w=[];let sum=0;for(let i=0;i<dur;i++){const v=.5+rnd();w.push(v);sum+=v}const per=(s1-s0)/sum;const cum=[s0];for(let i=0;i<dur;i++)cum.push(cum[i]+w[i]*per);const d0=Math.floor(el),frac=el-d0;return Math.round(cum[d0]+(cum[d0+1]-cum[d0])*frac)}
 const ubEl=document.getElementById('ubNum');if(ubEl)ubEl.dataset.target=ubTarget()
 const rvObs=new IntersectionObserver((entries)=>{entries.forEach((e,i)=>{if(e.isIntersecting){setTimeout(()=>e.target.classList.add('in'),i*90);rvObs.unobserve(e.target)}})},{threshold:.1})
 document.querySelectorAll('.rv,.rv2,.rv3').forEach(el=>rvObs.observe(el))
