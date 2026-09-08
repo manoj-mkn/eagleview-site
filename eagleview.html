@@ -118,6 +118,12 @@ h1.hh{font-size:82px;font-weight:900;line-height:.93;letter-spacing:-3.5px;margi
 .snum{font-size:38px;font-weight:900;color:var(--cy);letter-spacing:-1.5px;text-shadow:0 0 20px rgba(0,229,255,.35);font-variant-numeric:tabular-nums;line-height:1;}
 .slbl{font-size:11px;color:var(--tx3);margin-top:5px;text-transform:uppercase;letter-spacing:1.5px;font-weight:600;}
 
+/* HAPPY USERS — standalone big-number section */
+@keyframes ubBob{0%,100%{transform:translateY(-7px);}50%{transform:translateY(7px);}}
+.ubsec{padding:80px 64px;text-align:center;position:relative;z-index:1;}
+.ubnum{font-size:clamp(64px,12vw,140px);font-weight:900;color:var(--cy);letter-spacing:-3px;line-height:1;font-variant-numeric:tabular-nums;text-shadow:0 0 40px rgba(0,229,255,.5),0 0 90px rgba(0,229,255,.25);animation:fadeUp .7s .1s ease both,ubBob 4s ease-in-out .8s infinite;}
+.ublbl{font-size:17px;color:var(--tx2);margin-top:14px;text-transform:uppercase;letter-spacing:5px;font-weight:700;animation:fadeUp .7s .3s ease both;}
+
 /* MOCKUP */
 .hm{flex:0 0 auto;position:relative;animation:fadeUp .6s .15s ease both;}
 .mr{position:absolute;inset:-50px;border-radius:50%;border:1px solid rgba(0,229,255,.06);animation:pulseRing 4s ease-in-out infinite;pointer-events:none;}
@@ -340,7 +346,6 @@ footer{padding:38px 64px;display:flex;align-items:center;justify-content:space-b
         <a href="#features" class="bs">See features →</a>
       </div>
       <div class="hstats">
-        <div class="stat"><div class="snum" id="ubNum">76</div><div class="slbl">Happy users</div></div>
         <div class="stat"><div class="snum" data-target="8" data-suffix="+">8+</div><div class="slbl">Live integrations</div></div>
         <div class="stat"><div class="snum" data-target="5">5</div><div class="slbl">Beautiful themes</div></div>
         <div class="stat"><div class="snum">∞</div><div class="slbl">Always on top</div></div>
@@ -373,6 +378,13 @@ footer{padding:38px 64px;display:flex;align-items:center;justify-content:space-b
       </div>
     </div>
   </div>
+</section>
+
+<div class="div"></div>
+
+<section class="ubsec">
+  <div class="ubnum" id="ubNum">76</div>
+  <div class="ublbl">Happy users</div>
 </section>
 
 <div class="div"></div>
