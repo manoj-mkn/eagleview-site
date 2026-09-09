@@ -57,33 +57,63 @@ body::before{
 .badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.22);color:var(--cy);padding:6px 16px;border-radius:100px;font-size:10.5px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;margin-bottom:22px;animation:fadeUp .6s ease both,glowBorder 3s ease-in-out infinite;}
 .bdot{width:6px;height:6px;border-radius:50%;background:var(--cy);box-shadow:0 0 8px var(--cy);animation:pulse 1.5s ease-in-out infinite;flex-shrink:0;}
 h1{font-size:clamp(32px,4.2vw,46px);font-weight:900;line-height:1.04;letter-spacing:-1.6px;margin-bottom:14px;color:var(--tx);animation:fadeUp .6s .1s ease both;}
-h1 .grad{display:block;background:linear-gradient(135deg,var(--or) 0%,#FFB300 38%,var(--cy) 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 4s linear infinite;}
+h1 .grad,.grad-text{display:block;background:linear-gradient(135deg,var(--or) 0%,#FFB300 38%,var(--cy) 100%);background-size:200% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 4s linear infinite;}
+.grad-text{display:inline-block;}
 .sub{font-size:14.5px;color:var(--tx2);line-height:1.7;margin-bottom:28px;min-height:1.7em;animation:fadeUp .6s .2s ease both;}
 .cur{display:inline-block;width:2px;height:1em;background:var(--cy);vertical-align:text-bottom;margin-left:1px;animation:blink .75s steps(1) infinite;}
 
 .card{animation:fadeUp .6s .25s ease both;}
-.plans{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
-.plan{display:flex;align-items:center;background:var(--sf);border:1.5px solid rgba(0,229,255,.09);border-radius:14px;padding:14px 16px;cursor:pointer;transition:all .2s;gap:0;}
+.plans{position:relative;display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
+.plan-sel-indicator{position:absolute;left:0;right:0;top:0;height:0;border-radius:14px;background:rgba(0,229,255,.05);border:1.5px solid var(--cy);box-shadow:0 0 0 1px rgba(0,229,255,.15),0 0 24px rgba(0,229,255,.05);pointer-events:none;opacity:0;transition:transform .45s cubic-bezier(.4,0,.2,1),height .45s cubic-bezier(.4,0,.2,1),opacity .3s ease;}
+.plan-sel-indicator.show{opacity:1;}
+.plan{display:flex;align-items:center;background:var(--sf);border:1.5px solid rgba(0,229,255,.09);border-radius:14px;padding:14px 16px;cursor:pointer;gap:0;transition:border-color .35s cubic-bezier(.4,0,.2,1),background .35s cubic-bezier(.4,0,.2,1);}
 .plan:hover{border-color:rgba(0,229,255,.28);background:#0E1730;}
-.plan.sel{background:rgba(0,229,255,.05);border-color:var(--cy);box-shadow:0 0 0 1px rgba(0,229,255,.15),0 0 24px rgba(0,229,255,.05);}
+.plan.sel{border-color:transparent;}
 .plan-left{flex:1;}
-.plan-dur{font-size:14px;font-weight:700;color:var(--tx);}
+.plan-dur{font-size:14px;font-weight:700;color:var(--tx);transition:color .35s cubic-bezier(.4,0,.2,1);}
 .plan.sel .plan-dur{color:var(--cy);}
 .plan-desc{font-size:11px;color:var(--tx3);margin-top:2px;}
 .plan-badge{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;background:linear-gradient(90deg,var(--or),#FFB300);color:#050B14;border-radius:20px;padding:2px 8px;margin-left:8px;}
-.plan-right{margin-right:14px;text-align:right;}
-.plan-price{font-size:19px;font-weight:800;color:var(--tx);font-variant-numeric:tabular-nums;}
+.plan-right{margin-right:14px;display:flex;align-items:center;gap:18px;}
+.plan-std-col{text-align:right;min-width:74px;transform:translateX(-20px);}
+.plan-std-price{position:relative;display:inline-block;font-size:19px;font-weight:800;color:var(--tx);font-variant-numeric:tabular-nums;transition:color .35s cubic-bezier(.4,0,.2,1);}
+.plan-std-price::after{content:'';position:absolute;left:-6%;right:-6%;top:50%;height:4px;background:rgba(255,107,122,.85);border-radius:2px;transform-origin:center;transform:translateY(-50%) rotate(-15deg) scaleX(0);opacity:0;transition:transform .4s ease,opacity .3s ease;}
+.plan.revealed .plan-std-price::after{transform:translateY(-50%) rotate(-15deg) scaleX(1);opacity:1;}
+.plan.sel .plan-std-price{color:var(--cy);}
+.plan-offer-col{position:relative;text-align:right;min-width:74px;height:30px;}
+.plan-price{position:absolute;top:50%;right:0;font-size:19px;font-weight:800;color:var(--tx);font-variant-numeric:tabular-nums;opacity:0;transform:translateY(-50%) scale(.9);pointer-events:none;transition:opacity .3s ease,transform .3s ease,color .35s cubic-bezier(.4,0,.2,1);}
+.plan.revealed .plan-price{opacity:1;transform:translateY(-50%) scale(1);pointer-events:auto;}
 .plan.sel .plan-price{color:var(--cy);}
+.offer-btn{position:absolute;top:50%;right:0;transform:translateY(-50%) scale(1);opacity:1;pointer-events:auto;transition:opacity .3s ease,transform .3s ease,filter .2s ease;display:inline-flex;align-items:center;justify-content:center;min-width:74px;padding:6px 14px;border:none;border-radius:20px;font-size:12px;font-weight:800;letter-spacing:.02em;color:#1a1206;cursor:pointer;background:linear-gradient(135deg,var(--or) 0%,#FFB300 38%,var(--cy) 100%);background-size:200% auto;animation:shimmer 4s linear infinite;}
+.plan.revealed .offer-btn{opacity:0;transform:translateY(-50%) scale(.85);pointer-events:none;}
+.offer-btn:hover{filter:brightness(1.08);}
 .plan-period{font-size:10px;color:var(--tx3);}
-.radio{width:18px;height:18px;border:2px solid rgba(0,229,255,.22);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .2s;}
+.price-cols-hdr{display:flex;align-items:center;padding:0 16px;margin-bottom:8px;}
+.phdr-spacer{flex:1;}
+.phdr-prices{display:flex;align-items:center;gap:18px;margin-right:14px;}
+.phdr-prices span{font-size:13px;font-weight:800;letter-spacing:.02em;color:var(--tx);text-align:right;white-space:nowrap;min-width:74px;}
+.phdr-prices span:first-child{transform:translateX(5px);}
+.phdr-prices span:last-child{transform:translateX(10px);}
+.phdr-radio{width:18px;flex-shrink:0;}
+@media(max-width:380px){
+  .plan-right{gap:10px;}
+  .plan-std-price{font-size:16px;}
+  .plan-price{font-size:16px;}
+  .plan-std-col,.plan-offer-col{min-width:56px;}
+  .plan-offer-col{height:24px;}
+  .offer-btn{min-width:56px;padding:5px 10px;font-size:10px;}
+  .phdr-prices{gap:10px;}
+  .phdr-prices span{font-size:10px;min-width:56px;}
+}
+.radio{width:18px;height:18px;border:2px solid rgba(0,229,255,.22);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .35s cubic-bezier(.4,0,.2,1);}
 .plan.sel .radio{border-color:var(--cy);}
-.radio::after{content:'';width:8px;height:8px;border-radius:50%;background:var(--cy);opacity:0;transform:scale(0);transition:all .2s cubic-bezier(.34,1.56,.64,1);}
+.radio::after{content:'';width:8px;height:8px;border-radius:50%;background:var(--cy);opacity:0;transform:scale(0);transition:opacity .3s ease,transform .3s cubic-bezier(.34,1.56,.64,1);}
 .plan.sel .radio::after{opacity:1;transform:scale(1);}
 
 .divider{height:1px;background:linear-gradient(90deg,transparent,rgba(0,229,255,.16),transparent);margin:6px 0 18px;}
 .inp{width:100%;background:var(--sf);border:1.5px solid rgba(0,229,255,.1);border-radius:10px;padding:12px 15px;font-size:13px;color:var(--tx);font-family:inherit;outline:none;margin-bottom:10px;transition:border-color .2s,box-shadow .2s;}
 .inp:focus{border-color:var(--cy);box-shadow:0 0 0 3px rgba(0,229,255,.08);}
-.inp::placeholder{color:var(--tx3);}
+.inp::placeholder{color:var(--tx2);}
 .inp[readonly]{background:#080D1C;color:var(--tx2);cursor:default;border-color:rgba(0,229,255,.06);}
 .mid-ok{display:none;align-items:center;gap:7px;font-size:12px;color:var(--tx2);margin-bottom:10px;}
 .mid-dot{width:7px;height:7px;border-radius:50%;background:var(--gr);box-shadow:0 0 6px var(--gr);flex-shrink:0;}
@@ -179,10 +209,12 @@ h1 .grad{display:block;background:linear-gradient(135deg,var(--or) 0%,#FFB300 38
       <p class="sub"><span id="tw"></span><span class="cur"></span></p>
 
       <div class="card">
+        <div class="price-cols-hdr"><div class="phdr-spacer"></div><div class="phdr-prices"><span>Standard Price</span><span class="grad-text">Launch offer</span></div><div class="phdr-radio"></div></div>
         <div class="plans">
-          <div class="plan" data-days="180" onclick="selectPlan(180)"><div class="plan-left"><div class="plan-dur">6 Months</div><div class="plan-desc">Half-year access</div></div><div class="plan-right"><div class="plan-price">₹1,699</div><div class="plan-period">one-time</div></div><div class="radio"></div></div>
-          <div class="plan sel" data-days="365" onclick="selectPlan(365)"><div class="plan-left"><div class="plan-dur">1 Year <span class="plan-badge">Popular</span></div><div class="plan-desc">Full-year access</div></div><div class="plan-right"><div class="plan-price">₹2,199</div><div class="plan-period">one-time</div></div><div class="radio"></div></div>
-          <div class="plan" data-days="730" onclick="selectPlan(730)"><div class="plan-left"><div class="plan-dur">2 Years <span class="plan-badge">Best value</span></div><div class="plan-desc">Extended access</div></div><div class="plan-right"><div class="plan-price">₹3,199</div><div class="plan-period">one-time</div></div><div class="radio"></div></div>
+          <div class="plan-sel-indicator" id="planSelInd"></div>
+          <div class="plan" data-days="180" onclick="selectPlan(180)"><div class="plan-left"><div class="plan-dur">6 Months</div><div class="plan-desc">Half-year access</div></div><div class="plan-right"><div class="plan-std-col"><div class="plan-std-price">₹6,100</div></div><div class="plan-offer-col"><button type="button" class="offer-btn" onclick="revealOffer(180,event)">Offer</button><div class="plan-price">₹1,999</div></div></div><div class="radio"></div></div>
+          <div class="plan sel" data-days="365" onclick="selectPlan(365)"><div class="plan-left"><div class="plan-dur">1 Year <span class="plan-badge">Popular</span></div><div class="plan-desc">Full-year access</div></div><div class="plan-right"><div class="plan-std-col"><div class="plan-std-price">₹9,100</div></div><div class="plan-offer-col"><button type="button" class="offer-btn" onclick="revealOffer(365,event)">Offer</button><div class="plan-price">₹2,199</div></div></div><div class="radio"></div></div>
+          <div class="plan" data-days="730" onclick="selectPlan(730)"><div class="plan-left"><div class="plan-dur">2 Years <span class="plan-badge">Best value</span></div><div class="plan-desc">Extended access</div></div><div class="plan-right"><div class="plan-std-col"><div class="plan-std-price">₹14,100</div></div><div class="plan-offer-col"><button type="button" class="offer-btn" onclick="revealOffer(730,event)">Offer</button><div class="plan-price">₹2,599</div></div></div><div class="radio"></div></div>
         </div>
         <div class="coupon-row">
           <input class="inp" id="buyCoupon" type="text" placeholder="Coupon code (optional)" autocomplete="off" spellcheck="false" oninput="onCouponInput()"/>
@@ -239,18 +271,27 @@ h1 .grad{display:block;background:linear-gradient(135deg,var(--or) 0%,#FFB300 38
 ;(function(){var el=document.getElementById('tw');if(!el)return;var txt='One-time payment · No subscription · Mac & Windows.';var i=0;function next(){if(i<txt.length){el.textContent+=txt[i++];setTimeout(next,32+Math.random()*30)}}setTimeout(next,500)})();
 function clocks(){const now=new Date(),f2=tz=>new Intl.DateTimeFormat('en',{timeZone:tz,hour:'2-digit',minute:'2-digit',hour12:false}).format(now),f3=tz=>new Intl.DateTimeFormat('en',{timeZone:tz,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(now);const de=document.getElementById('clock-de'),us=document.getElementById('clock-us'),upd=document.getElementById('clock-upd');if(de)de.textContent=f2('Europe/Berlin');if(us)us.textContent=f2('America/New_York');if(upd)upd.textContent=f3('Europe/Berlin')}
 clocks();setInterval(clocks,1000);
+updatePayBtn();
 </script>
 <script>
 var EDGE_URL='https://cmmafuddsgritdmltxcr.supabase.co/functions/v1/activate-license';
-var _plan=365,_mid='',_price=2199,_coupon='';
-var PRICES={180:1699,365:2199,730:3199};
-function renderPlanPrices(){document.querySelectorAll('[data-days]').forEach(function(el){var d=parseInt(el.dataset.days,10),priceEl=el.querySelector('.plan-price');if(!priceEl)return;priceEl.innerHTML=_coupon?('<s style="opacity:.5;font-weight:400;font-size:13px">₹'+PRICES[d].toLocaleString('en-IN')+'</s> ₹1'):('₹'+PRICES[d].toLocaleString('en-IN'));});}
-function applyCoupon(){var v=(document.getElementById('buyCoupon').value||'').trim().toLowerCase(),ok=document.getElementById('couponOk'),err=document.getElementById('couponErr');_coupon=(v==='launchoffer01')?'launchoffer01':'';if(ok)ok.style.display=_coupon?'flex':'none';if(err)err.style.display=_coupon?'none':'block';renderPlanPrices();}
-function onCouponInput(){var ok=document.getElementById('couponOk'),err=document.getElementById('couponErr');if(!_coupon&&(!err||err.style.display!=='block'))return;_coupon='';if(ok)ok.style.display='none';if(err)err.style.display='none';renderPlanPrices();}
+var PRICES={180:1999,365:2199,730:2599};
+var STD_PRICES={180:6100,365:9100,730:14100};
+var _revealed={180:false,365:false,730:false};
+var _plan=365,_mid='',_price=STD_PRICES[365],_coupon='';
+function effectivePrice(){return (_coupon&&_revealed[_plan])?1:_price;}
+function renderPlanPrices(){document.querySelectorAll('[data-days]').forEach(function(el){var d=parseInt(el.dataset.days,10),priceEl=el.querySelector('.plan-price');if(!priceEl)return;priceEl.innerHTML=(_coupon&&_revealed[d])?('<s style="opacity:.5;font-weight:400;font-size:13px">₹'+PRICES[d].toLocaleString('en-IN')+'</s> ₹1'):('₹'+PRICES[d].toLocaleString('en-IN'));});}
+function updatePayBtn(){var btn=document.getElementById('buyBtn');if(!btn||btn.disabled)return;btn.textContent='Pay ₹'+effectivePrice().toLocaleString('en-IN')+' →';}
+function applyCoupon(){var v=(document.getElementById('buyCoupon').value||'').trim().toLowerCase(),ok=document.getElementById('couponOk'),err=document.getElementById('couponErr');_coupon=(v==='launchoffer01')?'launchoffer01':'';if(ok)ok.style.display=_coupon?'flex':'none';if(err)err.style.display=_coupon?'none':'block';renderPlanPrices();updatePayBtn();}
+function onCouponInput(){var ok=document.getElementById('couponOk'),err=document.getElementById('couponErr');if(!_coupon&&(!err||err.style.display!=='block'))return;_coupon='';if(ok)ok.style.display='none';if(err)err.style.display='none';renderPlanPrices();updatePayBtn();}
 (function(){var p=new URLSearchParams(window.location.search),mid=(p.get('mid')||'').trim(),email=(p.get('email')||'').trim();if(mid){_mid=mid;var ok=document.getElementById('buyMidOk'),mn=document.getElementById('buyMidManual');if(ok)ok.style.display='flex';if(mn)mn.style.display='none';}if(email){var el=document.getElementById('buyEmail');if(el){el.value=email;el.readOnly=true;}}})();
-function selectPlan(d){_plan=d;_price=PRICES[d]||2199;document.querySelectorAll('[data-days]').forEach(function(el){el.classList.toggle('sel',parseInt(el.dataset.days,10)===d);});}
+function moveSelIndicator(){var ind=document.getElementById('planSelInd'),wrap=document.querySelector('.plans'),el=document.querySelector('.plan.sel');if(!ind||!wrap||!el)return;var wrapRect=wrap.getBoundingClientRect(),elRect=el.getBoundingClientRect();ind.style.height=elRect.height+'px';ind.style.transform='translateY('+(elRect.top-wrapRect.top)+'px)';ind.classList.add('show');}
+function selectPlan(d){_plan=d;_price=_revealed[d]?PRICES[d]:STD_PRICES[d];document.querySelectorAll('[data-days]').forEach(function(el){el.classList.toggle('sel',parseInt(el.dataset.days,10)===d);});renderPlanPrices();updatePayBtn();moveSelIndicator();}
+window.addEventListener('resize',moveSelIndicator);
+moveSelIndicator();
+function revealOffer(d,event){_revealed[d]=true;var planEl=document.querySelector('.plan[data-days="'+d+'"]');if(planEl)planEl.classList.add('revealed');renderPlanPrices();if(d===_plan){_price=PRICES[d];updatePayBtn();}}
 function showErr(m){var el=document.getElementById('buyErr');el.textContent=m;el.style.display='block';}
-function startPayment(){var email=(document.getElementById('buyEmail').value||'').trim().toLowerCase(),mid=_mid||(document.getElementById('buyMachineId')?(document.getElementById('buyMachineId').value||'').trim():'');document.getElementById('buyErr').style.display='none';if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showErr('Enter a valid email address.');return;}if(!mid){showErr('Paste your Machine ID from Eagle View.');return;}var btn=document.getElementById('buyBtn');btn.disabled=true;btn.textContent='Opening…';fetch(EDGE_URL+'?action=create-payment-link',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,machine_id:mid,license_days:_plan,amount_inr:(_coupon?1:_price),coupon:_coupon})}).then(function(r){return r.json();}).then(function(data){if(data.payment_link_url){window.location.href=data.payment_link_url;}else{showErr(data.error||'Try again.');btn.disabled=false;btn.textContent='Pay now →';}}).catch(function(){showErr('Network error.');btn.disabled=false;btn.textContent='Pay now →';});}
+function startPayment(){var email=(document.getElementById('buyEmail').value||'').trim().toLowerCase(),mid=_mid||(document.getElementById('buyMachineId')?(document.getElementById('buyMachineId').value||'').trim():'');document.getElementById('buyErr').style.display='none';if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){showErr('Enter a valid email address.');return;}if(!mid){showErr('Paste your Machine ID from Eagle View.');return;}var btn=document.getElementById('buyBtn');btn.disabled=true;btn.textContent='Opening…';fetch(EDGE_URL+'?action=create-payment-link',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:email,machine_id:mid,license_days:_plan,amount_inr:effectivePrice(),coupon:(_coupon&&_revealed[_plan])?_coupon:''})}).then(function(r){return r.json();}).then(function(data){if(data.payment_link_url){window.location.href=data.payment_link_url;}else{showErr(data.error||'Try again.');btn.disabled=false;btn.textContent='Pay now →';}}).catch(function(){showErr('Network error.');btn.disabled=false;btn.textContent='Pay now →';});}
 </script>
 </body>
 </html>
