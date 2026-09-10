@@ -268,6 +268,62 @@
   }
   .check-item.checked .check-text { color: var(--done); }
 
+  .check-row { display: flex; align-items: flex-start; gap: 6px; }
+  .check-row .check-item { width: auto; flex: 1; }
+  .info-btn {
+    flex-shrink: 0;
+    width: 16px; height: 16px;
+    margin-top: 2px;
+    border-radius: 50%;
+    border: 1.3px solid var(--cream-faint);
+    background: none;
+    color: var(--cream-faint);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+    padding: 0;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .info-btn:hover, .info-btn:focus-visible { border-color: var(--orange); color: var(--orange); outline: none; }
+  .node.teal .info-btn:hover, .node.teal .info-btn:focus-visible { border-color: var(--teal); color: var(--teal); }
+
+  .info-modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(36,26,14,0.45);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 10000; padding: 20px;
+  }
+  .info-modal-overlay[hidden] { display: none; }
+  .info-modal {
+    background: var(--bg);
+    border-radius: 14px;
+    max-width: 400px; width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 22px 24px;
+    box-shadow: 0 24px 60px -16px rgba(36,26,14,0.4);
+    position: relative;
+    text-align: left;
+  }
+  .info-modal h3 { font-family: 'Fraunces', Georgia, serif; font-size: 16px; font-weight: 700; color: var(--cream); margin: 0 0 12px; padding-right: 20px; }
+  .info-modal p { font-size: 13.5px; color: var(--cream-dim); margin: 0 0 10px; line-height: 1.6; }
+  .info-modal p:last-child { margin-bottom: 0; }
+  .info-modal strong { color: var(--cream); }
+  .info-modal-close {
+    position: absolute; top: 10px; right: 10px;
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: none;
+    background: var(--bg-soft);
+    color: var(--cream-dim);
+    font-size: 15px; line-height: 1;
+    cursor: pointer;
+  }
+
   footer {
     max-width: 640px;
     margin: 60px auto 0;
@@ -350,7 +406,7 @@
     <h1>Product Launch Roadmap<span class="rule">— Eagle View —</span></h1>
     <div class="stats">
       <div class="stat">Critical path <b>10–14 wks</b></div>
-      <div class="stat teal">Total cost <b>₹1.1L–3.9L</b></div>
+      <div class="stat teal">Total cost <b>₹0.9L–3.7L</b></div>
       <div class="stat">Fastest win <b>3–5 days</b></div>
     </div>
   </div>
@@ -371,7 +427,7 @@
           <div class="card-title">App development — production ready</div>
           <div class="check-list">
             <button class="check-item" data-key="p1-0" data-default="true"><span class="check-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="check-text">Feature development complete<span class="check-meta">Core app, all sub-apps, all 5 themes</span></span></button>
-            <button class="check-item" data-key="p1-1" data-default="false"><span class="check-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="check-text">Full QA pass — 100% of test cases verified<span class="check-meta">In progress · 550 TCs / 46 sections · ₹20k</span></span></button>
+            <button class="check-item" data-key="p1-1" data-default="false"><span class="check-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="check-text">Full QA pass — 100% of test cases verified<span class="check-meta">In progress · 550 TCs / 46 sections · ₹5k</span></span></button>
           </div>
         </div>
       </div>
@@ -446,7 +502,10 @@
           <div class="card-title">Code signing</div>
           <div class="check-list">
             <button class="check-item" data-key="p6-0" data-default="false"><span class="check-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="check-text">Apple Developer ID (org account)<span class="check-meta">2–10 days · $99/yr (~₹8.2k)</span></span></button>
-            <button class="check-item" data-key="p6-1" data-default="false"><span class="check-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="check-text">Windows code-signing cert<span class="check-meta">3–10 days · ₹25,100/yr (EV, SSL.com)</span></span></button>
+            <div class="check-row">
+              <button class="check-item" data-key="p6-1" data-default="false"><span class="check-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="check-text">Windows code-signing cert<span class="check-meta">3–10 days · ₹25,100/yr (EV, SSL.com)</span></span></button>
+              <button class="info-btn" type="button" data-info-key="p6-1" aria-label="More detail">i</button>
+            </div>
           </div>
         </div>
       </div>
@@ -488,7 +547,54 @@
   <footer>Estimates only — confirm exact figures with your CA/company secretary and the relevant assessor before budgeting. Status snapshot as of last update — not editable here.</footer>
 
 </div>
+
+<div class="info-modal-overlay" id="info-modal-overlay" hidden>
+  <div class="info-modal" role="dialog" aria-modal="true">
+    <button class="info-modal-close" id="info-modal-close" type="button" aria-label="Close">&times;</button>
+    <h3 id="info-modal-title"></h3>
+    <div id="info-modal-body"></div>
+  </div>
 </div>
+
+</div>
+
+<script>
+  var INFO_CONTENT = {
+    'p6-1': {
+      title: 'Windows code-signing cert',
+      body: '<p><strong>OV (Sectigo/Comodo):</strong> $219/yr (~₹18,400/yr). Cheaper, but Windows SmartScreen still shows &ldquo;Unknown Publisher&rdquo; warnings until the app builds enough download reputation.</p>' +
+            '<p><strong>EV (SSL.com):</strong> $299/yr (~₹25,100/yr). Instant SmartScreen trust from day one — no warning screen, even on the very first download.</p>' +
+            '<p>Both require the private key on a physical USB hardware token (mandatory CA/Browser Forum rule since 2023), shipped free with the cert. Certs are now capped at 1-year validity (down from 3), so this is a recurring annual line item.</p>' +
+            '<p><strong>Recommendation:</strong> since Eagle View is a paid product, the &ldquo;Unknown Publisher&rdquo; warning is a real conversion killer for someone who just paid — go EV via SSL.com (~₹25,100/yr) rather than the cheaper OV option.</p>'
+    }
+  };
+  (function () {
+    var overlay = document.getElementById('info-modal-overlay');
+    var titleEl = document.getElementById('info-modal-title');
+    var bodyEl = document.getElementById('info-modal-body');
+    var closeBtn = document.getElementById('info-modal-close');
+    if (!overlay) return;
+
+    function openInfo(key) {
+      var data = INFO_CONTENT[key];
+      if (!data) return;
+      titleEl.textContent = data.title;
+      bodyEl.innerHTML = data.body;
+      overlay.hidden = false;
+    }
+    function closeInfo() { overlay.hidden = true; }
+
+    document.querySelectorAll('.info-btn').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        openInfo(btn.getAttribute('data-info-key'));
+      });
+    });
+    closeBtn.addEventListener('click', closeInfo);
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) closeInfo(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeInfo(); });
+  })();
+</script>
 
 <script>
 (function () {
