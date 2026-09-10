@@ -217,7 +217,7 @@ h1 .grad,.grad-text{display:block;background:linear-gradient(135deg,var(--or) 0%
           <div class="plan" data-days="730" onclick="selectPlan(730)"><div class="plan-left"><div class="plan-dur">2 Years <span class="plan-badge">Best value</span></div><div class="plan-desc">Extended access</div></div><div class="plan-right"><div class="plan-std-col"><div class="plan-std-price">₹14,100</div></div><div class="plan-offer-col"><button type="button" class="offer-btn" onclick="revealOffer(730,event)">Offer</button><div class="plan-price">₹2,599</div></div></div><div class="radio"></div></div>
         </div>
         <div class="coupon-row">
-          <input class="inp" id="buyCoupon" type="text" placeholder="Coupon code (optional)" autocomplete="off" spellcheck="false" oninput="onCouponInput()"/>
+          <input class="inp" id="buyCoupon" type="text" placeholder="Coupon code (optional)" autocomplete="off" spellcheck="false" oninput="onCouponInput()" onkeydown="if(event.key==='Enter'){event.preventDefault();applyCoupon();}"/>
           <button type="button" class="coupon-apply-btn" onclick="applyCoupon()">Apply</button>
         </div>
         <div class="mid-ok" id="couponOk"><div class="mid-dot"></div><span>Coupon applied — <strong>₹1 on all plans</strong></span></div>
