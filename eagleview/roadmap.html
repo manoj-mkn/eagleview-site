@@ -237,7 +237,7 @@
   .check-item {
     display: flex; gap: 10px; align-items: flex-start;
     background: none; border: none; padding: 0; margin: 0;
-    font: inherit; text-align: left; cursor: pointer; width: 100%;
+    font: inherit; text-align: left; cursor: default; width: 100%;
   }
   .check-box {
     flex-shrink: 0;
@@ -257,8 +257,6 @@
   .check-item.checked .check-box { background: var(--orange-check); border-color: var(--orange-check); }
   .node.teal .check-item.checked .check-box { background: var(--teal-check); border-color: var(--teal-check); }
   .check-item.checked .check-box svg { opacity: 1; transform: scale(1); }
-  .check-item:focus-visible .check-box { outline: 2px solid var(--orange); outline-offset: 2px; }
-  .node.teal .check-item:focus-visible .check-box { outline-color: var(--teal); }
   .check-text { font-size: 13.5px; color: var(--cream); }
   .check-meta {
     display: block;
@@ -487,7 +485,7 @@
 
   </div>
 
-  <footer>Estimates only — confirm exact figures with your CA/company secretary and the relevant assessor before budgeting. Tap any item to check it off — your progress is saved on this device.</footer>
+  <footer>Estimates only — confirm exact figures with your CA/company secretary and the relevant assessor before budgeting. Status snapshot as of last update — not editable here.</footer>
 
 </div>
 </div>
@@ -507,10 +505,6 @@
   }
 
   function initRoadmap() {
-    var STORAGE_KEY = 'ev-roadmap-checks-v1';
-    var saved = {};
-    try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch (e) {}
-
     function updateCard(card) {
       var items = card.querySelectorAll('.check-item');
       var allChecked = items.length > 0 && Array.prototype.every.call(items, function (it) {
@@ -558,19 +552,7 @@
     }
 
     document.querySelectorAll('.check-item').forEach(function (el) {
-      var key = el.getAttribute('data-key');
-      var isChecked = Object.prototype.hasOwnProperty.call(saved, key)
-        ? saved[key]
-        : el.getAttribute('data-default') === 'true';
-      if (isChecked) el.classList.add('checked');
-
-      el.addEventListener('click', function () {
-        el.classList.toggle('checked');
-        saved[key] = el.classList.contains('checked');
-        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(saved)); } catch (e) {}
-        updateCard(el.closest('.card'));
-        updateTimelineLineColors();
-      });
+      if (el.getAttribute('data-default') === 'true') el.classList.add('checked');
     });
 
     document.querySelectorAll('.card').forEach(updateCard);
