@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Product Launch Roadmap — Eagle View</title>
+<meta name="description" content="Eagle View's internal path from a production-ready app to fully signed, fully verified distribution — phases, durations, and costs.">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,900&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+  /* Deliberate single light-theme design — same in every viewer theme.
+     Colors are Eagle View's own Horizon theme pair, taken directly from
+     themes.js: c1 #E87722 (orange), c2 #009B8D (teal). */
+  :root {
+    --bg: #FFFFFF;
+    --bg-soft: #FFF8EF;
+    --cream: #241A0E;
+    --cream-dim: #6B5C48;
+    --cream-faint: #9C8F7C;
+    --line: #EBDFC9;
+
+    --orange: #E87722;
+    --orange-card: #FFF2E2;
+    --orange-check: #C05A00;
+    --orange-edge: #F5D9B8;
+
+    --teal: #009B8D;
+    --teal-card: #E5F5F3;
+    --teal-check: #00786D;
+    --teal-edge: #B9E4DE;
+
+    --done: #4B7A1F;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--cream);
+    font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.5;
+    padding: 36px 20px 60px;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; }
+
+  h1, h2 { font-family: 'Fraunces', Georgia, serif; text-wrap: balance; margin: 0; }
+
+  /* ── Title ────────────────────────────────────────────── */
+  .title-block { text-align: center; margin-bottom: 20px; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--orange);
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  h1 {
+    font-size: clamp(30px, 5vw, 46px);
+    font-weight: 700;
+    line-height: 1.12;
+  }
+  h1 .rule {
+    display: block;
+    font-size: 0.5em;
+    font-weight: 600;
+    color: var(--teal-check);
+    letter-spacing: 0.08em;
+    margin-top: 4px;
+  }
+  .subhead {
+    color: var(--cream-dim);
+    font-size: 15.5px;
+    margin: 18px auto 0;
+    max-width: 56ch;
+  }
+
+  /* ── Stat chips ───────────────────────────────────────── */
+  .stats {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 16px 0 0;
+  }
+  .stat {
+    background: var(--orange);
+    color: #fff;
+    border-radius: 999px;
+    padding: 9px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: baseline;
+    gap: 7px;
+    box-shadow: 0 6px 16px -6px rgba(232,119,34,0.35);
+  }
+  .stat.teal { background: var(--teal); box-shadow: 0 6px 16px -6px rgba(0,155,141,0.35); }
+  .stat b {
+    font-family: 'IBM Plex Mono', monospace;
+    font-variant-numeric: tabular-nums;
+    color: #fff;
+  }
+
+  /* ── Callout ──────────────────────────────────────────── */
+  .callout {
+    max-width: 640px;
+    margin: 20px auto 0;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 18px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .callout svg { flex-shrink: 0; width: 20px; height: 20px; color: var(--orange); margin-top: 2px; }
+  .callout p { margin: 0; font-size: 13.5px; color: var(--cream-dim); }
+  .callout strong { color: var(--cream); }
+
+  /* ── Zigzag timeline ──────────────────────────────────── */
+  .timeline { position: relative; margin-top: 40px; }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 50%; top: 6px; bottom: 6px;
+    width: 2px;
+    background: var(--line);
+    transform: translateX(-50%);
+  }
+
+  .node {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 44px 1fr;
+    margin-bottom: 24px;
+  }
+  .node:last-child { margin-bottom: 0; }
+
+  .dot-col { grid-column: 2; display: flex; justify-content: center; padding-top: 6px; }
+  .dot {
+    width: 15px; height: 15px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 3px solid var(--orange);
+    z-index: 2;
+  }
+  .node.teal .dot { border-color: var(--teal); }
+
+  .line-seg {
+    position: absolute;
+    width: 2px;
+    background: var(--line);
+    z-index: 1;
+    transform: translateX(-50%);
+    transition: background 0.2s ease, width 0.2s ease, box-shadow 0.2s ease;
+  }
+  .line-seg.complete {
+    width: 4px;
+    background: var(--done);
+    box-shadow: 0 0 12px 1px rgba(75,122,31,0.6);
+  }
+
+  .content { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+  .node.right .content { grid-column: 3; align-items: flex-start; }
+  .node.left  .content { grid-column: 1; align-items: flex-end; }
+
+  .node.center { grid-template-columns: 1fr; margin-top: 12px; }
+  .node.center .dot-col { grid-column: 1; }
+  .node.center .content { grid-column: 1; align-items: center; text-align: center; }
+  .node.center .dot { width: 20px; height: 20px; border-width: 4px; }
+  .node.center .pill-label { font-size: 15px; padding: 11px 28px; }
+
+  .node.center .card {
+    max-width: 540px;
+    padding: 32px 38px;
+  }
+  .node.center.teal .card {
+    background: var(--teal);
+    border: 2px solid transparent;
+  }
+  .node.center .card-title {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 18px;
+    text-align: center;
+  }
+  .node.center .check-list { text-align: left; align-items: center; }
+  .node.center .check-item { justify-content: center; max-width: 380px; margin: 0 auto; }
+  .node.center .check-box { width: 26px; height: 26px; border-radius: 8px; border-width: 2.5px; }
+  .node.center.teal .check-box { border-color: rgba(255,255,255,0.8); }
+  .node.center.teal .check-item.checked .check-box { background: #fff; border-color: #fff; }
+  .node.center .check-box svg { color: var(--teal-check); }
+  .node.center .check-text { font-size: 19px; font-weight: 600; color: #fff; }
+  .node.center .check-meta { font-size: 13px; color: rgba(255,255,255,0.78); margin-top: 4px; }
+  .node.center .check-item.checked .check-text { color: #fff; }
+
+  .pill-label {
+    background: var(--orange);
+    color: #fff;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    border-radius: 999px;
+    box-shadow: 0 4px 12px -4px rgba(232,119,34,0.4);
+    white-space: nowrap;
+  }
+  .node.teal .pill-label { background: var(--teal); box-shadow: 0 4px 12px -4px rgba(0,155,141,0.4); }
+
+  .card {
+    width: 100%;
+    max-width: 380px;
+    border-radius: 14px;
+    padding: 14px 18px;
+    border: 1px solid var(--orange-edge);
+    background: var(--orange-card);
+  }
+  .node.teal .card { border-color: var(--teal-edge); background: var(--teal-card); }
+  .card.complete,
+  .node.teal .card.complete {
+    border-color: var(--done);
+    box-shadow: 0 0 0 3px var(--done), 0 0 28px 4px rgba(75,122,31,0.45), 0 14px 32px -10px rgba(75,122,31,0.55);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+
+  .card-title { font-size: 13px; font-weight: 700; color: var(--cream-dim); margin-bottom: 8px; text-align: left; }
+
+  .check-list { display: flex; flex-direction: column; gap: 8px; text-align: left; }
+  .check-item {
+    display: flex; gap: 10px; align-items: flex-start;
+    background: none; border: none; padding: 0; margin: 0;
+    font: inherit; text-align: left; cursor: pointer; width: 100%;
+  }
+  .check-box {
+    flex-shrink: 0;
+    width: 19px; height: 19px;
+    margin-top: 1px;
+    border-radius: 6px;
+    border: 2px solid var(--orange-check);
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .node.teal .check-box { border-color: var(--teal-check); }
+  .check-box svg {
+    width: 12px; height: 12px; color: #fff;
+    opacity: 0; transform: scale(0.5);
+    transition: opacity 0.12s ease, transform 0.12s ease;
+  }
+  .check-item.checked .check-box { background: var(--orange-check); border-color: var(--orange-check); }
+  .node.teal .check-item.checked .check-box { background: var(--teal-check); border-color: var(--teal-check); }
+  .check-item.checked .check-box svg { opacity: 1; transform: scale(1); }
+  .check-item:focus-visible .check-box { outline: 2px solid var(--orange); outline-offset: 2px; }
+  .node.teal .check-item:focus-visible .check-box { outline-color: var(--teal); }
+  .check-text { font-size: 13.5px; color: var(--cream); }
+  .check-meta {
+    display: block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11.5px;
+    color: var(--cream-faint);
+    margin-top: 2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .check-item.checked .check-text { color: var(--done); }
+
+  footer {
+    max-width: 640px;
+    margin: 60px auto 0;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    font-size: 12px;
+    color: var(--cream-faint);
+    text-align: center;
+  }
+
+  @media (max-width: 680px) {
+    .node { grid-template-columns: 32px 1fr; }
+    .dot-col { grid-column: 1; padding-top: 4px; }
+    .node.right .content, .node.left .content { grid-column: 2; align-items: flex-start; }
+    .card { max-width: none; }
+
+    .node.center { grid-template-columns: 1fr; }
+    .node.center .dot-col { grid-column: 1; }
+    .node.center .content { grid-column: 1; align-items: center; text-align: center; }
+    .node.center .card { max-width: none; padding: 26px 22px; }
+    .node.center .check-item { max-width: none; }
+  }
+
+  /* ── Password gate ────────────────────────────────────── */
+  #pw-gate {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+    padding: 20px;
+    text-align: center;
+  }
+  #pw-gate .pw-title { font-family: 'Fraunces', Georgia, serif; font-size: 22px; font-weight: 700; color: var(--cream); }
+  #pw-gate .pw-sub { color: var(--cream-dim); font-size: 14px; max-width: 340px; }
+  #pw-form { display: flex; gap: 8px; }
+  #pw-input {
+    padding: 10px 14px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    width: 200px;
+  }
+  #pw-form button {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    background: var(--teal);
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  #pw-error { color: var(--orange-check); font-size: 13px; display: none; }
+</style>
+</head>
+<body>
+
+<div id="pw-gate">
+  <div class="pw-title">Eagle View — Internal</div>
+  <div class="pw-sub">This page has internal planning details. Enter the access code to continue.</div>
+  <form id="pw-form" autocomplete="off">
+    <input id="pw-input" type="password" placeholder="Access code" autocomplete="off">
+    <button type="submit">Enter</button>
+  </form>
+  <div id="pw-error">Incorrect code — try again.</div>
+</div>
+
+<div id="pw-content" style="display:none;">
+<div class="wrap">
+
+  <div class="title-block">
+    <div class="eyebrow">Eagle View — Business &amp; Distribution</div>
+    <h1>Product Launch Roadmap<span class="rule">— Eagle View —</span></h1>
+    <div class="stats">
+      <div class="stat">Critical path <b>10–14 wks</b></div>
+      <div class="stat teal">Total cost <b>₹0.9L–4L</b></div>
+      <div class="stat">Fastest win <b>3–5 days</b></div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <p><strong>Start the Google OAuth + CASA process as early as possible</strong> — it's the longest pole in the whole roadmap by a wide margin. Everything else can run underneath it, but nothing shortens CASA once it's queued.</p>
+  </div>
+
+  <div class="timeline">
+
+    <!-- 1 -->
+    <div class="node right">
+      <div class="dot-col"><div class="dot"></div></div>
+      <div class="content">
+        <span class="pill-label">1 · First checkpoint</span>
+        <div class="card">
+          <div class="card-title">App development — production ready</div>
+          <div class="check-list">
+            <button class="check-item" data-key="p1-0" data-default="true"><span class="check-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="check-text">Feature development complete<span class="check-meta">Core app, all sub-apps, all 5 themes</span></span></button>
+            <button class="check-item" data-key="p1-1" data-default="false"><span class="check-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="check-text">Full QA pass — 100% of test cases verified<span class="check-meta">In progress · 550 TCs / 46 sections · ₹20k</span></span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="node left teal">
+      <div class="dot-col"><div class="dot"></div></div>
+      <div class="content">
+        <span class="pill-label">2 · Second checkpoint</span>
+        <div class="card">
+          <div class="card-title">Domain &amp; business mailbox</div>
+          <div class="check-list">
+            <button class="check-item" data-key="p2-0" data-default="false"><span class="check-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="check-text">Confirm/register business domain<span class="check-meta">Same day · ~₹500–1,500/yr</span></span></button>
+            <button class="check-item" data-key="p2-1" data-default="false"><span class="check-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="check-text">Business mailbox (Workspace / 365)<span class="check-meta">1–2 days · ~₹500–1,400/mo</span></span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="node right">
+      <div class="dot-col"><div class="dot"></div></div>
+      <div class="content">
+        <span class="pill-label">3 · Third checkpoint</span>
+        <div class="card">
+          <div class="card-title">Host the home &amp; product websites</div>
+          <div class="check-list">
+            <button class="check-item" data-key="p3-0" data-default="true"><span class="check-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="check-text">Home / marketing website<span class="check-meta">Done · already live</span></span></button>
+            <button class="check-item" data-key="p3-1" data-default="true"><span class="check-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="check-text">Product website (Eagle View pages)<span class="check-meta">Done · already live</span></span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="node left teal">
+      <div class="dot-col"><div class="dot"></div></div>
+      <div class="content">
+        <span class="pill-label">4 · ~10 days</span>
+        <div class="card">
+          <div class="card-title">Company registration</div>
+          <div class="check-list">
+            <button class="check-item" data-key="p4-0" data-default="false"><span class="check-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="check-text">PAN, MSME (Udyam), GST<span class="check-meta">Filed, awaiting approval · ₹12.5k</span></span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div class="node right">
+      <div class="dot-col"><div class="dot"></div></div>
+      <div class="content">
+        <span class="pill-label">5 · ~2–3 weeks</span>
+        <div class="card">
+          <div class="card-title">Financial &amp; sales admin</div>
+          <div class="check-list">
+            <button class="check-item" data-key="p5-0" data-default="false"><span class="check-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="check-text">Open business current account<span class="check-meta">3–7 days · ₹0 held (IDFC First, 3-yr zero-AMB) — not a cost, stays yours</span></span></button>
+            <button class="check-item" data-key="p5-1" data-default="false"><span class="check-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="check-text">Razorpay business KYC<span class="check-meta">3–7 days · no setup fee</span></span></button>
+            <button class="check-item" data-key="p5-2" data-default="false"><span class="check-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="check-text">GST invoicing + first return<span class="check-meta">1–2 weeks · Free for first year, then ₹1k–5k/mo via CA</span></span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6 -->
+    <div class="node left teal">
+      <div class="dot-col"><div class="dot"></div></div>
+      <div class="content">
+        <span class="pill-label">6 · ~1–2 weeks</span>
+        <div class="card">
+          <div class="card-title">Code signing</div>
+          <div class="check-list">
+            <button class="check-item" data-key="p6-0" data-default="false"><span class="check-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="check-text">Apple Developer ID (org account)<span class="check-meta">2–10 days · $99/yr (~₹8.2k)</span></span></button>
+            <button class="check-item" data-key="p6-1" data-default="false"><span class="check-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="check-text">Windows code-signing cert<span class="check-meta">3–10 days · ₹8k–37k/yr</span></span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7 -->
+    <div class="node right">
+      <div class="dot-col"><div class="dot"></div></div>
+      <div class="content">
+        <span class="pill-label">7 · 8–14 weeks</span>
+        <div class="card">
+          <div class="card-title">OAuth publisher verification</div>
+          <div class="check-list">
+            <button class="check-item" data-key="p7-0" data-default="false"><span class="check-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="check-text">Microsoft Partner Network ID<span class="check-meta">1–3 days · free</span></span></button>
+            <button class="check-item" data-key="p7-1" data-default="false"><span class="check-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="check-text">D-U-N-S + Publisher Verification<span class="check-meta">1–4 weeks · free (expedited D&amp;B ~$229)</span></span></button>
+            <button class="check-item" data-key="p7-2" data-default="false"><span class="check-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="check-text">Google OAuth consent verification<span class="check-meta">1–2 weeks · free</span></span></button>
+            <button class="check-item" data-key="p7-3" data-default="false"><span class="check-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="check-text">CASA Tier 2 security assessment<span class="check-meta">4–8 weeks · ₹45k–3L — shop authorized labs (TAC Security, Fluid Attacks)</span></span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8 -->
+    <div class="node center teal">
+      <div class="dot-col"><div class="dot"></div></div>
+      <div class="content">
+        <span class="pill-label">8 · Launch</span>
+        <div class="card">
+          <div class="card-title">Public launch</div>
+          <div class="check-list">
+            <button class="check-item" data-key="p9-0" data-default="false"><span class="check-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span><span class="check-text">Eagle View goes live<span class="check-meta">Target Nov 19 – Dec 17, 2026 · 10–14 wks from today</span></span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>Estimates only — confirm exact figures with your CA/company secretary and the relevant assessor before budgeting. Tap any item to check it off — your progress is saved on this device.</footer>
+
+</div>
+</div>
+
+<script>
+(function () {
+  var CORRECT_HASH = '5cb4dcad2693e6b82708ce728b25493d59e18300cbc9c0e3375be47b5699e353';
+  var SESSION_KEY = 'ev-roadmap-unlocked';
+
+  function sha256(str) {
+    var enc = new TextEncoder().encode(str);
+    return crypto.subtle.digest('SHA-256', enc).then(function (buf) {
+      return Array.prototype.map.call(new Uint8Array(buf), function (b) {
+        return b.toString(16).padStart(2, '0');
+      }).join('');
+    });
+  }
+
+  function initRoadmap() {
+    var STORAGE_KEY = 'ev-roadmap-checks-v1';
+    var saved = {};
+    try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch (e) {}
+
+    function updateCard(card) {
+      var items = card.querySelectorAll('.check-item');
+      var allChecked = items.length > 0 && Array.prototype.every.call(items, function (it) {
+        return it.classList.contains('checked');
+      });
+      card.classList.toggle('complete', allChecked);
+    }
+
+    var timeline = document.querySelector('.timeline');
+
+    function layoutTimelineLine() {
+      if (!timeline) return;
+      var nodes = Array.prototype.slice.call(timeline.querySelectorAll('.node'));
+      if (nodes.length < 2) return;
+      var timelineRect = timeline.getBoundingClientRect();
+      var dots = nodes.map(function (n) { return n.querySelector('.dot'); });
+      var firstDotRect = dots[0].getBoundingClientRect();
+      var left = (firstDotRect.left + firstDotRect.width / 2) - timelineRect.left;
+      var centers = dots.map(function (d) {
+        var r = d.getBoundingClientRect();
+        return (r.top + r.height / 2) - timelineRect.top;
+      });
+
+      timeline.querySelectorAll('.line-seg').forEach(function (s) { s.remove(); });
+      for (var i = 0; i < nodes.length - 1; i++) {
+        var seg = document.createElement('div');
+        seg.className = 'line-seg';
+        seg.dataset.idx = i;
+        seg.style.left = left + 'px';
+        seg.style.top = centers[i] + 'px';
+        seg.style.height = (centers[i + 1] - centers[i]) + 'px';
+        timeline.insertBefore(seg, timeline.firstChild);
+      }
+      updateTimelineLineColors();
+    }
+
+    function updateTimelineLineColors() {
+      if (!timeline) return;
+      var nodes = timeline.querySelectorAll('.node');
+      timeline.querySelectorAll('.line-seg').forEach(function (seg) {
+        var idx = parseInt(seg.dataset.idx, 10);
+        var card = nodes[idx] && nodes[idx].querySelector('.card');
+        seg.classList.toggle('complete', !!(card && card.classList.contains('complete')));
+      });
+    }
+
+    document.querySelectorAll('.check-item').forEach(function (el) {
+      var key = el.getAttribute('data-key');
+      var isChecked = Object.prototype.hasOwnProperty.call(saved, key)
+        ? saved[key]
+        : el.getAttribute('data-default') === 'true';
+      if (isChecked) el.classList.add('checked');
+
+      el.addEventListener('click', function () {
+        el.classList.toggle('checked');
+        saved[key] = el.classList.contains('checked');
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(saved)); } catch (e) {}
+        updateCard(el.closest('.card'));
+        updateTimelineLineColors();
+      });
+    });
+
+    document.querySelectorAll('.card').forEach(updateCard);
+    layoutTimelineLine();
+    var resizeT;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeT);
+      resizeT = setTimeout(layoutTimelineLine, 150);
+    });
+  }
+
+  function unlock() {
+    document.getElementById('pw-gate').style.display = 'none';
+    document.getElementById('pw-content').style.display = 'block';
+    initRoadmap();
+  }
+
+  var already = false;
+  try { already = sessionStorage.getItem(SESSION_KEY) === '1'; } catch (e) {}
+
+  if (already) {
+    unlock();
+  } else {
+    document.getElementById('pw-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var val = document.getElementById('pw-input').value;
+      sha256(val).then(function (hash) {
+        if (hash === CORRECT_HASH) {
+          try { sessionStorage.setItem(SESSION_KEY, '1'); } catch (e) {}
+          unlock();
+        } else {
+          document.getElementById('pw-error').style.display = 'block';
+          document.getElementById('pw-input').value = '';
+          document.getElementById('pw-input').focus();
+        }
+      });
+    });
+  }
+})();
+</script>
+
+</body>
+</html>
